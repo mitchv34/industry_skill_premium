@@ -15,9 +15,9 @@ end
 
 
 #  Load Data
-path_data_korv = "./extend_KORV/data/Data_KORV.csv";
-path_updated_labor = "./extend_KORV/data/proc/labor_totl.csv";
-path_updated_capital = "./extend_KORV/data/proc/capital_totl.csv";
+path_data_korv = "./data/Data_KORV.csv";
+path_updated_labor = "./data/proc/labor_totl.csv";
+path_updated_capital = "./data/proc/capital_totl.csv";
 
 dataframe_korv = CSV.read(path_data_korv, DataFrame);
 updated_labor = CSV.read(path_updated_labor, DataFrame);
@@ -75,33 +75,66 @@ scale_0 = [0.4, 0.4, scale_initial]
 optim_problem_korv(x::Vector) = set_optim_problem(x, data_korv, T, η_ω_0, model, scale_initial)
 optim_problem_updated(x::Vector) = set_optim_problem(x, data_updated, T, η_ω_0, model, scale_initial)
 
-# out_prob = set_outter_problem(x, params::Array{Float64}, data::Data, T::Int64, η_ω::Float64,
-# 													model::Model, fixed_param::Float64)
 
-### Set options for estimation
-# optim_options = OptimOptions(
-#     optim_problem_korv, # Function to be optimized
-#     vcat(param_0, scale_0), # Initial parameter values
-#     NelderMead(), # Optimization method
-#     1e-4, # Tolerance for convergence
-#     300, # Maximum number of iterations
-#     callback # Callback function
-# )
 
+params = sim.x # Parameters
+# Genrate shocks
+shocks = generateShocks(params, T);
+# Update model
+update_model!(model, params)
+# Evaluate model
+model_results = evaluateModel(0, model, data_korv, params, shocks)
+
+# Plot results:
+p1 = plot(  model_results[:rr] .*  data.q[1:end-1], lw = 2, linestyle=:dash,
+			label = "Model", legend =:topright, size = (800, 400))
+plot!(data.rr .* data.q[1:end-1], lw = 2, label = "Data")
+title!("Relative Price of Equipment")
+
+p2 = plot(model_results[:ω] , lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
+plot!(data.w_h ./ data.w_ℓ, lw = 2, label = "Data")
+title!("Skill Premium")
+
+p3 = plot(model_results[:lbr], lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
+plot!(data.lsh, lw = 2, label = "Data")
+ylims!(.60, .80)
+title!("Labor Share of Output")
+
+p4 = plot(model_results[:wbr], lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
+plot!(data.wbr, lw = 2, label = "Data")
+title!("Wage Bill Ratio")
+
+title_plot = plot(title = title, grid = false, showaxis = false, bottom_margin = -1Plots.px)
+xticks!([0]); yticks!([0]);
+
+p = plot(title_plot, p1,p2,p3,p4, layout = @layout([A{0.01h}; [[B C];[D E]]]), size = (800, 600))
+
+
+## Set options for estimation
+optim_options = OptimOptions(
+    optim_problem_korv, # Function to be optimized
+    vcat(param_0, scale_0), # Initial parameter values
+    NelderMead(), # Optimization method
+    1e-2, # Tolerance for convergence
+    300, # Maximum number of iterations
+    callback # Callback function
+)
+sim = solve_optim_prob(optim_options, scale_initial, η_ω_0)
+plot_results(sim, data_korv)
 
 ### Set options for estimation
 optim_options = OptimOptions(
     optim_problem_updated, # Function to be optimized
     vcat(param_0, scale_0), # Initial parameter values
     NelderMead(), # Optimization method
-    1e-4, # Tolerance for convergence
+    1e-1, # Tolerance for convergence
     300, # Maximum number of iterations
     callback # Callback function
 )
 
 sim = solve_optim_prob(optim_options, scale_initial, η_ω_0)
 
-p = plot_results(sim, data_updated)
+plot_results(sim, data_updated)
 
 
 @save "./extend_KORV/data/results/example.jld2" sim optim_options p

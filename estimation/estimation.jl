@@ -26,8 +26,8 @@ using Optimization
     η_ω     ::Float64               # Common innovation variance of both processes
 	φℓ₀ 	::Float64 				# Initial value for φ_ℓ
 	φh₀ 	::Float64 				# Initial value for φ_h
-	δ_e		::Float64 =0.05 				# depreciation rate of the capital euipment
-	δ_s		::Float64 =0.125 		# depreciation rate of the capital structures
+	δ_e		::Float64 				# depreciation rate of the capital euipment
+	δ_s		::Float64 		 		# depreciation rate of the capital structures
 	nS 		::Int64 				# Number of simulations
 end
 
@@ -413,8 +413,7 @@ function generateData(data::DataFrame)
 end
 
 
-function setParams(param::Vector{Float64}, scale_params::Vector{Float64})
-	
+function setParams(param::Vector{Float64}, scale_params::Vector{Float64}; δ_e::Float64=0.125, δ_s::Float64 =0.05)
 	parameters = Params(
 						α   = param[1],
 						μ   = scale_params[1],    
@@ -427,6 +426,8 @@ function setParams(param::Vector{Float64}, scale_params::Vector{Float64})
 						η_ω =  param[4],
 						φℓ₀ = scale_params[3], 
 						φh₀ = scale_params[4],
+						δ_e = δ_e,
+						δ_s = δ_s,
 						nS = 1000
 	);
 	
