@@ -19,40 +19,6 @@ params_init = InitParams(
 			[0.4, 0.4, 4.45] # scale_0
 			)
 
-mutable struct InitParams
-	scale_initial::Float64
-	η_ω_0::Float64
-	param_0::Vector{Float64}
-	scale_0::Vector{Float64}
-end
-
-function estimate_industry(ind_code, initParams::InitParams; tol = 1e-2)
-
-	scale_initial = initParams.scale_initial
-	η_ω_0 = initParams.η_ω_0
-	param_0 = initParams.param_0
-	scale_0 = initParams.scale_0
-
-	# # Define parameters and variables of the model
-begin
-	@parameters α, μ, σ, λ, ρ, δ_e, δ_s
-	@variables k_e, k_s, h, ℓ, ψ_L, ψ_H, q, y
-end
-
-path_data = "./data/proc/ind/$(ind_code).csv";
-dataframe = CSV.read(path_data, DataFrame);
-
-data = generateData(dataframe);
-model = intializeModel();
-delta_e = mean(dataframe.DPR_EQ)
-delta_s = mean(dataframe.DPR_ST)
-
-	sim = solve_optim_prob(data, model, scale_initial, 0.08, vcat(param_0, scale_0), tol = tol; delta=[delta_e, delta_s]);
-
-	return sim
-
-end 
-
 sim = estimate_industry(ind_code, params_init);
 
 p = plot_results(sim_updated_dpr, data)
@@ -60,7 +26,7 @@ p = plot_results(sim_updated_dpr, data)
 # Save results
 
 # Using JDL
-@save "./extend_KORV/data/results/var/$(ind_code)$(sim.f).jld2" sim  p
+@save "./extend_KORV/data/results/var/$(ind_code)$(sim.f).jld2" sim p
 
 
 
