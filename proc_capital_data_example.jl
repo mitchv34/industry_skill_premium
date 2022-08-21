@@ -5,13 +5,13 @@ using Plots
 using StatsPlots
 
 # Load KORV for comparison
-KORV = CSV.read("extend_KORV/data/Data_KORV.csv", DataFrame)
+KORV = CSV.read("./data/Data_KORV.csv", DataFrame)
 
-capital_data = CSV.read("extend_KORV/data/interim/capital_totl.csv", DataFrame)
-gdpdef = CSV.read("extend_KORV/data/raw/gdpdef.csv", DataFrame)
-consdef = CSV.read("extend_KORV/data/raw/consdef.csv", DataFrame)
-peric = CSV.read("extend_KORV/data/raw/peric.csv", DataFrame)
-gdp = CSV.read("extend_KORV/data/raw/gdp.csv", DataFrame)
+capital_data = CSV.read("./data/interim/capital_totl.csv", DataFrame)
+gdpdef = CSV.read("./data/raw/gdpdef.csv", DataFrame)
+consdef = CSV.read("./data/raw/consdef.csv", DataFrame)
+peric = CSV.read("./data/raw/peric.csv", DataFrame)
+gdp = CSV.read("./data/raw/gdp.csv", DataFrame)
 # Obtain equipment deflator by muiltipliying PERIC by CONSDEF
 equip_def = peric.value .* consdef.value
 
@@ -73,22 +73,24 @@ K_eq = (K_eq / K_eq[18]) * KORV.K_EQ[1]
 # plot(capital_data.year[18:end], gdp.value[18:end] / gdp.value[18] , label = "Updated", lw = 2, linestyle = :dash)
 #     plot!(capital_data.year[18:18+29], KORV.OUTPUT / KORV.OUTPUT[1] , lw = 2, label = "KORV")
 # # title!("Realtive Price of Equipment")
-# gdp_ = ( gdp.value[1:end] / gdp.value[18] ) * KORV.OUTPUT[1]
-# REL_P_EQ = (peric.value[18:end] / peric.value[18]) * KORV.REL_P_EQ[1]
+gdp_ = ( gdp.value[1:end] / gdp.value[18] ) * KORV.OUTPUT[1]
+REL_P_EQ = (peric.value[18:end] / peric.value[18]) * KORV.REL_P_EQ[1]
 
 
-# # Save results to file
-# final_df = DataFrame(
-#     [
-#         :YEAR => capital_data.year[17:end-1],
-#         :K_STR => K_st[18:end],
-#         :K_EQ => K_eq[18:end],
-#         :REL_P_EQ => REL_P_EQ,
-#         :OUTPUT =>gdp_[18:end]
-#     ]
-# )
+# Save results to file
+final_df = DataFrame(
+    [
+        :YEAR => capital_data.year[17:end-1],
+        :K_STR => K_st[18:end],
+        :K_EQ => K_eq[18:end],
+        :DPR_STR => δ_st[18:end],
+        :DPR_EQ => δ_eq[18:end],
+        :REL_P_EQ => REL_P_EQ,
+        :OUTPUT =>gdp_[18:end]
+    ]
+)
 
-# CSV.write("extend_KORV/data/proc/capital_totl.csv", final_df)
+CSV.write("./data/proc/capital_totl.csv", final_df)
 
 # plot(final_df.OUTPUT)
 # plot!(KORV.OUTPUT)

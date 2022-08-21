@@ -89,3 +89,16 @@ for (ind_bea, ind_klems) in zip(bea_code, klems_code):
 
 
 # %%
+## Create exrtended dataframe for the whole economy
+### Read capital data
+capital_data = pd.read_csv("data/proc/capital_totl.csv")
+capital_data.YEAR = capital_data.YEAR.astype(int).astype(str)
+capital_data.set_index("YEAR", inplace=True)
+### Read labor data
+labor_data = pd.read_csv("data/proc/labor_totl.csv")
+labor_data.YEAR = labor_data.YEAR.astype(int).astype(str)
+labor_data.set_index("YEAR", inplace=True)
+### Merge both dataframes
+merged = pd.merge(capital_data, labor_data, left_index=True, right_index=True)
+merged.to_csv("./data/proc/data_updated.csv", index=False)
+# %%
