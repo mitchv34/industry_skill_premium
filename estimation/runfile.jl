@@ -65,53 +65,19 @@ data_updated.ℓ = vcat([0], L_U_hat)
 
 ## Estimate model with data from KORV
 ### Set initial parameter values
-# T = length(data_korv.y);
-T = length(data_updated.y);
+T_korv = length(data_korv.y);
+T_updated = length(data_updated.y);
 scale_initial = 5.0
 η_ω_0 = 0.065
 param_0 = [0.1, 0.35, -0.4] 
 scale_0 = [0.4, 0.4, scale_initial]
 ### Set optimization problem
-optim_problem_korv(x::Vector) = set_optim_problem(x, data_korv, T, η_ω_0, model, scale_initial)
-optim_problem_updated(x::Vector) = set_optim_problem(x, data_updated, T, η_ω_0, model, scale_initial)
+optim_problem_korv(x::Vector) = set_optim_problem(x, data_korv, T_korv, η_ω_0, model, scale_initial)
+optim_problem_updated(x::Vector) = set_optim_problem(x, data_updated, T_updated, η_ω_0, model, scale_initial)
 
-
-
-params = sim.x # Parameters
-# Genrate shocks
-shocks = generateShocks(params, T);
-# Update model
-update_model!(model, params)
-# Evaluate model
-model_results = evaluateModel(0, model, data_korv, params, shocks)
-
-# Plot results:
-p1 = plot(  model_results[:rr] .*  data.q[1:end-1], lw = 2, linestyle=:dash,
-			label = "Model", legend =:topright, size = (800, 400))
-plot!(data.rr .* data.q[1:end-1], lw = 2, label = "Data")
-title!("Relative Price of Equipment")
-
-p2 = plot(model_results[:ω] , lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
-plot!(data.w_h ./ data.w_ℓ, lw = 2, label = "Data")
-title!("Skill Premium")
-
-p3 = plot(model_results[:lbr], lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
-plot!(data.lsh, lw = 2, label = "Data")
-ylims!(.60, .80)
-title!("Labor Share of Output")
-
-p4 = plot(model_results[:wbr], lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
-plot!(data.wbr, lw = 2, label = "Data")
-title!("Wage Bill Ratio")
-
-title_plot = plot(title = title, grid = false, showaxis = false, bottom_margin = -1Plots.px)
-xticks!([0]); yticks!([0]);
-
-p = plot(title_plot, p1,p2,p3,p4, layout = @layout([A{0.01h}; [[B C];[D E]]]), size = (800, 600))
-
-
+### Run optimization
 ## Set options for estimation
-optim_options = OptimOptions(
+optim_options_korv = OptimOptions(
     optim_problem_korv, # Function to be optimized
     vcat(param_0, scale_0), # Initial parameter values
     NelderMead(), # Optimization method
@@ -119,7 +85,7 @@ optim_options = OptimOptions(
     300, # Maximum number of iterations
     callback # Callback function
 )
-sim = solve_optim_prob(optim_options, scale_initial, η_ω_0)
+sim = solve_optim_prob(optim_options_korv, scale_initial, η_ω_0)
 plot_results(sim, data_korv)
 
 ### Set options for estimation

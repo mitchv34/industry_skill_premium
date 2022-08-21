@@ -273,6 +273,8 @@ function evaluateModel(sim_id::Int64, model::Model, data::Data, parameters::Para
 			η_ω = 0.0,
 			φℓ₀ = parameters.φℓ₀,
 			φh₀ = parameters.φh₀,
+			δ_s = parameters.δ_s,
+			δ_e = parameters.δ_e,
 			nS = 1)
 		T = length(y_data)
 		shocks_dumb = generateShocks(params_no_shock, T)

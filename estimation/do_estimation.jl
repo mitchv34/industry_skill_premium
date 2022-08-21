@@ -107,8 +107,7 @@ function solve_optim_prob(options::OptimOptions, fixed_param::Float64, η_ω::Fl
 end # solve_optim_prob 
 
 # Plot the results 
-function plot_results(simulation::Simulation, 
-    ::Data; title::String="Model Results")
+function plot_results(simulation::Simulation, data::Data; title::String="Model Results")
 
     params = simulation.x # Parameters
     # Genrate shocks
