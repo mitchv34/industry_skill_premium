@@ -226,7 +226,7 @@ function update_model!(model::Model, parameters::Params)
 						ρ => parameters.ρ,
 						δ_s => parameters.δ_s,
 						δ_e => parameters.δ_e)
-
+	
 	vars = [k_e, k_s, h, ℓ,  ψ_L, ψ_H, q, y]
 
 	prod_fucnt_fun = build_function(substitute(model.prod_fucnt, params_dict), vars, expression=Val{false}) 			
@@ -360,15 +360,13 @@ function objectiveFunction(model::Model, parameters::Params, data::Data, shocks:
 	@unpack wbr, lsh, rr, y, lsh_alt = data
 	@unpack ε = shocks
 	
-	@parameters α, μ, σ, λ, ρ
+	@parameters α, μ, σ, λ, ρ, δ_s, δ_e
 	@variables k_e, k_s, h, ℓ, ψ_L, ψ_H, q
 
 	# model = intializeModel()
 	# update_model!(model, parameters)
 
 	T = length(lsh) - 1
-
-
 	mS, vS = generateMoments(model, parameters, data, shocks)
 	
 

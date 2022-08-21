@@ -53,25 +53,28 @@ mutable struct Simulation
     t::Float64 # Time elapsed
     x_0::Params # Initial parameter values
     x::Params # Parameters
-    method # Optimization method
+    options::OptimOptions # Optimization options
 end # Simulation
 
 # Define optimization problem
-function set_optim_problem(x::Vector, data::Data, T::Int64, η_ω::Float64,
-                            model::Model, fixed_param::Float64)
+function set_optim_problem(x::Vector, data::Data, T::Int64, η_ω::Float64, model::Model, fixed_param::Float64; delta::Vector=[])
 
 	# Check admisible parameter values
 	if (0 > x[1]) || (1 < x[1]) || (x[2] > 1)  || (1 < x[3]) 
 		return Inf 
 	end
 
-
 	if (0 > x[4]) || (1 < x[4]) || (0 > x[5])  || (1 < x[5]) || (x[6] < 0) 
 		return Inf 
 	end
 
-	# p_new = setParams( x[1:3], [x[4:end]..., scale_param_fixed]);
-	p_new = setParams( [x[1:3]...,η_ω] , [x[4:end]..., fixed_param]);
+    if length(delta) == 0
+        p_new = setParams( [x[1:3]...,η_ω] , [x[4:end]..., fixed_param]);
+    else
+        delta_e, delta_s = delta
+        p_new = setParams( [x[1:3]...,η_ω] , [x[4:end]..., fixed_param], δ_e = delta_e, δ_s = delta_s);
+    end
+    
 
 	shocks = generateShocks(p_new, T);
 	update_model!(model, p_new)
@@ -81,9 +84,25 @@ function set_optim_problem(x::Vector, data::Data, T::Int64, η_ω::Float64,
 end # set_optim_problem
 
 # Solve optimization problem
-function solve_optim_prob(options::OptimOptions, fixed_param::Float64, η_ω::Float64)
+function solve_optim_prob(data::Data, model::Model, fixed_param::Float64, η_ω::Float64, x_0 ::Array{Float64};
+                            delta::Vector=[], tol = 1e-4, maxiter=300)
 
-    
+    ### Run optimization
+    # set optimization problem
+    optim_problem(x::Vector) = set_optim_problem(x, data, T, η_ω, model, fixed_param; delta=delta)
+
+    T = length(data.y) # Time horizon
+
+    ## Set options for estimation
+    options = OptimOptions(
+        optim_problem, # Function to be optimized
+        x_0, # Initial parameter values
+        NelderMead(), # Optimization method
+        tol, # Tolerance for convergence
+        maxiter, # Maximum number of iterations
+        callback # Callback function
+    )
+        
     # Solve optimization problem
     sol = Optim.optimize(   options.optim_problem,
                             options.x_0,
@@ -96,13 +115,19 @@ function solve_optim_prob(options::OptimOptions, fixed_param::Float64, η_ω::Fl
                                 )
                         )
 
+    if length(delta) == 0
+        delta_e, delta_s = [0.125, 0.05]
+    else
+        delta_e, delta_s = delta
+    end
+
     # Create simulation results struct
     return Simulation(  sol.minimum,
                         sol.g_residual,
                         sol.time_run,
-                        setParams( [sol.initial_x[1:3]...,η_ω] , [sol.initial_x[4:end]..., fixed_param] ),
-                        setParams( [sol.minimizer[1:3]...,η_ω] , [sol.minimizer[4:end]..., fixed_param] ),
-                        sol.method
+                        setParams( [sol.initial_x[1:3]...,η_ω] , [sol.initial_x[4:end]..., fixed_param], δ_e = delta_e, δ_s = delta_s ),
+                        setParams( [sol.minimizer[1:3]...,η_ω] , [sol.minimizer[4:end]..., fixed_param], δ_e = delta_e, δ_s = delta_s ),
+                        options
                     )
 end # solve_optim_prob 
 
@@ -110,6 +135,7 @@ end # solve_optim_prob
 function plot_results(simulation::Simulation, data::Data; title::String="Model Results")
 
     params = simulation.x # Parameters
+    T = length(data.y) # Time horizon
     # Genrate shocks
     shocks = generateShocks(params, T);
     # Update model
@@ -144,16 +170,3 @@ function plot_results(simulation::Simulation, data::Data; title::String="Model R
     return  p
 
 end # plot_results
-
-# sim_1 = Simulation23(
-#     sol.minimum,  # Objective function value
-#     sol.g_residual, # Norm of the gradient
-#     sol.time_run, # Time elapsed
-#     setParams(sol.initial_x[1:4], [sol.minimizer[5:end]..., φₕ⁰]), # Initial parameter values
-#     setParams(sol.minimizer[1:4], [sol.minimizer[5:end]..., φₕ⁰]), # Parameters
-#     sol.method # Optimization method
-# )
-
-# @save "./extend_KORV/data/results/example.jld2" sim_1
-
-# @load "./extend_KORV/data/results/example.jld2" sim_1
