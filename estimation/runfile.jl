@@ -62,9 +62,12 @@ data_updated.ℓ = vcat([0], L_U_hat)
 ### Set initial parameter values
 scale_initial = 5.0
 η_ω_0 = 0.065
-param_0 = [0.1, 0.35, -0.4] 
+param_0 = [0.1, 0.5, 0.0] 
 scale_0 = [0.4, 0.4, scale_initial]
-sim_korv = solve_optim_prob(data_korv, model, scale_initial, 0.02, vcat(param_0, scale_0), tol = 0.01);
+
+objectiveFunctionEval(model, param_0, scale_0, η_ω_0, scale_initial, data)
+
+sim_korv = solve_optim_prob(data_korv, model, scale_initial, 0.02, vcat(param_0, scale_0), tol = 1e-6);
 plot_results(sim_korv, data_korv)
 sim_updated = solve_optim_prob(data_updated, model, scale_initial, η_ω_0, vcat(param_0, scale_0), tol = 0.01);
 plot_results(sim_updated, data_updated)

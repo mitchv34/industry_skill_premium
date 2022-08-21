@@ -371,7 +371,7 @@ function objectiveFunction(model::Model, parameters::Params, data::Data, shocks:
 	
 
 	# Z = hcat(wbr[1:end-1] / wbr[1] , lsh_alt[1:end-1]/lsh_alt[1], rr/rr[1])
-	Z = hcat(wbr[1:end-1] , lsh[1:end-1], rr)
+	Z = hcat(wbr[2:end] , lsh[2:end], rr)
 	
 	ℓ²ₛ = 0
 	moment_subset = [1,2,3]
@@ -428,7 +428,7 @@ function setParams(param::Vector{Float64}, scale_params::Vector{Float64}; δ_e::
 						φh₀ = scale_params[4],
 						δ_e = δ_e,
 						δ_s = δ_s,
-						nS = 1000
+						nS = 500
 	);
 	
 	return parameters 

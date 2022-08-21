@@ -1,6 +1,5 @@
 using Parameters
 using Optim
-using JLD2
 using Plots
 Plots.theme(:juno); # :dark, :light, :plain, :grid, :tufte, :presentation, :none
 default(fontfamily="Computer Modern", framestyle=:box); # LaTex-style
@@ -10,7 +9,7 @@ include("estimation.jl")
 
 # Callback function to be used during estimation
 function callback(os)
-	if os.iteration % 1 == 0                                       
+	if os.iteration % 20 == 5                                      
 		println("----------------------------------------------------")
 		print(@green @bold "Iteration : $(os.iteration)")
 		time = os.metadata["time"]
@@ -155,7 +154,7 @@ function plot_results(simulation::Simulation, data::Data; title::String="Model R
 
     p3 = plot(model_results[:lbr], lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
     plot!(data.lsh, lw = 2, label = "Data")
-    ylims!(.60, .80)
+    ylims!(.30, .90)
     title!("Labor Share of Output")
 
     p4 = plot(model_results[:wbr], lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
