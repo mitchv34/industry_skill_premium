@@ -57,57 +57,32 @@ L_U_hat = predict(reg_U, data_for_reg_updated)
 data_updated.h = vcat([0], L_S_hat)
 data_updated.ℓ = vcat([0], L_U_hat)
 
-# plot(data_for_reg_updated.L_S, label = "L_S", legend=:top)
-# plot!(L_S_hat, label = "L_S_hat")
-
-# plot(data_for_reg_updated.L_U, label = "L_U", legend=:top)
-# plot!(L_U_hat, label = "L_U_hat")
 
 ## Estimate model with data from KORV
 ### Set initial parameter values
-T_korv = length(data_korv.y);
-T_updated = length(data_updated.y);
 scale_initial = 5.0
 η_ω_0 = 0.065
 param_0 = [0.1, 0.35, -0.4] 
 scale_0 = [0.4, 0.4, scale_initial]
-### Set optimization problem
-optim_problem_korv(x::Vector) = set_optim_problem(x, data_korv, T_korv, η_ω_0, model, scale_initial)
-optim_problem_updated(x::Vector) = set_optim_problem(x, data_updated, T_updated, η_ω_0, model, scale_initial)
-
-### Run optimization
-## Set options for estimation
-optim_options_korv = OptimOptions(
-    optim_problem_korv, # Function to be optimized
-    vcat(param_0, scale_0), # Initial parameter values
-    NelderMead(), # Optimization method
-    1e-2, # Tolerance for convergence
-    300, # Maximum number of iterations
-    callback # Callback function
-)
-sim = solve_optim_prob(optim_options_korv, scale_initial, η_ω_0)
-plot_results(sim, data_korv)
-
-### Set options for estimation
-optim_options = OptimOptions(
-    optim_problem_updated, # Function to be optimized
-    vcat(param_0, scale_0), # Initial parameter values
-    NelderMead(), # Optimization method
-    1e-1, # Tolerance for convergence
-    300, # Maximum number of iterations
-    callback # Callback function
-)
-
-sim = solve_optim_prob(optim_options, scale_initial, η_ω_0)
-
-plot_results(sim, data_updated)
-
+sim_korv = solve_optim_prob(data_korv, model, scale_initial, 0.02, vcat(param_0, scale_0), tol = 0.01)
+plot_results(sim_korv, data_korv)
+sim_updated = solve_optim_prob(data_updated, model, scale_initial, η_ω_0, vcat(param_0, scale_0), tol = 0.01)
+plot_results(sim_updated, data_updated)
+## Repeat with different depreciation rates
+delta_e = mean(dataframe_updated.DPR_EQ)
+delta_s = mean(dataframe_updated.DPR_STR)
+sim_updated_dpr = solve_optim_prob(data_updated, model, scale_initial, η_ω_0, vcat(param_0, scale_0), tol = 0.01; delta=[delta_e, delta_s])
+plot_results(sim_updated_dpr, data_updated)
 
 @save "./extend_KORV/data/results/example.jld2" sim optim_options p
 
 @load "./extend_KORV/data/results/example.jld2" sim optim_options p
 
 
+shocks = generateShocks(setParams( [param_0...,η_ω_0] , [scale_0..., scale_initial], δ_e = 0.12, δ_s = 0.02), length(data_updated.y))
+evaluateModel(1, model, data_updated,  
+setParams( [param_0...,η_ω_0] , [scale_0..., scale_initial], δ_e = 0.12, δ_s = 0.02),
+shocks)
 
 function set_outer_problem(x::Vector, Φ::Array{Float64}, data::Data, model::Model, fixed_param::Float64; off::Bool=false) 
 	
