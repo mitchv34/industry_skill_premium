@@ -16,7 +16,7 @@ begin
 	@parameters α, μ, σ, λ, ρ, δ_e, δ_s
 	@variables k_e, k_s, h, ℓ, ψ_L, ψ_H, q, y
 end
-
+model = intializeModel();
 ###  INITIAL PARAMETERS ###
 params_init = InitParams( 
 			4.45, # scale_initial
@@ -25,14 +25,14 @@ params_init = InitParams(
 			[0.4, 0.4, 4.45] # scale_0
 			)
 
-sim = estimate_industry(ind_code, params_init);
+sim, p = estimate_industry(ind_code, params_init);
 
-p = plot_results(sim_updated_dpr, data)
+p
 
 # Save results
 
 # Using JDL
-@save "./extend_KORV/data/results/var/$(ind_code)$(sim.f).jld2" sim p
+@save "./data/results/vars/$(ind_code)$(sim.f).jld2" sim p
 
 
 

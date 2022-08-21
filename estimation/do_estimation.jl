@@ -186,16 +186,17 @@ function estimate_industry(ind_code, initParams::InitParams; tol = 1e-2)
 	scale_0 = initParams.scale_0
 
 
-path_data = "./data/proc/ind/$(ind_code).csv";
-dataframe = CSV.read(path_data, DataFrame);
+    path_data = "./data/proc/ind/$(ind_code).csv";
+    dataframe = CSV.read(path_data, DataFrame);
 
-data = generateData(dataframe);
-model = intializeModel();
-delta_e = mean(dataframe.DPR_EQ)
-delta_s = mean(dataframe.DPR_ST)
+    data = generateData(dataframe);
+    delta_e = mean(dataframe.DPR_EQ)
+    delta_s = mean(dataframe.DPR_ST)
 
-	sim = solve_optim_prob(data, model, scale_initial, 0.08, vcat(param_0, scale_0), tol = tol; delta=[delta_e, delta_s]);
+    sim = solve_optim_prob(data, model, scale_initial, 0.08, vcat(param_0, scale_0), tol = tol; delta=[delta_e, delta_s]);
 
-	return sim
+    p = plot_results(sim, data)
+
+	return sim, p
 
 end 
