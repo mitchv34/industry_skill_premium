@@ -11,6 +11,11 @@ using Optim
 
 #  Load Data
 ind_code = "44RT"
+# # Define parameters and variables of the model
+begin
+	@parameters α, μ, σ, λ, ρ, δ_e, δ_s
+	@variables k_e, k_s, h, ℓ, ψ_L, ψ_H, q, y
+end
 
 ###  INITIAL PARAMETERS ###
 params_init = InitParams( 

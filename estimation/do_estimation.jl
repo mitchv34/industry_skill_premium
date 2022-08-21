@@ -185,11 +185,6 @@ function estimate_industry(ind_code, initParams::InitParams; tol = 1e-2)
 	param_0 = initParams.param_0
 	scale_0 = initParams.scale_0
 
-	# # Define parameters and variables of the model
-begin
-	@parameters α, μ, σ, λ, ρ, δ_e, δ_s
-	@variables k_e, k_s, h, ℓ, ψ_L, ψ_H, q, y
-end
 
 path_data = "./data/proc/ind/$(ind_code).csv";
 dataframe = CSV.read(path_data, DataFrame);
