@@ -19,13 +19,13 @@ end
 model = intializeModel();
 ###  INITIAL PARAMETERS ###
 params_init = InitParams( 
-			4.45, # scale_initial
-			0.065, # η_ω_0
-			[0.1, 0.45, 0.4], # param_0
-			[0.4, 0.4, 4.45] # scale_0
+			5.0, # scale_initial
+			0.08, # η_ω_0
+			[0.1, 0.6, 0.2], # param_0
+			[0.4, 0.4, 5.0] # scale_0
 			)
 
-sim, p = estimate_industry(ind_code, params_init);
+sim, p = estimate_industry(ind_code, params_init, tol = 0.1);
 
 p
 
@@ -37,41 +37,7 @@ p
 
 
 
-# function set_outer_problem(x::Vector, Φ::Array{Float64}, data::Data, model::Model, fixed_param::Float64; off::Bool=false) 
-	
-# 	# Check admisible parameter values
-# 	if ( x[1] < 0 ) 
-# 		return Inf 
-# 	end
 
-# 	params = setParams( [Φ[1:3]...,  x[1]], [Φ[4:end]..., fixed_param] )
-
-# 	params.η_ω = x[1]
-# 	# Genrate shocks
-# 	shocks = generateShocks(params, T);
-# 	# Update model
-# 	update_model!(model, params)
-
-# 	if off
-# 		model_results = evaluateModel(0, model, data, params, shocks)
-# 		ω_model[ :, i] = model_results[:ω];
-# 		rr_model[:, i] = model_results[:rr];
-# 	else
-# 		ω_model = zeros(T-1 , params.nS)
-# 		rr_model = zeros(T-1 , params.nS)
-# 		for i ∈ 1:params.nS
-# 			model_results = evaluateModel(i, model, data, params, shocks)
-# 			ω_model[ :, i] = model_results[:ω];
-# 			rr_model[:, i] = model_results[:rr];
-# 		end 
-# 		model_moments = vcat(mean(ω_model, dims=2), mean(rr_model, dims=2))
-# 		data_moments = vcat(data.w_h[1:end-1] ./ data.w_ℓ[1:end-1], data.rr)
-# 	end
-# 	W = diagm(vcat(ones(T-1), 0.5 * ones(T-1)))
-# 	obj_fun = ((model_moments - data_moments)'*W*(model_moments - data_moments))[1]
-
-# 	return obj_fun
-# end 
 
 # η_ω = η_ω_0
 # param_1 = copy(param_0)

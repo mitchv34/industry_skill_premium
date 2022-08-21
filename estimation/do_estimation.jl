@@ -178,7 +178,38 @@ mutable struct InitParams
 	scale_0::Vector{Float64}
 end
 
-function estimate_industry(ind_code, initParams::InitParams; tol = 1e-2)
+function estimate_industry(ind_code, initParams::InitParams; tol = 1e-2, path_to_results::String="./data/results")
+
+    if ind_code*".csv" in readdir(path_to_results)
+        results = CSV.read(path_to_results * "/" * ind_code * ".csv", DataFrame)
+    else
+        results = DataFrame(
+            [
+                :alpha_0 => [],
+                :sigma_0 => [],
+                :rho_0 => [],
+                :eta_0 => [],
+                :mu_0 => [],
+                :lambda_0 => [],
+                :phi_L_0 => [],
+                :phi_H_0 => [],
+                :alpha => [],
+                :sigma => [],
+                :rho => [],
+                :eta => [],
+                :mu => [],
+                :lambda => [],
+                :phi_L => [],
+                :phi_H => [],
+                :fit_rr => [],
+                :fit_wbr => [],
+                :fit_lbr => [],
+                :fit_sp => [],
+                :obj_val => [],
+                :tol => [],
+            ]
+        )
+    end
 
 	scale_initial = initParams.scale_initial
 	η_ω_0 = initParams.η_ω_0
@@ -196,6 +227,62 @@ function estimate_industry(ind_code, initParams::InitParams; tol = 1e-2)
     sim = solve_optim_prob(data, model, scale_initial, 0.08, vcat(param_0, scale_0), tol = tol; delta=[delta_e, delta_s]);
 
     p = plot_results(sim, data)
+
+    T = length(data.y) # Time horizon
+    # Genrate shocks
+    shocks = generateShocks(sim.x, T);
+    # Update model
+    update_model!(model, sim.x)
+
+    # Evaluate model
+    model_results = evaluateModel(0, model, data, sim.x, shocks)
+    ω_model = model_results[:ω];
+    rr_model = model_results[:rr];
+    lbr_model = model_results[:lbr];
+    wbr_model = model_results[:wbr];
+    # Data
+    ω_data = data.w_h ./ data.w_ℓ;
+    rr_data = data.rr;
+    lbr_data = data.lsh;
+    wbr_data = data.wbr;
+
+    # Check fitness
+
+    f1 = sum((ω_model .- ω_data[2:end]).^ 2)
+    f2 = sum((rr_model .- rr_data).^ 2)
+    f3 = sum((lbr_model .- lbr_data[2:end]).^ 2)
+    f4 = sum((wbr_model .- wbr_data[2:end]).^ 2)
+
+    # # Save results
+    temp_df = DataFrame(
+        [
+            :alpha_0 => [sim.x_0.α],
+            :sigma_0 => [sim.x_0.σ],
+            :rho_0 => [sim.x_0.ρ],
+            :eta_0 => [sim.x_0.η_ω],
+            :mu_0 => [sim.x_0.μ],
+            :lambda_0 => [sim.x_0.λ],
+            :phi_L_0 => [sim.x_0.φℓ₀],
+            :phi_H_0 => [sim.x_0.φh₀],
+            :alpha => [sim.x.α],
+            :sigma => [sim.x.σ],
+            :rho => [sim.x.ρ],
+            :eta => [sim.x.η_ω],
+            :mu => [sim.x.μ],
+            :lambda => [sim.x.λ],
+            :phi_L => [sim.x.φℓ₀],
+            :phi_H => [sim.x.φh₀],
+            :fit_rr => [f2],
+            :fit_wbr => [f4],
+            :fit_lbr => [f3],
+            :fit_sp => [f1],
+            :obj_val => [sim.f],
+            :tol => [tol]
+        ]
+    )
+
+    append!(results, temp_df)
+    CSV.write(path_to_results * "/" * ind_code * ".csv", results)
 
 	return sim, p
 
