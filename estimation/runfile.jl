@@ -64,25 +64,20 @@ scale_initial = 5.0
 η_ω_0 = 0.065
 param_0 = [0.1, 0.35, -0.4] 
 scale_0 = [0.4, 0.4, scale_initial]
-sim_korv = solve_optim_prob(data_korv, model, scale_initial, 0.02, vcat(param_0, scale_0), tol = 0.01)
+sim_korv = solve_optim_prob(data_korv, model, scale_initial, 0.02, vcat(param_0, scale_0), tol = 0.01);
 plot_results(sim_korv, data_korv)
-sim_updated = solve_optim_prob(data_updated, model, scale_initial, η_ω_0, vcat(param_0, scale_0), tol = 0.01)
+sim_updated = solve_optim_prob(data_updated, model, scale_initial, η_ω_0, vcat(param_0, scale_0), tol = 0.01);
 plot_results(sim_updated, data_updated)
 ## Repeat with different depreciation rates
 delta_e = mean(dataframe_updated.DPR_EQ)
 delta_s = mean(dataframe_updated.DPR_STR)
-sim_updated_dpr = solve_optim_prob(data_updated, model, scale_initial, η_ω_0, vcat(param_0, scale_0), tol = 0.01; delta=[delta_e, delta_s])
+sim_updated_dpr = solve_optim_prob(data_updated, model, scale_initial, 0.08, vcat(param_0, scale_0), tol = 0.01; delta=[delta_e, delta_s]);
 plot_results(sim_updated_dpr, data_updated)
 
 @save "./extend_KORV/data/results/example.jld2" sim optim_options p
 
 @load "./extend_KORV/data/results/example.jld2" sim optim_options p
 
-
-shocks = generateShocks(setParams( [param_0...,η_ω_0] , [scale_0..., scale_initial], δ_e = 0.12, δ_s = 0.02), length(data_updated.y))
-evaluateModel(1, model, data_updated,  
-setParams( [param_0...,η_ω_0] , [scale_0..., scale_initial], δ_e = 0.12, δ_s = 0.02),
-shocks)
 
 function set_outer_problem(x::Vector, Φ::Array{Float64}, data::Data, model::Model, fixed_param::Float64; off::Bool=false) 
 	

@@ -10,7 +10,7 @@ include("estimation.jl")
 
 # Callback function to be used during estimation
 function callback(os)
-	if os.iteration % 10 == 0                                       
+	if os.iteration % 1 == 0                                       
 		println("----------------------------------------------------")
 		print(@green @bold "Iteration : $(os.iteration)")
 		time = os.metadata["time"]
