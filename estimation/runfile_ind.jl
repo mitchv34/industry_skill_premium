@@ -8,6 +8,8 @@ Plots.theme(:juno); # :dark, :light, :plain, :grid, :tufte, :presentation, :none
 default(fontfamily="Computer Modern", framestyle=:box); # LaTex-style
 
 include("estimation.jl")
+include("do_estimation.jl")
+
 
 using Optim
 
@@ -19,95 +21,193 @@ end
 
 #  Load Data
 ind_code = "44RT"
-path_data = "./extend_KORV/data/proc/ind/$(ind_code).csv";
+path_data = "./data/proc/ind/$(ind_code).csv";
 dataframe = CSV.read(path_data, DataFrame);
 
 data = generateData(dataframe);
 model = intializeModel();
+delta_e = mean(dataframe.DPR_EQ)
+delta_s = mean(dataframe.DPR_ST)
 
 
-### Estimate model with data from KORV
+###  INITIAL PARAMETERS ###
+scale_initial = 5.0
+η_ω_0 = 0.065
+param_0 = [0.1, 0.35, -0.4] 
+scale_0 = [0.4, 0.4, scale_initial]
 
-# Define the optimizaiton problem to estimate the model # TODO: this should be done in a separate file
-begin
-scale_param_fixed = 6.0;
+sim_updated_dpr = solve_optim_prob(data, model, scale_initial, 0.08, vcat(param_0, scale_0), tol = 0.01; delta=[delta_e, delta_s]);
+plot_results(sim_updated_dpr, data_updated)
 
-T = length(data.y);
-function optim_problem(x)
+@save "./extend_KORV/data/results/example.jld2" sim optim_options p
 
-	# Check admisible parameter values
-	if (0 > x[1]) || (1 < x[1]) || (x[2] > 1)  || (1 < x[3]) 
-		return Inf 
-	end
+@load "./extend_KORV/data/results/example.jld2" sim optim_options p
 
 
-	if (0 > x[4]) || (1 < x[4]) || (0 > x[5])  || (1 < x[5]) || (x[6] < 0) 
-		return Inf 
-	end
-
-	p_new = setParams( x[1:3], x[4:end]);
-	# p_new = setParams( x[1:3], [x[4:end]..., scale_param_fixed]);
+function set_outer_problem(x::Vector, Φ::Array{Float64}, data::Data, model::Model, fixed_param::Float64; off::Bool=false) 
 	
-	shocks = generateShocks(p_new, T);
-	update_model!(model, p_new)
+	# Check admisible parameter values
+	if ( x[1] < 0 ) 
+		return Inf 
+	end
 
-	return objectiveFunction(model, p_new, data, shocks)
+	params = setParams( [Φ[1:3]...,  x[1]], [Φ[4:end]..., fixed_param] )
+
+	params.η_ω = x[1]
+	# Genrate shocks
+	shocks = generateShocks(params, T);
+	# Update model
+	update_model!(model, params)
+
+	if off
+		model_results = evaluateModel(0, model, data, params, shocks)
+		ω_model[ :, i] = model_results[:ω];
+		rr_model[:, i] = model_results[:rr];
+	else
+		ω_model = zeros(T-1 , params.nS)
+		rr_model = zeros(T-1 , params.nS)
+		for i ∈ 1:params.nS
+			model_results = evaluateModel(i, model, data, params, shocks)
+			ω_model[ :, i] = model_results[:ω];
+			rr_model[:, i] = model_results[:rr];
+		end 
+		model_moments = vcat(mean(ω_model, dims=2), mean(rr_model, dims=2))
+		data_moments = vcat(data.w_h[1:end-1] ./ data.w_ℓ[1:end-1], data.rr)
+	end
+	W = diagm(vcat(ones(T-1), 0.5 * ones(T-1)))
+	obj_fun = ((model_moments - data_moments)'*W*(model_moments - data_moments))[1]
+
+	return obj_fun
+end 
+
+η_ω = η_ω_0
+param_1 = copy(param_0)
+scale_1 = copy(scale_0)
+
+# for i = 1:10
+
+# 	outer_problem(x::Vector) = set_outer_problem(x, vcat(param, scale), data_korv, model, scale_initial)
+
+# 	sol_η = Optim.optimize(	outer_problem, [η_ω],
+# 	Optim.Options(
+# 	g_tol = 1e-10,
+# 	show_trace = true,
+# 	iterations = 300,
+# 	show_every=20,
+# 	)
+# 	)
+
+# 	print("η_ω = ", η_ω, " η_ω_next = ", sol_η.minimizer[1], " diff = ", abs(η_ω - sol_η.minimizer[1]))
+
+# 	η_ω = sol_η.minimizer[1]
+
+# 	### Set options for estimation
+# 	optim_options = OptimOptions(
+# 		optim_problem_korv, # Function to be optimized
+# 		vcat(param, scale), # Initial parameter values
+# 		NelderMead(), # Optimization method
+# 		1e-2, # Tolerance for convergence
+# 		300, # Maximum number of iterations
+# 		callback # Callback function
+# 	)
+
+# 	sim = solve_optim_prob(optim_options, scale_initial, η_ω_0)
+
+# 	param = [sim.x.α, sim.x.σ, sim.x.ρ]
+# 	scale = [sim.x.μ, sim.x.λ, sim.x.φℓ₀]
+
+# 	@info "Iteration ", i, ": ", param, " ", scale
+
+# end
+
+η_ω_vals = 0.001:0.01:0.2 |> collect
+
+
+objs_ =[]
+sims = []
+
+for i ∈ 1:length(η_ω_vals)
+
+	η_ω = η_ω_vals[i]
+
+	# optim_problem_korv(x::Vector) = set_optim_problem(x, data_korv, T, η_ω,
+	# 												model, scale_initial)
+
+	optim_problem_updated(x::Vector) = set_optim_problem(x, data_updated, length(data_updated.y), η_ω,
+													model, scale_initial)
+
+	### Set options for estimation
+	# optim_options = OptimOptions(
+	# 	optim_problem_korv, # Function to be optimized
+	# 	vcat(param_0, scale_0), # Initial parameter values
+	# 	NelderMead(), # Optimization method
+	# 	1e-2, # Tolerance for convergence
+	# 	300, # Maximum number of iterations
+	# 	callback # Callback function
+	# )
+	# params_last = sims[i].x
+
+	# init_params = [ params_last.α, params_last.σ, params_last.ρ, 
+	# 				params_last.μ, params_last.λ, params_last.φℓ₀
+	# 				]
+	init_params = vcat(param_0, scale_0)
+	print(init_params)
+	optim_options = OptimOptions(
+		optim_problem_updated, # Function to be optimized
+		init_params, # Initial parameter values
+		NelderMead(), # Optimization method
+		1e-3, # Tolerance for convergence
+		300, # Maximum number of iterations
+		callback # Callback function
+	)
+
+
+	sim = solve_optim_prob(optim_options, scale_initial, η_ω)
+	
+	
+	@info "Final Params:" sim.x
+	
+	push!(sims, sim)
+	
+	param = [sim.x.α, sim.x.σ, sim.x.ρ]
+	scale = [sim.x.μ, sim.x.λ, sim.x.φℓ₀]
+
+	# outer_problem(x::Vector) = set_outer_problem(x, vcat(param, scale), data_korv, model, scale_initial, off=false)
+
+	outer_problem(x::Vector) = set_outer_problem(x, vcat(param, scale), data_updated, model, scale_initial, off=false)
+
+	obj = outer_problem([η_ω])
+
+	push!(objs_, obj)
 
 end
 
 
-# Set initial parameter values
-param_0 = [0.29655668731713436
-0.4012832851663651
--1.0611728986687934]
-scale_0 = [0.027890845668247413
-0.17287751342253802
-12.070228321665113
-3.8893943097551804]
-
-
-@time sol = Optim.optimize(	optim_problem,
-				vcat(param_0, scale_0),
-				Optim.Options(
-				g_tol = 1e-4,
-				show_trace = true,
-				iterations = 300,
-				show_every=10
-				)
-			)
-
-# Plot the results
-p = setParams(sol.minimizer[1:3], sol.minimizer[4:end]);
-# p_korv = setParams(sol.minimizer[1:3], [sol.minimizer[4:end]..., scale_param_fixed]);
-T = length(data.y);
-shocks = generateShocks(p, T);
-update_model!(model, p)
-model_results = evaluateModel(0, model, data, p, shocks)
-
-rr_model = model_results[:rr] .*  data.q[2:end] #/model_results[:rr][1]
-ω_model = model_results[:ω]# /model_results[:ω][1]
-lbr_model = model_results[:lbr]# / model_results[:lbr][1]
-wbr_model = model_results[:wbr]#/model_results[:wbr][1]
-
-rr_data = data.rr .* data.q[2:end]  #/ data.rr[1]
-ω_data = data.w_h ./ data.w_ℓ; #ω_data = ω_data/ω_data[1]
-lbr_data = data.lsh# / data.lsh[1]
-wbr_data = data.wbr;# wbr_data /= wbr_data[1]
-
-p1 = plot(rr_model, lw = 2, linestyle=:dash, label = "Model", legend =:topright, size = (800, 400))
-plot!(rr_data, lw = 2, label = "Data")
-title!("Eq (8)")
-p2 = plot(ω_model , lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
-plot!(ω_data, lw = 2, label = "Data")
-title!("Skill Premium")
-p3 = plot(lbr_model, lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
-plot!(lbr_data, lw = 2, label = "Data")
-ylims!(.40, .80)
-title!("Labor Share of Output")
-p4 = plot(wbr_model, lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
-plot!(wbr_data, lw = 2, label = "Data")
-title!("Wage Bill Ratio")
-
-plot(p1,p2,p3,p4, layout = (2,2), size = (800, 600))
-
+for i in 1:length(sims)
+	println("i = " , i, " η_ω = ", η_ω_vals[i], " obj = ", objs_[i])
 end
+
+plot(η_ω_vals, objs_, markerstyle=:x)
+
+sims[1].x
+
+begin
+	i = 17
+	plot_results(sims[i], data_updated, title="Updated model η_ω =   $(η_ω_vals[i])")
+end
+
+
+for i ∈ eachindex(sims)
+	println("i = " , i, " η_ω = ", η_ω_vals[i], " obj = ", objs_[i])
+end
+
+sim.x.α = param[1]
+sim.x.σ = param[2]
+sim.x.ρ = param[3]
+sim.x.μ = scale[1]
+sim.x.λ = scale[2]
+sim.x.φℓ₀ = scale[3]
+sim.x.η_ω = η_ω
+
+
+plot_results(sim_2, data_korv)
