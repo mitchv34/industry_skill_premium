@@ -1,5 +1,6 @@
 using Plots
 using JLD2
+using Term
 
 include("estimation.jl")
 include("do_estimation.jl")
