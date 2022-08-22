@@ -29,7 +29,7 @@ param_values = collect.(collect(Iterators.product(sigma, rho, eta, phi, lambda, 
 
 alpha_0 = 0.22
 
-for p ∈ param_values
+for p ∈ param_values[11:end]
 
 	# params_init = InitParams( 
 	# 			5.0, # scale_initial
@@ -50,8 +50,6 @@ for p ∈ param_values
 	# Using JDL
 	@save "./data/results/vars/$(ind_code)_$( join( p, "_" ) ).jld2" sim ploT	
 
-	# Save Figure
-	savefig(ploT, "./data/results/figures/$(ind_code)_$( join( p, "_" ) ).png")
 
 end
 
