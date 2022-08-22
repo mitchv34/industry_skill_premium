@@ -1,0 +1,60 @@
+,ind_desc,code_klems,code_bea,code_census
+0,Farms,111CA,110c,10
+1,"Forestry, fishing, and related activities",113FF,113f,"11,12,20,30,31,32,230"
+2,Oil and gas extraction,211,2110,42
+3,"Mining, except oil and gas",212,2120,"40,50,41"
+4,Support activities for mining,213,2130,"882,890,891,892,893"
+5,Utilities,22,2200,"450,451,452,470,471,472"
+6,Construction,23,2300,60
+7,Wood products,321,3210,"231,232,241"
+8,Nonmetallic mineral products,327,3270,"250,251,252,261,262"
+9,Primary metals,331,3310,"270,271,272,280"
+10,Fabricated metal products,332,3320,"281,282,290,291,292,300"
+11,Machinery,333,3330,"310,311,312,320,331,332,321,380"
+12,Computer and electronic products,334,3340,"322,341,371,381"
+13,"Electrical equipment, appliances, and components",335,3350,"340,342,350"
+14,"Motor vehicles, bodies and trailers, and parts",3361MV,336m,351
+15,Other transportation equipment,3364OT,336o,"352,360,361,362,370"
+16,Furniture and related products,337,3370,242
+17,Miscellaneous manufacturing,339,338a,"372,390,391"
+18,Food and beverage and tobacco products,311FT,311a,"100,101,102,110,111,112,120,121,122,130"
+19,Textile mills and textile product mills,313TT,313t,"132,140,141,142,150"
+20,Apparel and leather and allied products,315AL,315a,"151,152,220,221,222"
+21,Paper products,322,3220,"160,161,162"
+22,Printing and related support activities,323,3230,171
+23,Petroleum and coal products,324,3240,"200,201"
+24,Chemical products,325,3250,"181,182,190,191,192"
+25,Plastics and rubber products,326,3260,"180,210,211,212"
+26,Wholesale trade,42,4200,"500,501,502,510,511,512,521,530,531,532,540,541,542,550,551,552,560,561,562,571"
+27,Retail trade,44RT,44RT,"580,581,582,590,591,592,600,601,602,612,620,621,622,623,630,631,632,633,640,642,650,651,652,660,661,662,663,670,671,672,681,682,691"
+28,Air transportation,481,4810,421
+29,Water transportation,483,4830,420
+30,Truck transportation,484,4840,410
+31,Transit and ground passenger transportation,485,4850,"401,402"
+32,Pipeline transportation,486,4860,422
+33,Other transportation and support activities,487OS,487S,432
+34,Warehousing and storage,493,4930,411
+35,Motion picture and sound recording industries,512,5120,"802,810,872"
+36,Broadcasting and telecommunications,513,5130,"440,441,442"
+37,"Securities, commodity contracts, and investments",523,5230,701
+38,Insurance carriers and related activities,524,5240,702
+39,"Funds, trusts, and other financial vehicles",525,5250,710
+40,Real estate,531,5310,712
+41,Rental and leasing services and lessors of intangible assets,532RL,5320,711
+42,Legal services,5411,5411,841
+43,Computer systems design and related services,5415,5415,732
+44,"Miscellaneous professional, scientific, and technical services",5412OP,5412,721
+45,Management of companies and enterprises,55,5500,"741,740"
+46,Administrative and support services,561,5610,722
+47,Waste management and remediation services,562,5620,731
+48,Educational services,61,6100,"842,850,851,852,860"
+49,Ambulatory health care services,621,6210,"812,820,821,822,830,840"
+50,Social assistance,624,6240,"861,862,863,871,880,881"
+51,"Performing arts, spectator sports, museums, and related activities",711AS,711a,800
+52,"Amusements, gambling, and recreation industries",713,7130,801
+53,Accommodation,721,7210,"762,770"
+54,Food services and drinking places,722,7220,"610,611,641"
+55,"Other services, except government",81,8100,"742,750,751,752,760,761,771,772,780,781,782,790,791"
+56,Hospitals and nursing and residential care facilities,622HO,"622h, 6230","831,832,870"
+57,Rail transportation,482,4820,400
+58,"Federal Reserve banks, credit intermediation, and related activities",521CI,"5210,5220",700

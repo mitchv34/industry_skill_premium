@@ -8,7 +8,7 @@ include("do_estimation.jl")
 
 using Optim
 
-codes = CSV.read("./data/interim/cross_walk.csv", DataFrame).code_klems
+codes = CSV.read("./data/cross_walk.csv", DataFrame).code_klems
 
 
 
