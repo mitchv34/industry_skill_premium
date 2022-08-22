@@ -8,70 +8,86 @@ include("do_estimation.jl")
 
 using Optim
 
+codes = CSV.read("./data/interim/cross_walk.csv", DataFrame).code_klems
+
+
 
 #  Load Data
-ind_code = "44RT"
-memory = CSV.read("./data/results/$ind_code.csv", DataFrame)[:, [:alpha_0,:sigma_0,:rho_0,:eta_0,:mu_0,:lambda_0,:phi_L_0,:phi_H_0]] 
-params_list = []
-for row in eachrow(memory)
-	push!(params_list, Array(row))
-end
-
-# # Define parameters and variables of the model
-begin
-	@parameters α, μ, σ, λ, ρ, δ_e, δ_s
-	@variables k_e, k_s, h, ℓ, ψ_L, ψ_H, q, y
-end
-model = intializeModel();
-###  INITIAL PARAMETERS ###
-sigma = [-0.5, 0.5]
-rho = [-0.5, 0.5]
-eta = [0.01, 0.04, 0.08, 0.1 , 0.3]
-phi_L = [3.0, 7.0]
-phi_H = [3.0, 7.0]
-lambda = [0.33, 0.66]
-mu = [0.33,  0.66]
-
-param_values = collect.(collect(Iterators.product(sigma, rho, eta, phi_L, phi_H, lambda, mu))[:])
-n = length(param_values)
-alpha_0 = 0.22
-
-for i in eachindex(param_values)
-	p = param_values[i]
-
-	println(@bold @green "Estimating parameters $i of $n")
-	println(@bold "\t $p")
-
-	p_current = [alpha_0, p[1], p[2], p[3], p[6], p[7], p[4], p[5]]
-	if p_current ∈ params_list
-		println(@bold @blue "$p_current Already done")
+for ind_code in codes[1:21]
+	if ind_code ==  "22"
 		continue
 	end
-
-	# params_init = InitParams( 
-	# 			5.0, # scale_initial
-	# 			0.08, # η_ω_0
-	# 			[0.1, 0.6, 0.2], # param_0
-	# 			[0.4, 0.4, 5.0] # scale_0
-	# 			)
-	params_init = InitParams( 
-				p[5], # scale_initial
-				p[3], # η_ω_0
-				[alpha_0, p[1], p[2]], # param_0
-				[p[6], p[7], p[4]] # scale_0
-				)
-
-	sim, ploT = estimate_industry(ind_code, params_init, tol = 0.5);
+	mem = true
 	try
-	# Save Figure
-	savefig(ploT, "./data/results/figures/$(ind_code)_$( join( p, "_" ) ).png")
-	catch e
-		print(@red @bold string(e))
+		memory = CSV.read("./data/results/$ind_code.csv", DataFrame)[:, [:alpha_0,:sigma_0,:rho_0,:eta_0,:mu_0,:lambda_0,:phi_L_0,:phi_H_0]] 
+		params_list = []
+		for row in eachrow(memory)
+			push!(params_list, Array(row))
+		end
+
+	catch 
+		println(@bold @red "No data for $ind_code")
+		mem = false
 	end
-	# Using JDL
-	@save "./data/results/vars/$(ind_code)_$( join( p, "_" ) ).jld2" sim ploT	
 
 
+	# # Define parameters and variables of the model
+	begin
+		@parameters α, μ, σ, λ, ρ, δ_e, δ_s
+		@variables k_e, k_s, h, ℓ, ψ_L, ψ_H, q, y
+	end
+	model = intializeModel();
+	###  INITIAL PARAMETERS ###
+	sigma = [0.5]
+	rho = [-0.5, 0.5]
+	eta = [0.01, 0.04, 0.08, 0.1 , 0.3]
+	phi_L = [4.0 7.0]
+	phi_H = [6.0]
+	lambda = [0.4]
+	mu = [0.4]
+
+	param_values = collect.(collect(Iterators.product(sigma, rho, eta, phi_L, phi_H, lambda, mu))[:])
+	n = length(param_values)
+	alpha_0 = 0.22
+
+	for i in eachindex(param_values)
+		p = param_values[i]
+
+		println(@bold @yellow "Estimating parameters $i of $n for $ind_code")
+		println(@bold "\t $p")
+		
+		if mem
+			p_current = [alpha_0, p[1], p[2], p[3], p[6], p[7], p[4], p[5]]
+			if p_current ∈ params_list
+				println(@bold @blue "$p_current Already done")
+				continue
+			end
+		end
+		# params_init = InitParams( 
+		# 			5.0, # scale_initial
+		# 			0.08, # η_ω_0
+		# 			[0.1, 0.6, 0.2], # param_0
+		# 			[0.4, 0.4, 5.0] # scale_0
+		# 			)
+		params_init = InitParams( 
+					p[5], # scale_initial
+					p[3], # η_ω_0
+					[alpha_0, p[1], p[2]], # param_0
+					[p[6], p[7], p[4]] # scale_0
+					)
+
+		sim, ploT = estimate_industry(ind_code, params_init, tol = 0.1);
+		try
+		# Save Figure
+		savefig(ploT, "./data/results/figures/$(ind_code)_$( join( p, "_" ) ).png")
+		catch e
+			print(@red @bold string(e))
+		end
+		# Using JDL
+		@save "./data/results/vars/$(ind_code)_$( join( p, "_" ) ).jld2" sim ploT	
+
+
+	end
 end
 
 
