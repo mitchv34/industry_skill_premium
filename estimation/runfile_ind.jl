@@ -47,7 +47,7 @@ for p ∈ param_values[11:end]
 	sim, ploT = estimate_industry(ind_code, params_init, tol = 0.5);
 	try
 	# Save Figure
-	savefig(p, "./data/results/figures/$(ind_code)_$( join( p, "_" ) ).png")
+	savefig(ploT, "./data/results/figures/$(ind_code)_$( join( p, "_" ) ).png")
 	catch e
 		print(@red string(e))
 	end
