@@ -45,8 +45,12 @@ for p ∈ param_values[11:end]
 				)
 
 	sim, ploT = estimate_industry(ind_code, params_init, tol = 0.5);
-
-
+	try
+	# Save Figure
+	savefig(p, "./data/results/figures/$(ind_code)_$( join( p, "_" ) ).png")
+	catch e
+		print(@red string(e))
+	end
 	# Using JDL
 	@save "./data/results/vars/$(ind_code)_$( join( p, "_" ) ).jld2" sim ploT	
 
