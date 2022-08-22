@@ -285,6 +285,8 @@ function estimate_industry(ind_code, initParams::InitParams; tol = 1e-2, path_to
         append!(results, temp_df)
         CSV.write(path_to_results * "/" * ind_code * ".csv", results)
 
+        # Save Figure
+        savefig(p, "./data/results/figures/$(ind_code)_$( join( p, "_" ) ).png")
 
         return sim, p
     catch  e
