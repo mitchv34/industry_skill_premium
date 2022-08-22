@@ -18,24 +18,42 @@ begin
 end
 model = intializeModel();
 ###  INITIAL PARAMETERS ###
-params_init = InitParams( 
-			5.0, # scale_initial
-			0.08, # η_ω_0
-			[0.1, 0.6, 0.2], # param_0
-			[0.4, 0.4, 5.0] # scale_0
-			)
+sigma = [-0.5, 0.1, 0.5]
+rho = [-0.5, -1.0, 0.5]
+eta = [0.01, 0.1 , 0.3]
+phi = [2.0, 6.0, 12.0]
+lambda = [0.25, 0.5, 0.75]
+mu = [0.25, 0.5, 0.75]
 
-sim, p = estimate_industry(ind_code, params_init, tol = 0.1);
+param_values = collect.(collect(Iterators.product(sigma, rho, eta, phi, lambda, mu))[:])
 
-p
+alpha_0 = 0.22
 
-# Save results
+for p ∈ param_values
 
-# Using JDL
-@save "./data/results/vars/$(ind_code)$(sim.f).jld2" sim p
+	# params_init = InitParams( 
+	# 			5.0, # scale_initial
+	# 			0.08, # η_ω_0
+	# 			[0.1, 0.6, 0.2], # param_0
+	# 			[0.4, 0.4, 5.0] # scale_0
+	# 			)
+	params_init = InitParams( 
+				p[4], # scale_initial
+				p[3], # η_ω_0
+				[alpha_0, p[1], p[2]], # param_0
+				[p[5], p[6], p[4]] # scale_0
+				)
+
+	sim, ploT = estimate_industry(ind_code, params_init, tol = 0.5);
 
 
+	# Using JDL
+	@save "./data/results/vars/$(ind_code)_$( join( p, "_" ) ).jld2" sim ploT	
 
+	# Save Figure
+	savefig(ploT, "./data/results/figures/$(ind_code)_$( join( p, "_" ) ).png")
+
+end
 
 
 
