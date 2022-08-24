@@ -21,15 +21,13 @@ mem = true
 params_list = []
 #  Load Data
 for ind_code in codes[1:21]
-	if ind_code ==  "22"
-		continue
-	end
 	try
 		memory = CSV.read("./data/results/$ind_code.csv", DataFrame)[:, [:alpha_0,:sigma_0,:rho_0,:eta_0,:mu_0,:lambda_0,:phi_L_0,:phi_H_0]] 
 
-		for row in eachrow(memory)
-			push!(params_list, Array(row))
-		end
+		continue 
+		# for row in eachrow(memory)
+		# 	push!(params_list, Array(row))
+		# end
 
 		# @show mem
 
@@ -40,17 +38,18 @@ for ind_code in codes[1:21]
 	end
 
 	###  INITIAL PARAMETERS ###
-	sigma = [0.5]
-	rho = [-0.5, 0.5]
-	eta = [0.01, 0.04, 0.08, 0.1 , 0.3]
-	phi_L = [4.0 7.0]
+	sigma = [0.5, -0.45]
+	rho = [-0.5, 0.45]
+	eta = [0.01, 0.04, 0.3]
+	phi_L = [4.0]
 	phi_H = [6.0]
 	lambda = [0.4]
 	mu = [0.4]
 
 	param_values = collect.(collect(Iterators.product(sigma, rho, eta, phi_L, phi_H, lambda, mu))[:])
+	param_values = [p for p in param_values if p[1] > p[2]]
 	n = length(param_values)
-	alpha_0 = 0.22
+	alpha_0 = 0.2
 
 	for i in eachindex(param_values)
 		p = param_values[i]
@@ -82,7 +81,7 @@ for ind_code in codes[1:21]
 					[p[6], p[7], p[4]] # scale_0
 					)
 
-		sim, ploT = estimate_industry(ind_code, params_init, tol = 0.1);
+		sim, ploT = estimate_industry(ind_code, params_init, tol = 0.01);
 		try
 		# Save Figure
 		savefig(ploT, "./data/results/figures/$(ind_code)_$( join( p, "_" ) ).png")

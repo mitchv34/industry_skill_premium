@@ -16,7 +16,7 @@ fredKey <- '485a8a81f782ca06921bd2620a64b301'
 # Investment in Private Nonresidential Fixed Assets (Equipment): I3N110C1EQ00
 
 # Let's do a search on the first one and see what we get
-beaSearch("by industry", beaKey, asHtml = TRUE)
+beaSearch(" Table 3.1E.", beaKey, asHtml = TRUE)
 
 # There are two tables that contains this series both in the FixedAssets dataset:
 # 1.(FAAt301E) Table 3.1E. Current-Cost Net Stock of Private Equipment by Industry
