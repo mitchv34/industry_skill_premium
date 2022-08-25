@@ -12,6 +12,8 @@
 \usepackage{graphicx}
 \usepackage{setspace}
 \usepackage[authoryear]{natbib}
+\usepackage{longtable}
+\usepackage{ltablex}
 \onehalfspacing
 \usepackage[unicode=true,pdfusetitle,
             bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
@@ -21,7 +23,6 @@
  pdfborderstyle=,pdfborderstyle={},pdfborderstyle={},linkcolor=blue,urlcolor=blue,citecolor=blue,pdfstartview={FitH},hyperfootnotes=false}
 
 \makeatletter
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
 %% Because html converters don't know tabularnewline
@@ -173,24 +174,66 @@ This paper ....
 		
 % Given the measure $z_{o,t}$ of computer and software requirements in each occupation, we estimate technological change by measuring the change in the share of vacancies in a given occupation that contain a computer or software skill. Let $\varDelta z_{o}=z_{o,2017}-z_{o,2007}$ denote the change in the share of vacancies in occupation $o$ that list a computer or software skill requirement between $2007$ and $2017$. Panel (b) of Figure \ref{fig:Technology Adoption by firms} presents a scatter plot of computer and software requirements in 2007 (\textit{x-axis}) against the change in computer and software requirements between 2007 and 2017 by occupation (\textit{y-axis}). The scatter plot shows that nearly all occupations saw an increase in computer and software requirements between 2007 and 2017. Additionally, the scatter plot shows that there is significant heterogeneity in the adoption of computer and software requirements across occupations between 2007 and 2017. This heterogeneity in the adoption of computer and software requirements is critical for our identification of the impact of technological change on the outcomes of displaced workers, as we will compare the outcomes of workers displaced from occupations with large increases in computer and software requirements to the outcomes of workers displaced from occupations with a small increase in computer and software requirements. In the following subsection, we further examine which occupations have been more/less exposed to technological change as measures by changes in computer and software requirements over time. 
 
-% \section{Data}\label{sec:data}
-% I estimate the model following the approach outlined in KORV \citet{krusell2000capital}. I construct data series for wages, labor input and capital input from 1963 to \textcolor{red}{FINAL YEAR} to replicate  KORV with updated data following \citet{ohanian2021revisiting}. I then collect the same series at the industry level re-estimate the model, due to data availability industry series cover the period from \textcolor{red}{INITIAL YEAR}-\textcolor{red}{FINAL YEAR}.
+\section{Introduction}\label{sec:introduction}
 
-% Labor input and wages are estimated using CPS data downloaded from IPUMS, see \citet{flood2015integrated}, 
+\section{Industry Specific Skill Premium}
 
-% \subsection{Capital Data}\label{sec:capital_data}
-% To extend capital series to replicate KORV I obtained investment series in equipment $(I_e)$ and structures $(I_s)$ from NIPA Table 5.2.5. Then the equipment $(K_e)$ and structure $(K_s)$ capital series where constructed using the perpetual inventory method:
+\section{Model}\label{sec:model}
+This section presents the model which is the same as \citep{krusell2000capital}. There are four inputs for production in this economy: two types of capital, equipment $(k_e)$ and structures $(k_s)$ and two types of labor, skilled $(s)$ and unskilled $(u)$. Inputs are combined thourgh a produciton funciton $G(\cdot)$ to produce three final goods: consumption $(c)$, investment in equipment $(i_e)$ and investment in structures $(i_s)$. Assuming an hicks-newutral technological shocks $A$, the aggreate production is given by
+\begin{equation}\label{eq:production}
+  c_t + i_{e_t} + i_{s_t} = A_t G(k_{s_t}, k_{e_t}, u_t, s_t)
+\end{equation}
+The production function is assumed to be Cobb-Douglas in structures and a nested CES in all other inputs:
+\begin{equation}\label{eq:production_fun}
+  G(k_{s_t}, k_{e_t}, u_t, s_t) = k_{s_t}^\alpha\left( \mu u_t^\sigma + (1-\mu)\left(\lambda k_{s_t}^\rho (1-\lambda)s_t^\rho\right)^\frac{\sigma}{\rho}\right)^\frac{1-\alpha}{\sigma}
+\end{equation}
+where $\alpha$ is the share of capital structures in output, $\mu$  and $\lambda$  are income shares, $\rho$ and $\sigma$ govern the elasticity of substitution between capital equipment and labor:
+\begin{itemize}
+  \item $\sigma_{H} = 1/(1-\rho)$ is the elasticity of substitution between equipment and high-skilled.
+  \item $\sigma_{L} = 1/(1-\sigma)$ is the elasticity of substitution between low-skilled and equipment + high skill labor.
+\end{itemize}
+Labor input is defined as 
+\begin{align*}
+  u &= \psi^u_t h^u_t\\
+  s &= \psi^s_t h^s_t
+\end{align*}
+where $\psi^i_t$ is the (unobserved) efficiency of each type of labor and $h^i_t$ is the number of labor hours. 
+
+\subsection{Skill Premium}
+Firms solve the following profit maximization problem 
+\begin{equation}\label{eq:profit_max}
+  \max_{k_{s_t}, k_{e_t}, u_t, s_t} G(k_{s_t}, k_{e_t}, u_t, s_t) - r_{s_t}k_{s_t} - r_{e_t}k_{e_t} - w_{u_t} h_{u_t} - w_{s_t} h_{s_t}
+\end{equation}
+% where $r_{s_t}$ and $r_{e_t}$ are rental rates of capital and  $w_{u_t}$ and $w_{s_t}$ are wages of unskilled and skilled workers. Sice  
+
+% \citep{krusell2000capital} make the following stochastic assumptions about labor labor productivity:
 % \begin{equation}
-% 	K_{i_{t+1}} = (1 - \delta_{i_t}) K_{i_{t}} + I_{i_{t}} \qquad i\in\{e, s\}
+%   \psi^u_t = \psi^u_0 + \epsilon \qquad \epsilon \sim N(0, \eta_\epsilon^2)
 % \end{equation}
-% \noindent
-% I depart from KORV by using time varying depreciation rates $\delta_{i_t}$, instead of constant depreciation rates for each series. As in \citep{ohanian2021revisiting} I deflate structures using the implicit price deflatorof GDP \footnote{Available \url{https://fred.stlouisfed.org/series/GDPDEF}}, and equipment using the product of the consumption delfator\footnote{Available at \url{https://fred.stlouisfed.org/series/CONSDEF}} and the relative price of equipment \footnote{Available at \url{https://fred.stlouisfed.org/series/PERIC}}. 
 
-% To obtain capital data at the industry level I used BEA Fixed Assets dataset to obtain investment and capital consumption series by industry and type, details of which tables where used are includedn in Appendix \ref{subsec:capital-inputs-labor-share}. Fixed Assets dataset groups industries into 76 gorups. To construct series of labor share of output by industry, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS)\footnote{Available at \url{https://www.bls.gov/productivity/articles-and-research/industry-production-account-capital.xlsx}}. KLEMS data consists on 57 industry groups some of which are aggreations of industries on the BEA dataset. Table %\ref{tab: changes_by_occ} 
-% presents the crosswalk between BEA, KLEMS and Census industry codes, I used the crosswalk provided by \citep*{acemoglu2020unpacking} 
 
-% \subsection{Labor Data}\label{sec:labor_data}
+\textcolor{red}{Rember to show that capital-skill complementarity is requieres $\sigma > \rho$}
 
+
+\section{Data}\label{sec:data}
+I estimate the model following the approach outlined in KORV \citet{krusell2000capital}. I constructed data series for wages, labor input, and capital input from 1963 to \textcolor{red}{FINAL YEAR} to replicate KORV with updated data following \citet{ohanian2021revisiting}. I then collect the same series at the industry level to re-estimate the model, due to data availability industry series cover the period from \textcolor{red}{INITIAL YEAR}-\textcolor{red}{FINAL YEAR}.
+
+Labor input and wages are estimated using CPS data downloaded from IPUMS, see \citet{flood2015integrated}, 
+
+\subsection{Capital Data}\label{sec:capital_data}
+To extend both capital series to replicate KORV I obtained investment series in equipment $(I_e)$ and structures $(I_s)$ from NIPA Table 5.2.5. Then the equipment $(K_e)$ and structure $(K_s)$ capital series were constructed using the perpetual inventory method:
+\begin{equation}
+  K_{i_{t+1}} = (1 - \delta_{i_t}) K_{i_{t}} + I_{i_{t}} \qquad i\in\{e, s\}
+\end{equation}
+\noindent
+I departed from KORV by using time-varying depreciation rates $\delta_{i_t}$, instead of constant depreciation rates for each series. As in \citep{ohanian2021revisiting} I deflate structures using the implicit price deflator of GDP \footnote{Available \url{https://fred.stlouisfed.org/series/GDPDEF}}, and equipment using the product of the consumption delfator\footnote{Available at \url{https://fred.stlouisfed.org/series/CONSDEF}} and the relative price of equipment \footnote{Available at \url{https://fred.stlouisfed.org/series/PERIC}}. 
+
+To obtain capital data at the industry level I used the BEA Fixed Assets dataset to obtain investment and capital consumption series by industry and type, details of which tables were used are included in Appendix \ref{subsec:capital-inputs-labor-share}. Fixed Assets dataset groups industries into 76 groups. To construct a series of the labor share of output by industry, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS)\footnote{Available at \url{https://www.bls.gov/productivity/articles-and-research/industry-production-account-capital.xlsx}}. KLEMS data consists on 57 industry groups some of which are aggregations of industries on the BEA dataset. Table %\ref{tab: changes_by_occ} 
+presents the crosswalk between BEA, KLEMS, and Census industry codes. I used the crosswalk provided by \citep{acemoglu2020unpacking}. A description of the codes is in \textcolor{red}{INSER TABLE AND REFERENCEIT}.
+
+\subsection{Labor Data}\label{sec:labor_data}
+
+\section{Results}\label{sec:results}
 
 % \subsection{Which occupations are changing computer \& software requirements}
 
