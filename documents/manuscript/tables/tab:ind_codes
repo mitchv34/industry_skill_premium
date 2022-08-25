@@ -1,9 +1,9 @@
-\begin{longtable}[h]
+\begin{tabularx}[h]
 % \centering
 % \caption{Industry Codes}
 % \begin{tabular}{lllll}
 % \toprule
- & Industry Description & KLEMS Code & BEA Code & Census Code \\
+ asd & Industry Description & KLEMS Code & BEA Code & Census Code \\
 % \midrule
 0 & Farms & 111CA & 110c & 10 \\
 1 & Forestry, fishing, and related activities & 113FF & 113f & 11,12,20,30,31,32,230 \\
@@ -66,4 +66,4 @@
 58 & Federal Reserve banks, credit intermediation, and related activities & 521CI & 5210,5220 & 700 \\
 % \bottomrule
 % \end{tabular}
-\end{longtable}
+\end{tabularx}
