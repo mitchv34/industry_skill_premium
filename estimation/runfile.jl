@@ -15,9 +15,9 @@ end
 
 
 #  Load Data
-path_data_korv = "./data/Data_KORV.csv";
-path_updated_labor = "./data/proc/labor_totl.csv";
-path_updated_capital = "./data/proc/capital_totl.csv";
+path_data_korv = "../data/Data_KORV.csv";
+path_updated_labor = "../data/proc/labor_totl.csv";
+path_updated_capital = "../data/proc/capital_totl.csv";
 
 dataframe_korv = CSV.read(path_data_korv, DataFrame);
 updated_labor = CSV.read(path_updated_labor, DataFrame);
@@ -26,9 +26,6 @@ updated_capital = CSV.read(path_updated_capital, DataFrame);
 dataframe_updated = innerjoin(updated_capital, updated_labor, on = :YEAR)
 dataframe_updated.REL_P_EQ = dataframe_updated.REL_P_EQ / dataframe_updated.REL_P_EQ[1];
 
-data_korv = generateData(dataframe_korv);
-data_updated = generateData(dataframe_updated[1:end, :]);
-model = intializeModel();
 
 ## Instrument L_S and L_U ######
 data_for_reg_updated = DataFrame(
@@ -53,9 +50,17 @@ reg_U = lm(formula_U,  data_for_reg_updated)
 L_S_hat = predict(reg_S, data_for_reg_updated)
 L_U_hat = predict(reg_U, data_for_reg_updated)
 
-# Todo: add original labor series to data structure
-data_updated.h = vcat([0], L_S_hat)
-data_updated.ℓ = vcat([0], L_U_hat)
+dataframe_updated.L_S = vcat([0], L_S_hat)
+dataframe_updated.L_U = vcat([0], L_U_hat)
+
+dropmissing!(dataframe_updated)
+
+data_korv = generateData(dataframe_korv);
+data_updated_korv = generateData(dataframe_updated[1:30, :]);
+data_updated = generateData(dataframe_updated);
+data_updated_ind = generateData(dataframe_updated[26:end, :]);
+
+model = intializeModel();
 
 
 ## Estimate model with data from KORV
@@ -64,8 +69,6 @@ scale_initial = 5.0
 η_ω_0 = 0.065
 param_0 = [0.1, 0.5, 0.0] 
 scale_0 = [0.4, 0.4, scale_initial]
-
-objectiveFunctionEval(model, param_0, scale_0, η_ω_0, scale_initial, data)
 
 sim_korv = solve_optim_prob(data_korv, model, scale_initial, 0.02, vcat(param_0, scale_0), tol = 1e-6);
 plot_results(sim_korv, data_korv)
