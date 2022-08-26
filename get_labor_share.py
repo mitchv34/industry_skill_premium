@@ -4,8 +4,8 @@ from os import listdir
 from rich import print
 
 # Path to data
-path_raw_data = "./extend_KORV/data/raw/gdi.csv" # To read
-path_proc_data = "./extend_KORV/data/interim/" # To write
+path_raw_data = "./data/raw/gdi.csv" # To read
+path_proc_data = "./data/interim/" # To write
 
 print("[bold blue]Loading data...")
 data_dict = {}
@@ -20,4 +20,6 @@ Y = data.loc["A261RC"]
 PI = data.loc["A041RC"]
 labor_share_ingredients = pd.DataFrame({"UCI": UCI, "CI": CI, "Y": Y, "PI": PI})
 labor_share_ingredients.to_csv(path_proc_data + "labor_share.csv")
+
+print(labor_share_ingredients)
 

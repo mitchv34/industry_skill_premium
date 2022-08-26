@@ -6,7 +6,7 @@ using StatsPlots
 using Term
 
 # read data
-path = "extend_KORV/data/raw/labor_raw/"
+path = "./data/raw/labor_raw/"
 ind_code_list = [split(f, ".")[1] for f in readdir(path)]
 
 for ind_code ∈ ind_code_list
@@ -95,7 +95,7 @@ for ind_code ∈ ind_code_list
 
     ## HOURS_80######################################################################
 
-    grouped_skill.wage = grouped_skill.wage ./ grouped_skill.hours#_80
+    grouped_skill.wage = grouped_skill.wage ./ grouped_skill.hours_80
     grouped_skill.YEAR .-= 1
     # @df subset(
     #     grouped_skill, 
@@ -119,7 +119,7 @@ for ind_code ∈ ind_code_list
     final.SKILL_PREMIUM = final.W_S ./ final.W_U
     final.LABOR_INPUT_RATIO = final.L_S ./ final.L_U    
 
-    CSV.write("./extend_KORV/data/interim/ind_labor/$(ind_code).csv", final)
+    CSV.write("./data/interim/ind_labor/$(ind_code).csv", final)
     catch   
         final = DataFrame( [
                             :YEAR => [], 
@@ -129,7 +129,7 @@ for ind_code ∈ ind_code_list
                             :LABOR_INPUT_RATIO => []
                         ])
         println(@red @bold "Error Processing labor data for industry: $(ind_code)")
-        CSV.write("./extend_KORV/data/interim/ind_labor/$(ind_code).csv", final)
+        CSV.write("./data/interim/ind_labor/$(ind_code).csv", final)
     end
 end # for ind_code ∈ ind_code_list
 

@@ -1,8 +1,7 @@
 using Parameters
 using Optim
 using Plots
-Plots.theme(:juno); # :dark, :light, :plain, :grid, :tufte, :presentation, :none
-default(fontfamily="Computer Modern", framestyle=:box); # LaTex-style
+
 
 include("estimation.jl")
 
@@ -131,8 +130,12 @@ function solve_optim_prob(data::Data, model::Model, fixed_param::Float64, η_ω:
 end # solve_optim_prob 
 
 # Plot the results 
-function plot_results(simulation::Simulation, data::Data; title::String="Model Results")
+function plot_results(simulation::Simulation, data::Data; years::Array=[])
+    
 
+    Plots.theme(:vibrant); # :dark, :light, :plain, :grid, :tufte, :presentation, :none
+    default(fontfamily="Computer Modern", framestyle=:box ); # LaTex-style1
+    Plots.scalefontsizes(10)
     params = simulation.x # Parameters
     T = length(data.y) # Time horizon
     # Genrate shocks
@@ -142,32 +145,42 @@ function plot_results(simulation::Simulation, data::Data; title::String="Model R
     # Evaluate model
     model_results = evaluateModel(0, model, data, params, shocks)
 
+    if length(years) == 0
+        years = 1:length(data.y)-1
+    end
+
+    # @info "MODEL" size( model_results[:rr] ), size( model_results[:ω] ), size( model_results[:lbr] ), size( model_results[:wbr] )
+    # @info "DATA" size(  data.rr ), size(  data.w_h ), size( data.lsh ), size( data.wbr )
+
     # Plot results:
-    p1 = plot(  model_results[:rr] .*  data.q[1:end-1], lw = 2, linestyle=:dash,
-                label = "Model", legend =:topright, size = (800, 400))
-    plot!(data.rr .* data.q[1:end-1], lw = 2, label = "Data")
+    p1 = plot( years, model_results[:rr] .*  data.q[1:end-1], lw = 2, linestyle=:dash,color = :red,
+                label = "Model", legend =:topright, size = (800, 200))
+    plot!(years, data.rr .* data.q[1:end-1], lw = 2, label = "Data", color = :black)
     title!("Relative Price of Equipment")
     
-    p2 = plot(model_results[:ω] , lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
-    plot!(data.w_h ./ data.w_ℓ, lw = 2, label = "Data")
+    p2 = plot(years, model_results[:ω] , lw = 2,  linestyle=:dash, color = :red,
+    label = "Model", legend =:topleft,size = (800, 400))
+    plot!(years, data.w_h[2:end] ./ data.w_ℓ[2:end], lw = 2, label = "Data", color = :black)
     title!("Skill Premium")
 
-    p3 = plot(model_results[:lbr], lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
-    plot!(data.lsh, lw = 2, label = "Data")
-    ylims!(.30, .90)
+    p3 = plot(years, model_results[:lbr], lw = 2,  linestyle=:dash, color = :red, label = "Model", legend =:topleft,size = (800, 400))
+    plot!(years, data.lsh[2:end], lw = 2, label = "Data", color = :black)
+    y_max = maximum(data.lsh[2:end]) .* 1.05
+    y_min = minimum(data.lsh[2:end]) .* 0.95
+    ylims!(y_min, y_max)
     title!("Labor Share of Output")
 
-    p4 = plot(model_results[:wbr], lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
-    plot!(data.wbr, lw = 2, label = "Data")
+    p4 = plot(years, model_results[:wbr], lw = 2,  linestyle=:dash, color = :red, label = "Model", legend =:topleft,size = (800, 400))
+    plot!(years, data.wbr[2:end], lw = 2, label = "Data", color = :black)
     title!("Wage Bill Ratio")
 
-    title_plot = plot(title = title, grid = false, showaxis = false, bottom_margin = -1Plots.px)
-    xticks!([0]); yticks!([0]);
+    # title_plot = plot(title = title, grid = false, showaxis = false, bottom_margin = -1Plots.px)
+    # xticks!([0]); yticks!([0]);
 
-    p = plot(title_plot, p1,p2,p3,p4, layout = @layout([A{0.01h}; [[B C];[D E]]]), size = (800, 600))
+    # p = plot(p1,p2,p3,p4, layout = (2,2), size = (800, 600))
+    # p = plot(p2,p3,p4, layout = (1,3), size = (800, 600))
 
-    return  p
-
+    return  (p1, p2, p3, p4)
 end # plot_results
 
 

@@ -80,7 +80,7 @@ function recode_race(x)
 end 
 
 # labor_data = CSV.read("extend_KORV/data/raw/cps_00014.csv", DataFrame)
-labor_data = CSV.read("./extend_KORV/data/raw/cps_00022.csv", DataFrame)
+labor_data = CSV.read("./data/raw/cps_00022.csv", DataFrame)
 subset!(labor_data, :ASECWT => ByRow(x -> ~ismissing(x)))
 
 # Fix weights for the 2014 sample
@@ -202,14 +202,14 @@ labor_data_full.:ASECWT = [w / weights[y] for (w, y) in zip(labor_data_full.:ASE
 # # Drop observations with less than 35 weeks worked
 filter!(:WKSWORK1 => >=(40), labor_data_full) # TODO: Check if this is correct
 # # Drop observations with less than 30 hours worked
-filter!(:UHRSWORKLY => >=(35), labor_data_full) # TODO: Check if this is correct
+filter!(:UHRSWORKLY => >=(30), labor_data_full) # TODO: Check if this is correct
 
 # Construct hours worked variable
 labor_data_full.HOURS_WORKED = labor_data_full.WKSWORK1 .* labor_data_full.UHRSWORKLY;
 # Construct hourly wages variable
 labor_data_full.WAGE = labor_data_full.INCWAGE ./ labor_data_full.HOURS_WORKED
 # Removing workers earning less than half the minimum wage (using 1999 min wage )
-labor_data_full = labor_data_full[(labor_data_full.WAGE .* labor_data_full.CPI99 .>= (5.65 / 2)), :]
+labor_data_full = labor_data_full[(labor_data_full.WAGE .* labor_data_full.CPI99 .>= (5.65 / 4)), :]
 
 
 labor_data_full.W_HOURS_WORKED = labor_data_full.HOURS_WORKED .* labor_data_full.ASECWT
@@ -256,7 +256,7 @@ grouped_skill = combine(
 filter!(:YEAR => x -> 1964 <= x <= 2019, grouped_skill)
 
 ## HOURS_80######################################################################
-grouped_skill.wage = grouped_skill.wage ./ grouped_skill.hours#_80
+grouped_skill.wage = grouped_skill.wage ./ grouped_skill.hours_80
 grouped_skill.YEAR .-= 1
 
 @df subset(
@@ -265,7 +265,7 @@ grouped_skill.YEAR .-= 1
 
 @df subset(
     grouped_skill, 
-    :SKILL => ByRow(==("S")), :YEAR => ByRow(>(1963))) plot(:YEAR .- 1, :wage, group=:SKILL)
+    :SKILL => ByRow(==("U")), :YEAR => ByRow(>(1963))) plot(:YEAR .- 1, :wage, group=:SKILL)
 
 
 final = innerjoin( 
@@ -282,13 +282,13 @@ final.SKILL_PREMIUM = final.W_S ./ final.W_U
 final.LABOR_INPUT_RATIO = final.L_S ./ final.L_U    
 
 
-data_korv = CSV.read("extend_KORV/data/Data_KORV.csv", DataFrame)
+data_korv = CSV.read("./data/Data_KORV.csv", DataFrame)
 
 sp_korv = data_korv.W_S ./ data_korv.W_U
 lir_korv = data_korv.L_S ./ data_korv.L_U
 
-p4 = plot(final.YEAR, final.SKILL_PREMIUM / final.SKILL_PREMIUM[1], legend=:topleft, label="Updated", lw = 2, linestyle = :dash)
-plot!(final.YEAR[1:30], sp_korv / sp_korv[1], label="KORV", lw = 2)
+p4 = plot(final.YEAR, final.SKILL_PREMIUM /   final.SKILL_PREMIUM[1] , legend=:topleft, label="Updated", lw = 2, linestyle = :dash)
+plot!(final.YEAR[1:30], sp_korv  / sp_korv[1], label="KORV", lw = 2)
 
 p5 = plot(final.YEAR, final.LABOR_INPUT_RATIO / final.LABOR_INPUT_RATIO[1], legend=:topleft, label="Update", lw = 2, linestyle = :dash)
 plot!(final.YEAR[1:30], lir_korv / lir_korv[1], label="KORV", lw = 2)
@@ -312,26 +312,26 @@ final.W_S = final.W_S ./ final.W_S[1] * data_korv.W_S[1]
 final.W_U = final.W_U ./ final.W_U[1] * data_korv.W_U[1]
 final.L_S = final.L_S ./ final.L_S[1] * data_korv.L_S[1]
 final.L_U = final.L_U ./ final.L_U[1] * data_korv.L_U[1]
-
+#
 # Read labor share data # TODO: FIX THIS PART 
-labor_share = CSV.read("./extend_KORV/data/interim/labor_share.csv", DataFrame)
-
-capital = CSV.read("./extend_KORV/data/interim/capital_totl.csv", DataFrame)
+labor_share = CSV.read("./data/interim/labor_share.csv", DataFrame)
+rename!(labor_share, :Column1 => :YEAR)
+capital = CSV.read("./data/interim/capital_totl.csv", DataFrame)
 filter!(:YEAR => >=(1947) , labor_share, )
 filter!(:YEAR => <=(2020) , labor_share, )
 
 labor_share.L_SHARE = 1 .- ( ( labor_share.CI .- capital.inv_ip ) ./ ( labor_share.Y .- labor_share.PI .- capital.inv_ip  )  )
 
-p6 = plot(labor_share.YEAR, labor_share.L_SHARE, legend=:topleft, label="Updated", lw = 2, linestyle = :dash)
-plot!(labor_share.YEAR[17:17+29], data_korv.L_SHARE, label="KORV", lw = 2)
-
-
 filter!(:YEAR => >=(1963) , labor_share, )
 filter!(:YEAR => <=(2018) , labor_share, )
+
+p6 = plot(labor_share.L_SHARE, legend=:topright, label="Updated", lw = 2, linestyle = :dash)
+plot!( data_korv.L_SHARE, label="KORV", lw = 2)
+
 
 final.L_SHARE = labor_share.L_SHARE
 
 # save final to csv
-CSV.write("./extend_KORV/data/proc/labor_totl.csv", final)
+CSV.write("./data/proc/labor_totl.csv", final)
 
 plot(p1, p2, p3, p4)

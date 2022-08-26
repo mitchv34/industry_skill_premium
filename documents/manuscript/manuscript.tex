@@ -21,8 +21,14 @@
  {hyperref}
 \hypersetup{
  pdfborderstyle=,pdfborderstyle={},pdfborderstyle={},linkcolor=blue,urlcolor=blue,citecolor=blue,pdfstartview={FitH},hyperfootnotes=false}
-
+ \setlength{\arrayrulewidth}{0.5mm}
+ \setlength{\tabcolsep}{18pt}
 \makeatletter
+% \usepackage{subcaption}
+
+
+% \usepackage{caption}
+% \usepackage{subcaption}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
 %% Because html converters don't know tabularnewline
@@ -73,6 +79,7 @@
 \newtheorem{lem}[thm]{Lemma}
 \newtheorem{prop}[thm]{Proposition}
 \usepackage[bottom]{footmisc}
+\usepackage{enumerate} % for numbered lists
 
 \newenvironment{definition}[1][Definition]{\begin{trivlist}
 		\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
@@ -133,34 +140,6 @@
 \pagebreak{}
 This paper .... 
 
-
-% \section{Model of technological change \label{sec:model}}
-
-% In this section we present a simple model of the labor market with technological change....
-
-
-% \subsection{Model Overview \label{subsec:model_overview}}
-
-% In this Section [X]
-
-% When a worker and a firm are matched with one another, production occurs according to an "up-to-the task" production function (e.g., \citet{albrecht2002matching} and \citet{jarosch2019statistical}), which defines the output of the match to be,
-% \begin{align}
-% 		f(h,z)=\begin{cases}
-% 			z & h\ge z\\
-% 			0 & \text{o.w.} \label{eq:prod_func}.
-% 		\end{cases}
-% \end{align}
-% The production function in equation \ref{eq:prod_func} requires workers to have a minimum amount of human capital to produce with a given technology. We use the up to the task production function as it introduces a notion of skill requirements, based upon technology, to work in a given occupation.	
-	
-% \section{Measuring technological change} \label{sec: measuring_tech_change}
-
-% In this section, we discuss of the construction of our measure of technological change using the Burning Glass database. We then discuss which occupations have been the most and least exposed to technological change and the characteristics of occupations that are associated with greater exposure to technological change. 
-
-% As an example of technological change, we examine the spread of computers and software within an occupation. We focus on computer and software requirements as our measure of technological change as innovation in the workplace commonly occurs via changes in software (e.g., \citet*{arora2013going} and \citet*{branstetter2019get}). Following \citet*{hershbein2018recessions}, we define a vacancy to contain a computer or software related skill if any of its reported skill requirements contain the keyword ``Computer'' or if any of the reported skill requirements are classified by Burning Glass as a software skill. We then measure for each occupation the share of vacancies in a given year that contain a computer or software related skill. Let $z_{o,t}$ denote the share of vacancies in occupation $o$ and year $t$ that contain a computer or software related skill. In our baseline analysis, we categorize occupations using 4-digit SOC codes as in \citet{hershbein2018recessions}, but show that our results are robust to alternative occupation classifications. 
-
-% To examine whether the share of vacancies in an occupation listing a computer or software requirement is informative about the use of computers and software in that occupation, we compare the estimates
-% from Burning Glass with data from O{*}NET. {O{*}NET asks individuals working in a given occupation as well as occupational experts to rate the level of knowledge needed in an occupation for a given set of skills/tasks and has been commonly used to measure the tasks performed in an occupation (e.g., \citet{acemoglu2011skills}). The level of knowledge is scored 0-7, with higher values indicating that a greater level of knowledge is required. Panel (a) of Figure \ref{fig:Technology Adoption by firms} compares the share of vacancies listing a computer skill requirement (\textit{y-axis}) to the level of computer knowledge recorded in O{*}NET (\textit{x-axis}) for each four-digit occupation.\footnote{We use vintage 15.1 of O*NET to measure computer usage by occupation (the O*NET variable is 2.C.3.a), which contains data collected between 2005 and 2010. We use this vintage as the midpoint of the data collection period aligns with the initial year of data from Burning Glass (2007).} The graph shows that our measure of computer and software requirements based on the skill content listed in online vacancies is highly correlated with the measure from O{*}NET. This finding suggests that the share of vacancies listing a computer or software requirement is informative about the use of computers and software in an occupation. % do we need to add a footnote/comment about why we do not just do the experiment w/ ONET. 
-
 % \begin{figure}[!tph]
 % 	\caption{Technological Change by Occupation \label{fig:Technology Adoption by firms}}
 % 	\begin{centering}
@@ -171,19 +150,38 @@ This paper ....
 % 		\par\end{centering}
 % 	\emph{Notes: Panel (a) displays the level of knowledge in computers reported in O{*}NET (x-axis) and the share of vacancies listing a computer or software requirement by occupation as measured in the Burning Glass database in 2007 (y-axis). Panel (b) displays the share of vacancies listing a computer or software requirement by occupation in 2007 (x-axis), and the change in the share of vacancies listing a computer or software requirement between 2007 and 2017 (y-axis) as measured in the Burning Glass database. Occupations are measured using four-digit SOC codes.}\\	
 % \end{figure}
-		
-% Given the measure $z_{o,t}$ of computer and software requirements in each occupation, we estimate technological change by measuring the change in the share of vacancies in a given occupation that contain a computer or software skill. Let $\varDelta z_{o}=z_{o,2017}-z_{o,2007}$ denote the change in the share of vacancies in occupation $o$ that list a computer or software skill requirement between $2007$ and $2017$. Panel (b) of Figure \ref{fig:Technology Adoption by firms} presents a scatter plot of computer and software requirements in 2007 (\textit{x-axis}) against the change in computer and software requirements between 2007 and 2017 by occupation (\textit{y-axis}). The scatter plot shows that nearly all occupations saw an increase in computer and software requirements between 2007 and 2017. Additionally, the scatter plot shows that there is significant heterogeneity in the adoption of computer and software requirements across occupations between 2007 and 2017. This heterogeneity in the adoption of computer and software requirements is critical for our identification of the impact of technological change on the outcomes of displaced workers, as we will compare the outcomes of workers displaced from occupations with large increases in computer and software requirements to the outcomes of workers displaced from occupations with a small increase in computer and software requirements. In the following subsection, we further examine which occupations have been more/less exposed to technological change as measures by changes in computer and software requirements over time. 
+
 
 \section{Introduction}\label{sec:introduction}
 
+\section{Literature Review}\label{sec:literature_review}
+
 \section{Industry Specific Skill Premium}
+
+\section{Data}\label{sec:data}
+I estimate the model following the approach outlined in KORV \citet{krusell2000capital}. I constructed data series for wages, labor input, and capital input from 1963 to \textcolor{red}{FINAL YEAR} to replicate KORV with updated data following \citet{ohanian2021revisiting}. I then collect the same series at the industry level to re-estimate the model, due to data availability industry series cover the period from \textcolor{red}{INITIAL YEAR}-\textcolor{red}{FINAL YEAR}.
+
+Labor input and wages are estimated using CPS data downloaded from IPUMS, see \citet{flood2015integrated}, 
+
+\subsection{Capital Data}\label{sec:capital_data}
+To extend both capital series to replicate KORV I obtained investment series in equipment $(I_e)$ and structures $(I_s)$ from NIPA Table 5.2.5. Then the equipment $(K_e)$ and structure $(K_s)$ capital series were constructed using the perpetual inventory method:
+\begin{equation}\label{eq:capital_law_motion}
+  K_{i_{t+1}} = (1 - \delta_{i_t}) K_{i_{t}} + I_{i_{t}} \qquad i\in\{e, s\}
+\end{equation}
+\noindent
+I departed from KORV by using time-varying depreciation rates $\delta_{i_t}$, instead of constant depreciation rates for each series. As in \citep{ohanian2021revisiting} I deflate structures using the implicit price deflator of GDP \footnote{Available \url{https://fred.stlouisfed.org/series/GDPDEF}}, and equipment using the product of the consumption delfator\footnote{Available at \url{https://fred.stlouisfed.org/series/CONSDEF}} and the relative price of equipment \footnote{Available at \url{https://fred.stlouisfed.org/series/PERIC}}. 
+
+To obtain capital data at the industry level I used the BEA Fixed Assets dataset to obtain investment and capital consumption series by industry and type, details of which tables were used are included in Appendix \ref{subsec:capital-inputs-labor-share}. Fixed Assets dataset groups industries into 76 groups. To construct a series of the labor share of output by industry, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS)\footnote{Available at \url{https://www.bls.gov/productivity/articles-and-research/industry-production-account-capital.xlsx}}. KLEMS data consists on 57 industry groups some of which are aggregations of industries on the BEA dataset. Table %\ref{tab: changes_by_occ} 
+presents the crosswalk between BEA, KLEMS, and Census industry codes. I used the crosswalk provided by \citep{acemoglu2020unpacking}. A description of the codes is in \textcolor{red}{INSER TABLE AND REFERENCEIT}.
+
+\subsection{Labor Data}\label{sec:labor_data}
 
 \section{Model}\label{sec:model}
 This section presents the model which is the same as \citep{krusell2000capital}. There are four inputs for production in this economy: two types of capital, equipment $(k_e)$ and structures $(k_s)$ and two types of labor, skilled $(s)$ and unskilled $(u)$. Inputs are combined thourgh a produciton funciton $G(\cdot)$ to produce three final goods: consumption $(c)$, investment in equipment $(i_e)$ and investment in structures $(i_s)$. Assuming an hicks-newutral technological shocks $A$, the aggreate production is given by
 \begin{equation}\label{eq:production}
-  c_t + i_{e_t} + i_{s_t} = A_t G(k_{s_t}, k_{e_t}, u_t, s_t)
+  c_t + i_{e_t} + i_{s_t} = Y_t =  A_t G(k_{s_t}, k_{e_t}, u_t, s_t)
 \end{equation}
-The production function is assumed to be Cobb-Douglas in structures and a nested CES in all other inputs:
+Capital evelves following the law of miotion in \eqref{eq:capital_law_motion}. The production function is assumed to be Cobb-Douglas in structures and a nested CES in all other inputs:
 \begin{equation}\label{eq:production_fun}
   G(k_{s_t}, k_{e_t}, u_t, s_t) = k_{s_t}^\alpha\left( \mu u_t^\sigma + (1-\mu)\left(\lambda k_{s_t}^\rho (1-\lambda)s_t^\rho\right)^\frac{\sigma}{\rho}\right)^\frac{1-\alpha}{\sigma}
 \end{equation}
@@ -200,100 +198,134 @@ Labor input is defined as
 where $\psi^i_t$ is the (unobserved) efficiency of each type of labor and $h^i_t$ is the number of labor hours. 
 
 \subsection{Skill Premium}
+The model can be used to analyze the determinants of the skill premium growth, i.e. growth of  the ratio of wages of skilled labor to wages of unskilled labor. 
+
 Firms solve the following profit maximization problem 
 \begin{equation}\label{eq:profit_max}
   \max_{k_{s_t}, k_{e_t}, u_t, s_t} G(k_{s_t}, k_{e_t}, u_t, s_t) - r_{s_t}k_{s_t} - r_{e_t}k_{e_t} - w_{u_t} h_{u_t} - w_{s_t} h_{s_t}
 \end{equation}
-% where $r_{s_t}$ and $r_{e_t}$ are rental rates of capital and  $w_{u_t}$ and $w_{s_t}$ are wages of unskilled and skilled workers. Sice  
-
-% \citep{krusell2000capital} make the following stochastic assumptions about labor labor productivity:
-% \begin{equation}
-%   \psi^u_t = \psi^u_0 + \epsilon \qquad \epsilon \sim N(0, \eta_\epsilon^2)
-% \end{equation}
-
-
-\textcolor{red}{Rember to show that capital-skill complementarity is requieres $\sigma > \rho$}
-
-
-\section{Data}\label{sec:data}
-I estimate the model following the approach outlined in KORV \citet{krusell2000capital}. I constructed data series for wages, labor input, and capital input from 1963 to \textcolor{red}{FINAL YEAR} to replicate KORV with updated data following \citet{ohanian2021revisiting}. I then collect the same series at the industry level to re-estimate the model, due to data availability industry series cover the period from \textcolor{red}{INITIAL YEAR}-\textcolor{red}{FINAL YEAR}.
-
-Labor input and wages are estimated using CPS data downloaded from IPUMS, see \citet{flood2015integrated}, 
-
-\subsection{Capital Data}\label{sec:capital_data}
-To extend both capital series to replicate KORV I obtained investment series in equipment $(I_e)$ and structures $(I_s)$ from NIPA Table 5.2.5. Then the equipment $(K_e)$ and structure $(K_s)$ capital series were constructed using the perpetual inventory method:
+$r_{s_t}$ and $r_{e_t}$ are rental rates of capital and  $w_{u_t}$ and $w_{s_t}$ are wages of unskilled and skilled workers. Assuming perfect competition, labor is payed it marginal productivity therefore the skill premium at time $t$, ($\omega_t$) is given by
 \begin{equation}
-  K_{i_{t+1}} = (1 - \delta_{i_t}) K_{i_{t}} + I_{i_{t}} \qquad i\in\{e, s\}
+  \omega_t = \frac{w_{s_t}}{w_{u_t}} = \frac{G_{h_s}(k_{s_t}, k_{e_t}, u_t, s_t) }{G_{h_u}(k_{s_t}, k_{e_t}, u_t, s_t) }
 \end{equation}
-\noindent
-I departed from KORV by using time-varying depreciation rates $\delta_{i_t}$, instead of constant depreciation rates for each series. As in \citep{ohanian2021revisiting} I deflate structures using the implicit price deflator of GDP \footnote{Available \url{https://fred.stlouisfed.org/series/GDPDEF}}, and equipment using the product of the consumption delfator\footnote{Available at \url{https://fred.stlouisfed.org/series/CONSDEF}} and the relative price of equipment \footnote{Available at \url{https://fred.stlouisfed.org/series/PERIC}}. 
 
-To obtain capital data at the industry level I used the BEA Fixed Assets dataset to obtain investment and capital consumption series by industry and type, details of which tables were used are included in Appendix \ref{subsec:capital-inputs-labor-share}. Fixed Assets dataset groups industries into 76 groups. To construct a series of the labor share of output by industry, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS)\footnote{Available at \url{https://www.bls.gov/productivity/articles-and-research/industry-production-account-capital.xlsx}}. KLEMS data consists on 57 industry groups some of which are aggregations of industries on the BEA dataset. Table %\ref{tab: changes_by_occ} 
-presents the crosswalk between BEA, KLEMS, and Census industry codes. I used the crosswalk provided by \citep{acemoglu2020unpacking}. A description of the codes is in \textcolor{red}{INSER TABLE AND REFERENCEIT}.
+this gives the following expression for the skill premium:
 
-\subsection{Labor Data}\label{sec:labor_data}
+\begin{equation}\label{eq:skill_premium}
+  \omega_{t}=\frac{(1-\mu)(1-\lambda)}{\mu}\left[\lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}+(1-\lambda)\right]^{(\sigma-\rho) / \rho}\left(\frac{h_{u_t}}{h_{s_t}}\right)^{1-\sigma}\left(\frac{\psi^s_t}{\psi^u_t}\right)^{\sigma} .
+\end{equation}
+Since the object of interest is the steady state growth of $\omega_t$\eqref{eq:skill_premium} can be log-linearized to  obtain the following expression:
+\begin{equation}\label{eq:skill_premium_log_linear}
+  \ln \omega_{t} \simeq \lambda \frac{\sigma-\rho}{\rho}\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}+(1-\sigma) \ln \left(\frac{h_{u_t}}{h_{s_t}}\right)+\sigma \ln \left(\frac{\psi^s_t}{\psi^u_t}\right)
+\end{equation}
+Which in turn can be written in terms of growth rates:
+\begin{equation}\label{eq:skill_premium_growth_rates}
+  \begin{aligned}
+    g_{\omega t} \simeq &(1-\sigma)\left(g_{h_{u_t}}-g_{h_{s_t}}\right)+\sigma\left(g_{\psi^s_t}-g_{\psi^u_t}\right) \\
+    &+(\sigma-\rho) \lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}\left(g_{k_{e_t}}-g_{h_{s_t}}-g_{\psi^s_t}\right) .
+    \end{aligned}
+\end{equation}
+where $g_x$ denotes the growth rate of variable $x$, details on the derivations are include in Appendix~\ref{sec:derivations}. Equation~\eqref{eq:skill_premium_growth_rates} has the nice property that it is a linear combination of the growth rates of the inputs in the production function, this allows us to decompose the growth rate of the skill premium into three components that are easy to analyze:
+\begin{enumerate}[(i)]
+  \item $(1-\sigma)(g_{h_{u_t}}-g_{h_{s_t}})$ depends on the growth rate of one type of labor over the other. We assume that both types of labor are substitutes i.e $\sigma_L < 0 \implies (1-\sigma) < 0$ . This means that if skilled labor grows at a faster rate than unskilled labor,will decrease the skill-premium.
+  \item $\sigma\left(g_{\psi^s_t}-g_{\psi^u_t}\right)$ depends on the growth rate of the productivity of one type of labor over the other. I follow \citep{krusell2000capital} in making the following stochastic assumptions about labor labor productivity:
+  \begin{equation}\label{eq:stochastic_labor_productivity}
+    \psi^i_t = \psi^i_0 + \epsilon \qquad \epsilon \sim N(0, \eta_\omega^2) \qquad i\in\{s,u\}
+  \end{equation}
+  This assumption guarantee that on average $\sigma (g_{\psi^s_t}-g_{\psi^u_t} )$ is constant over time and does not affect skill premium growth rate. 
+  \item $(\sigma-\rho) \lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}\left(g_{k_{e_t}}-(g_{h_{s_t}}+g_{\psi_{s_t}})\right)$ . This component depends on two factors:
+  \begin{enumerate}
+    \item The growth rate of equipment relative to the growth rates of skilled labor input. This allow us to characterize the capital-skill complementarity hypotesis as $\sigma > \rho$, if equipment capital grows faster than skilled labor, the skill-premium will increase.
+    \item The ratio of capital equipment to efficiency units of skilled labor input (given our assumptions amounts to the growth rate of skilled labor input), this efect will get larger (smaller) over time if $\rho > 0\:$ ($\rho < 0$). 
+  \end{enumerate}
+\end{enumerate}
 
+\section{Estimation}
+I follow the same methodology as \citep{krusell2000capital} to estimate the model parameter. To simplify notation from now on I will refer to  the unobservable labor efficiencies as, $\psi_t = \{\psi^u_t, \psi^s_t\}$, the  inputs of the production function as $X_t = \{ k_{s_t} , k_{e_t}, h_{s_t}, h_{u_t}\}$ and the set of parameters to be estimated  as $\Phi  = \{\alpha, \sigma, \rho, \mu, \lambda, \psi^u_0, \psi^s_0, \eta_\omega \}$. 
+
+Firms decide investment in structures based on expectations about future prices $q_{t+1}$. This is capture using a \textit{"no arbitrage"} condition, firms equate marginal returns on investment on  both types of capital. On the one hand marginal return on investment in capital structures is given by given by the sum of the marginal product of structures in $t+1$, $A_{t+1} G_{k_s}(X_{t+1}, \psi_{t+1} \mid \Phi )$ and undepreciated structures on $(1-\delta_s)$. On the other hand marginal return on investment in equipment is given by the sum of the marginal product of equipment in nexrt period, $q_t A_{t+1} G_{k_s}(X_{t+1}, \psi_{t+1} \mid \Phi )$  and depreciated structures $\mathbb{E}(q_t/q_{t+1})(1-\delta_e)$ the term $\mathbb{E}(q_t/q_{t+1})$, as in \citep{krusell2000capital} I make the simplifying assumption of 
+$(1-\delta_e)\mathbb{E}(q_t/q_{t+1}) =(1-\delta_e)(q_t/q_{t+1}) + \nu_t$ where $\nu_t$ is normaly distributed with mean zero and variance $\eta_\nu^2$ this parameter is calibrated using dataonm $q_t$.\footnote{Since I use the same series of relative prices than KORV I take their calibration of $\eta_\nu = 0.02$}. Putting everithing together we have the following equation:
+\begin{equation}\label{eq:no_arbitrage}
+  A_{t+1} G_{k_s}(X_{t+1}, \psi_{t+1} \mid \Phi ) = q_t A_{t+1} G_{k_s}(X_{t+1}, \psi_{t+1} \mid \Phi ) + (1-\delta_e)\left(\frac{q_t}{q_{t+1}}\right) + \nu_t
+\end{equation}
+
+The other two structural equations used to estimate the model compare the labor share observed in the data to labor share predicted by the model $lsh(X_{t+1}, \psi_{t+1} \mid \Phi )$ and the wage-bill ratio observed in the data to wage-bill ratio predicted by the model $wbr(X_{t+1}, \psi_{t+1} \mid \Phi )$:
+\begin{align}
+  \frac{w_{s_t}h_{s_t} + w_{u_t}h_{u_t} }{Y_t} &= lsh(X_{t}, \psi_{t} \mid \Phi ) \label{eq:labor_share}\\
+  \frac{w_{s_t}h_{s_t}}{w_{u_t}h_{u_t}} &= wbr(X_{t}, \psi_{t} \mid \Phi ) \label{eq:wage_bill_ratio}
+\end{align}
+
+Since the parameters $\mu, \lambda, \psi^u_0, \psi^s_0$ act as scaling parameters, to estimate the model one must be fixed, I follow \citep{krusell2000capital} in fixing $\psi^s_0$, the initial value of the productivity of skilled labor. When replicating their result on a extend sample I choose to fix $\psi^u_0 = 6$ as in the original, but choose diferent variants when estimating each industry to improve the fitness. Fuinally the parameter $\eta_\omega$ is choosen to minimize distance between the skill premium in the data and the skill premium predicted by the model.
+
+The estimation process is a simulated two-stage pseudo-maximum likelihood estimation (SPMLE) developed by \citep{white1996estimation}. Is reasonable that the choice of labor is influenced the productivity shocks therefore skilled and unkilled labor in treated as endogenous. 
+
+To allow for the possible dependence of hours worked on shocks, we use the two-stage SPML developed by, which is similar in spirit to two-stage least squares. We treat skilled and unskilled labor input as endogenous. To deal with the endogeneity, labor input is projected onto a constant, current, and lagged stock of capital equipment and structures, the lagged relative price of equipment, and a trend. The model is estimated using the instrumented labor input series, the series of capital and prices as the inputs of the model.
+
+The the next stage we proceed as follows: taking the variance $\eta_\omega$ as given, for each date $t$ generate $S$ realizations the stochastic components of the model $\quad \varphi_t$ use those as inputs to generate $S$ realization of the structural equaitons \eqref{eq:no_arbitrage}, \eqref{eq:labor_share} and \eqref{eq:wage_bill_ratio}, to simplify notaiton I refer to each of those values as $\tilde{Z}^{i}_t(X_{t}, \psi_{t} \mid \Phi)$, (note that this is a vector of three values, one for each of the equations). Using the simulated data we obtain the first and second moments of the model: 
+\begin{equation}\label{eq:first_moment}
+  m(X_{t}, \psi_{t} \mid \Phi) = \frac{1}{S}\sum_{i=1}^S \tilde{Z}^{i}_t(X_{t}, \psi_{t} \mid \Phi)
+\end{equation}
+and
+\begin{equation}\label{eq:second_moment}
+  V(X_{t}, \psi_{t} \mid \Phi) = \frac{1}{S-1}\sum_{i=1}^S \left( \tilde{Z}^{i}_t(X_{t}, \psi_{t} \mid \Phi) - m(X_{t}, \psi_{t} \mid \Phi) \right) \left( \tilde{Z}^{i}_t(X_{t}, \psi_{t} \mid \Phi) - m(X_{t}, \psi_{t} \mid \Phi) \right)'
+\end{equation}
+Finally, we minimize same objective function as \citep{krusell2000capital}:
+\begin{equation}\label{eq:objective_funct_estimation}
+  \begin{aligned}
+    \ell\left(Z^{T} ; X_{t}, \psi_{t} \mid \Phi\right)=&-\frac{1}{2 T} \sum_{t=1}^{T}\left\{\left[Z_{t}-m_{S}\left(\tilde{X}_{t} ; \phi\right)\right]^{\prime}\left(V_{S}\left(\tilde{X}_{t} ; \phi\right)\right)^{-1}\left[Z_{t}-m_{S}\left(\tilde{X}_{t} ; \phi\right)\right]\right.\\
+    &\left.-\log \operatorname{det}\left(V_{S}\left(\tilde{X}_{t} ; \phi\right)\right)\right\}
+    \end{aligned}    
+\end{equation}
+where $Z_{t}$ is the vector of model counterparts of $\tilde{Z}^{i}_t(X_{t}, \psi_{t} \mid \Phi)$.
 \section{Results}\label{sec:results}
+This section present the results of the estimation process. I first show the result of the replication of KORV for different time periods and  then summarize the results of the estimating the model for each industry.
+\subsection{KORV Replication}\label{sec:results_original}
+Table \ref{tab:estimation_korv} compares the results botained by \citep{krusell2000capital} to this replication using their 
+original data ($1963$ - $1992$) \footnote{Available at Gianluca Violante's web-site: \url{http://violante.mycpanel.princeton.edu/Journals/Data_KORV.txt}}. I present also the estimation on the extended sample ($1963$ - $2018$) and on the subset of the extended sample for which there is coverage at the industry level  ($1988$ - $2018$). 
 
-% \subsection{Which occupations are changing computer \& software requirements}
+\begin{table}[h]
+\begin{center}
+  \input{../tables/tab:estimation_korv.tex}
+  \caption{\label{tab:estimation_korv} Parameter estimates KORV model.}
+\end{center}
+\end{table}
+Figures 
 
-% In this section, we examine which occupations have been more exposed to technological change as measured by changes in computer and software requirements over time. We then examine the characteristics of occupations that are experiencing changes in computer and software requirements. 
 
-% Table \ref{tab: changes_by_occ} presents the 4-digit SOC occupations with the largest and smallest changes in computer and software requirements between 2007 and 2017.\footnote{In Appendix \ref{sec:chg_soc2} we present the change in computer and software requirements using broader 2-digit SOC occupation categories. }  The occupations with the largest increases in computer and software requirements include architects, engineers, advertising and marketing managers as well as protective service workers and their supervisors. Across these occupations we see different types of computer and software requirements being introduced. Among advertising and marketing managers there has been an increase in the demand for specific software packages and platforms. For instance Salesforce, Software as a Service (SaaS), and Google Analytics / Google Adwords are forms of software and platforms that were commonly listed in vacancies in 2017 but were rarely seen in 2007. Conversely, protective service jobs frequently include data entry by 2017 and job postings now list general computer skills and experience working with spreadsheets. 
+% \begin{figure}
+  % \centering
+  % \begin{subfigure}%[b]{0.3\textwidth}
+  %     \centering
+  %     \includegraphics[width=\textwidth]{../images/fig:korv_estimation_ls_doc.pdf}
+  %     \caption{$y=x$}
+  %     \label{fig:y equals x}
+  % \end{subfigure}
+  % \hfill
+  % \begin{subfigure}%[b]{0.3\textwidth}
+  %     \centering
+  %     \includegraphics[width=\textwidth]{../images/fig:korv_estimation_wbr_doc.pdf}
+  %     \caption{$y=3sinx$}
+  %     \label{fig:three sin x}
+  % \end{subfigure}
+  % \hfill
+  % \begin{subfigure}%[b]{0.3\textwidth}
+  %     \centering
+  %     \includegraphics[width=\textwidth]{../images/fig:korv_estimation_sp_doc.pdf}
+  %     \caption{$y=5/x$}
+  %     \label{fig:five over x}
+  % \end{subfigure}
+%     \caption{Three simple graphs}
+%     \label{fig:three graphs}
+% \end{figure}
 
-% In Appendix \ref{sec: robustness_occ_trends_ACS} we examine changes in employment and earnings structure by an occupation's exposure to technological change. We find that an occupation's exposure to technological change is not correlated with changes in employment share between 2007 and 2017. However, we find increased dispersion in earnings at both the top and bottom of the earnings distribution for occupations with greater exposure to technological change. 
 
 
-% % Table of top and bottom 10 occupations by change in CPU & software req. (2007-2017)
-% \begin{landscape}
-	
-% \begin{table}[!tph]
-% 	\caption{Changes in Computer and Software Requirements by Occupation \label{tab: changes_by_occ}}
-% 	\begin{small} 
-% 		\begin{centering}
-% 			\begin{tabular}{lclccccc}
-% 				\hline 
-% 				\multicolumn{8}{c}{\emph{Panel A: Occupations with largest increase in computer \& software requirements} }\tabularnewline
-% 				\hline 
-% 				   &       &  & (1)  & (2)  & (3)  & (4)  & (5) \tabularnewline
-% 				   &       &  & Chg. Computer  & Non-Routine & Routine  & Non-Routine  & Routine\tabularnewline
-% 				Rank       & SOC-4  & Occupation  & Req. (2007-2017)  & Cognitive  & Cognitive & Manual  & Manual\tabularnewline
-% 				\hline 
-% 				1  & 1710  & Architects                                 & 0.419  & 1.603   & 0.657  & -0.187  & -0.285\tabularnewline
-% 				2  & 3310  & Supervisors of protective service workers  & 0.408  & 1.036   & 0.160  & 1.845  & -0.250\tabularnewline
-% 				3  & 3390  & Protective service workers                 & 0.338  & -0.656  & 1.160  & -0.966  & -1.036\tabularnewline
-% 				4  & 1720  & Engineers - aerospace/biomedical/computer  & 0.337  & 0.323   & -0.468 & -1.587  & -0.868\tabularnewline
-% 				5  & 4330  & Financial clerks                           & 0.336  & -0.705  & 1.878  & -0.633  & -0.311\tabularnewline
-% 				6  & 1721  & Engineers - industrial/mechanical/nuclear  & 0.332  & 0.644   & -0.084 & -2.095  & -0.558\tabularnewline
-% 				7  & 1520  & Mathematical science occupations           & 0.315  & 0.888   & -0.789 & -2.455  & -1.355\tabularnewline
-% 				8  & 4750  & Oil, gas, and mining extraction workers    & 0.312  & -0.290  & 0.340  & 0.635  & 2.158\tabularnewline
-% 				9  & 1120  & Advertising, marketing \& sales managers   & 0.306  & 1.815   & -1.540 & 0.419  & -1.506\tabularnewline
-% 				10  & 2740  & Media and communication equipment workers & 0.304  & 0.097   & 0.605  & -0.235  & 1.112\tabularnewline
-% 				\hline 
-% 				\multicolumn{8}{c}{\emph{Panel B: Occupations with smallest increase in computer \& software requirements} }\tabularnewline
-% 				\hline 
-% 				&  &  & (1)  & (2)  & (3)  & (4)  & (5) \tabularnewline
-% 				&  &  & Chg. Computer  & Non-Routine & Routine  & Non-Routine  & Routine\tabularnewline
-% 				Rank  & SOC-4  & Occupation  & Req. (2007-2017)  & Cognitive  & Cognitive & Manual  & Manual\tabularnewline
-% 				\hline 
-% 				1  & 3990  & Personal care and service workers                & 0.044  & -0.641  & -2.490  & 0.894  & -1.245\tabularnewline
-% 				2  & 3730  & Grounds maintenance workers                      & 0.042  & -1.010  & -2.386 & 0.091  & 2.112\tabularnewline
-% 				3  & 5130  & Food processing workers                          & 0.041  & -0.832  & 0.150  & -0.736  & 1.281\tabularnewline
-% 				4  & 3720  & Cleaners                                         & 0.039  & -1.992  & -1.330 & -1.225  & 0.647\tabularnewline
-% 				5  & 3920  & Animal trainers and caretakers                   & 0.036  & -0.234  & -1.760 & 1.154  & -0.706\tabularnewline
-% 				6  & 3520  & Cooks and food preparation workers               & 0.033  & -1.209  & -0.585 & -0.059  & 1.085\tabularnewline
-% 				7  & 3590  & Restaurant attendants, dishwashers, hosts        & 0.029  & -1.758  & -1.242 & -0.041  & 0.762\tabularnewline
-% 				8  & 4730  & Helpers, construction trades                     & 0.022  & -0.624  & -0.228 & -0.214  & 1.099\tabularnewline
-% 				9  & 3530  & Food and drink servers                           & 0.010  & -1.040  & -0.394 & 0.210  & 0.214\tabularnewline
-% 				10  & 5330  & Drivers - ambulance/bus/tractor trailors/taxis  & -0.005  & -1.207  & 0.476 & 2.487  & 1.323\tabularnewline
-% 				\hline 
-% 			\end{tabular}
-% 			\par\end{centering}
-% 		\emph{Note: Table presents the 10 occupations with the largest increase in computer and software requirements between 2007 and 2017 (Panel A), and the 10 occupations with the smallest increase (Panel B). Column (1) presents the change in the share of vacancies listing a computer and software requirements by occupation between 2007 and 2017 as measured in the Burning Glass data. Measures of the task content of an occupation presented in columns (2)-(5) are from \citet{acemoglu2011skills}. Occupations are classified using 4-digit SOC codes.} 
-% 	\end{small} 
-% \end{table}
 
-% \end{landscape}
+As seen in table \ref{tab:estimation_korv} \textcolor{red}{Descirbe results}\dots
+
+
+\subsection{Estimation by Industry}
+
 
 \pagebreak{}
 
@@ -303,6 +335,14 @@ presents the crosswalk between BEA, KLEMS, and Census industry codes. I used the
 \pagebreak{}
 
 \appendix
+
+\section{Ommited Derivations}\label{sec:derivations}
+Outline:
+\begin{itemize}
+  \item FOC of Labor and Skill premium
+  \item Log Linearization
+  \item Write it as growth rates
+\end{itemize}
 
 \section{Data Construction}\label{sec:data-construction}
 
@@ -326,12 +366,6 @@ OUTLINE
 %     #     - (FAAt304I) Table 3.4I. Current-Cost Depreciation of Private Intellectual Property Products by Industry
 
 \subsection{Labor Inputs and Wage Rates}\label{subsec:labor-inputs-wage-rates}
-
-% \section{Additional Results: Measure of Technological Change}
-
-% In this Appendix, we provide additional results on our measure of technological change based upon changes in computer and software requirements reported in the Burning Glass database. 
-
-% \subsection{Change in computer and software requirements by 2-digit SOC} \label{sec:chg_soc2}
 
 
 \end{document}
