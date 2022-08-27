@@ -298,11 +298,17 @@ function evaluateModel(sim_id::Int64, model::Model, data::Data, parameters::Para
 	wbr = model.wage_bill_ratio_fun.( data_points )
 	# w_ℓ = model.wage_ℓ_fun.( data_points )
 	# w_h = model.wage_h_fun.( data_points )
+	try
 	rr  = model.rr_fun.( data_points ) 
-	# catch
-	# 	@info data_points[1]
-	# 	return 0
-	# end
+	catch
+		print("\n\n\n\nHERE")
+		for d ∈	data_points
+			print(d[1:4])
+		end
+		print("\n\n\n\n")
+		return 0
+	end
+
 
 	# add schock to rr
 	rr = rr .+ ε[sim_id, :]
@@ -329,7 +335,6 @@ function generateMoments(model::Model, parameters::Params, data::Data, shocks::S
 	
 	# Each iteration is a simulation of the model
 	for i ∈ 1:nS
-
 		model_results = evaluateModel(i, model, data, parameters, shocks)
 	
 		z[1, :, i] = model_results[:wbr];# z[1, :, i] = z[1, :, i] / z[1, 1, i]

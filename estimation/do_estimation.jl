@@ -130,17 +130,18 @@ function solve_optim_prob(data::Data, model::Model, fixed_param::Float64, η_ω:
 end # solve_optim_prob 
 
 # Plot the results 
-function plot_results(simulation::Simulation, data::Data; years::Array=[])
+function plot_results(simulation::Simulation, data::Data; years::Array=[], scale_font::Float64 = 1.0)
     
 
     Plots.theme(:vibrant); # :dark, :light, :plain, :grid, :tufte, :presentation, :none
     default(fontfamily="Computer Modern", framestyle=:box ); # LaTex-style1
-    Plots.scalefontsizes(10)
+    Plots.scalefontsizes(scale_font)
     params = simulation.x # Parameters
     T = length(data.y) # Time horizon
     # Genrate shocks
     shocks = generateShocks(params, T);
     # Update model
+    
     update_model!(model, params)
     # Evaluate model
     model_results = evaluateModel(0, model, data, params, shocks)
