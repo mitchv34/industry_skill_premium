@@ -25,7 +25,8 @@ inds_done = [f[1:end-4] for f in readdir("data/results/ind_est")]
 
 indx_ = [i for i in 1:length(inds.code_klems) if ~(inds.code_klems[i] in inds_done)]
 
-i = indx_[1]
+i = indx_[7]
+codes[i]
 begin
 	ind_proc = readdir("data/results/ind_est")
 	ind_code = codes[i]
@@ -53,9 +54,9 @@ delta_e = mean(dataframe.DPR_EQ)
 delta_s = mean(dataframe.DPR_ST)
 
 ### Set initial parameter values
-scale_initial = 20.0
-η_ω_0 = 0.002
-param_0 = [0.11, .5,.5] 
+scale_initial = 10.0
+η_ω_0 = 0.001
+param_0 = [0.11, .5, -.5] 
 
 scale_0 = [0.4, 0.4, scale_initial]
 sim = solve_optim_prob(data, model, scale_initial, η_ω_0, vcat(param_0, scale_0),  tol = 0.1, delta=[delta_e, delta_s])
