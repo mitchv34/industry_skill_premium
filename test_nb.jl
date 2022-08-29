@@ -296,7 +296,7 @@ end
 end 
 	
 #  Load Data
-ind_code = "5412OP"
+ind_code = "624"
 path_data = "./data/proc/ind/$(ind_code).csv";
 dataframe = CSV.read(path_data, DataFrame);
 
@@ -337,7 +337,7 @@ begin
 		for name in ["λ", "μ"]
 	],
 		[
-			@htl("<li>$(name): $(Child(Slider(0.01:0.25:10.0)))</li>")
+			@htl("<li>$(name): $(Child(Slider(0.01:0.25:20.0)))</li>")
 		for name in ["φℓ₀", "φh₀"]
 		]
 	))
@@ -482,12 +482,12 @@ end
     plot!( ω_data / ω_data[1] , lw = 2, label = "Data")
     title!("Skill Premium")
 
-    p3 = plot(model_results[:lbr], lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
+    p3 = plot(model_results[:lbr], lw = 2,  linestyle=:dash, label = "Model", legend = false,size = (800, 400))
     plot!(data.lsh, lw = 2, label = "Data")
-    ylims!(.30, .90)
+    ylims!(0.0, 1.00)
     title!("Labor Share of Output")
 
-    p4 = plot(model_results[:wbr] /model_results[:wbr][1], lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
+    p4 = plot(model_results[:wbr] /model_results[:wbr][1], lw = 2,  linestyle=:dash, label = "Model", legend =false,size = (800, 400))
     plot!(data.wbr / data.wbr[2] , lw = 2, label = "Data")
     title!("Wage Bill Ratio")
 
@@ -534,7 +534,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.0-rc3"
 manifest_format = "2.0"
-project_hash = "8803e59cfb53c0b0ad34adc125dceb0a63e09a65"
+project_hash = "5366371936cca1e63cc3daf8d753f0754fdc7908"
 
 [[deps.AbstractAlgebra]]
 deps = ["GroupsCore", "InteractiveUtils", "LinearAlgebra", "MacroTools", "Markdown", "Random", "RandomExtensions", "SparseArrays", "Test"]
@@ -2322,6 +2322,6 @@ version = "1.4.1+0"
 # ╟─9610f42e-4448-4657-a81d-b821ab9c0ae9
 # ╟─44bef502-0fcf-4f62-9cd2-c15cd2b5d8bf
 # ╟─54da9164-41dc-49af-8e24-626db783094b
-# ╠═2199d983-7de6-43ff-8983-fb6e4877b777
+# ╟─2199d983-7de6-43ff-8983-fb6e4877b777
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

@@ -151,11 +151,11 @@ This work is inserted in several strands of literature.
  \item Captial-Skill complementarity:
  \begin{itemize}
  \item \citet{krusell2000capital}
- \item Replications, \citet{ohanian2021revisiting}, \citet{polgreen2008capital}, \citet{maliar2020capital}.
+ \item Replications, \citet{ohanian2021revisiting}, \citet{polgreen2008capital}, \citet{maliar2020capital}, \citet{castex2022decline}.
  \end{itemize}
  \item Income Shares:
  \begin{itemize}
-  \item \citet{karabarbounis2014global}
+ \item \citet{karabarbounis2014global}
  \item Possible Explanations:
  \begin{itemize}
  \item Occupations \citet{orak2017capital}
@@ -165,34 +165,6 @@ This work is inserted in several strands of literature.
  \item Job Polarization stuff \citet{song2019firming}
 \end{itemize}
 \pagebreak
-\section{Industry Specific Skill Premium}
-
-The trend of the labor share at the industry are the same at the national level Figure~\ref*{fig:labor_share_by_industry}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.45\textwidth]{../images/industries/labor_share/dec531.pdf}
-  \hspace*{0.05\textwidth}
-  \includegraphics[width=0.45\textwidth]{../images/industries/labor_share/dec44RT.pdf}
-  \vfill
-  \includegraphics[width=0.45\textwidth]{../images/industries/labor_share/dec42.pdf}
-  \hspace*{0.05\textwidth}
-  \includegraphics[width=0.45\textwidth]{../images/industries/labor_share/dec23.pdf}
-  \caption{\label{fig:labor_share_by_industry} Declining Labor Share four larges industries}
-\end{figure}
-
-To justify explorign the skill vbiased technical change I want to show that the feature of increasing labor input ratio holds and also the skill premium increasing holds at industry level.
-
-I calcualte the slope of the labot input and get that \textcolor{red}{RESULTS}, I then repeat the process for the skill premium and get the \textcolor{red}{RESULTS}. Figure~\ref*{fig:trends_correlation} shows a scatter plot of slopes. The first thing to note is that for almost all industries (\textcolor{red}{percentage}) there;'s been an increase in both indicators, furthermore the m,ore that labor input ratio increases the more the skill premium increases. 
-
-Figure~\ref{fig:trends_correlation} shows \ldots
-
-\begin{figure}[H]
-  \centering
-    \includegraphics[width=0.85\textwidth]{../images/trend_correlation_doc.pdf}
-  \caption{\label{fig:trends_correlation} Correlation between the slopes of the Labor Input Ration and the Skill Premium.}
-\end{figure}
-
 
 \section{Data}\label{sec:data}
 I estimate the model following the approach outlined in KORV \citet{krusell2000capital}. I constructed data series for wages, labor input, and capital input from 1963 to \textcolor{red}{FINAL YEAR} to replicate KORV with updated data following \citet{ohanian2021revisiting}. I then collect the same series at the industry level to re-estimate the model, due to data availability industry series cover the period from \textcolor{red}{INITIAL YEAR}-\textcolor{red}{FINAL YEAR}.
@@ -203,7 +175,7 @@ To extend both capital series to replicate KORV I obtained investment series in 
  K_{i_{t+1}} = (1 - \delta_{i_t}) K_{i_{t}} + I_{i_{t}} \qquad i\in\{e, s\}
 \end{equation}
 \noindent
-I departed from KORV by using time-varying depreciation rates $\delta_{i_t}$, instead of constant depreciation rates for each series. As in \citep{ohanian2021revisiting} I deflate structures using the implicit price deflator of GDP \footnote{Available \url{https://fred.stlouisfed.org/series/GDPDEF}}, and equipment using the product of the consumption delfator\footnote{Available at \url{https://fred.stlouisfed.org/series/CONSDEF}} and the relative price of equipment \footnote{Available at \url{https://fred.stlouisfed.org/series/PERIC}}. Figure~\ref*{fig:capital_series} shows the comparison between the original capital series obtained by \citep{krusell2000capital} and the updated capital series.  
+I departed from KORV by using time-varying depreciation rates $\delta_{i_t}$, instead of constant depreciation rates for each series. As in \citep{ohanian2021revisiting} I deflate structures using the implicit price deflator of GDP \footnote{Available \url{https://fred.stlouisfed.org/series/GDPDEF}}, and equipment using the product of the consumption delfator\footnote{Available at \url{https://fred.stlouisfed.org/series/CONSDEF}} and the relative price of equipment \footnote{Available at \url{https://fred.stlouisfed.org/series/PERIC}}. Figure~\ref*{fig:capital_series} shows the comparison between the original capital series obtained by \citep{krusell2000capital} and the updated capital series. 
 
 \begin{figure}[H]
 \centering
@@ -215,7 +187,7 @@ I departed from KORV by using time-varying depreciation rates $\delta_{i_t}$, in
 \caption{\label{fig:capital_series} Capital Series}
 \end{figure}
 
-To obtain capital data at the industry level I used the BEA Fixed Assets dataset to obtain investment and capital consumption series by industry and type, details of which tables were used are included in Appendix \ref{subsec:capital-inputs-labor-share}. Fixed Assets dataset groups industries into 76 groups. To construct a series of the labor share of output by industry, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS)\footnote{Available at \url{https://www.bls.gov/productivity/articles-and-research/industry-production-account-capital.xlsx}}. KLEMS data consists on 57 industry groups some of which are aggregations of industries on the BEA dataset. Table %\ref{tab: changes_by_occ} 
+To obtain capital data at the industry level I used the BEA Fixed Assets dataset to obtain investment and capital consumption series by industry and type, details of which tables were used are included in Appendix \ref{subsec:capital-inputs-labor-share}. Fixed Assets dataset groups industries into 76 groups. To construct a series of the labor share of output by industry, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS)\footnote{Available at \url{https://www.bls.gov/productivity/articles-and-research/industry-production-account-capital.xlsx}}. This dataset contains the data underlying the BEA/BLS Integrated Industry-level Production Account for the United States. The data covers 1987-2020. KLEMS data consists of 57 industry groups some of which are aggregations of industries on the BEA dataset. The table 
 presents the crosswalk between BEA, KLEMS, and Census industry codes. I used the crosswalk provided by \citep{acemoglu2020unpacking}. A description of the codes is in \textcolor{red}{INSER TABLE AND REFERENCEIT}.
 
 \subsection{Labor Data}\label{sec:labor_data}
@@ -224,7 +196,7 @@ Labor input and wages are estimated using the march supplement of the Current Po
 
 
 
-\begin{figure}[H]
+\begin{figure}
  \centering
  \includegraphics[width=0.45\textwidth]{../images/labor_input_unskilled_doc.pdf}
  \hspace*{0.05\textwidth}
@@ -237,7 +209,58 @@ Labor input and wages are estimated using the march supplement of the Current Po
 \end{figure}
 
 
-I used the crosswalk in Table \textcolor{red}{INSER TABLE AND REFERENCEIT} to gorup Census code groups for each industry and subdivided the original CPS data. I then repeated the process described in Appendix~\ref{subsec:labor-inputs-wage-rates} to obtain labor input and wage series for each industry.
+I used the crosswalk in Table \textcolor{red}{INSER TABLE AND REFERENCEIT} to group Census code groups for each industry and subdivided the original CPS data. I then repeated the process described in Appendix~\ref{subsec:labor-inputs-wage-rates} to obtain labor input and wage series for each industry.
+
+
+\subsection{Labor Income Shares}\label{sec:labor_share_income}
+To construct labor share series at the economy level I follow \citet{krusell2000capital}, \citet{castex2022decline} and \citet{ohanian2021revisiting} in following the \citet*{cooley1995frontiers}. I first generate a series containing capital income $(CI)$ consisting of the sum of 
+\begin{enumerate}[(i)]
+ \item net interest and miscellaneous payments, domestic industries,
+ \item corporate profits,
+ \item consumption of fixed capital.
+\end{enumerate}
+Capital share is defined as the ratio between $CI$ and gross domestic income (net of proprietors' income) $Y - PI$. Labor share is then calculated as 
+\begin{equation*}
+ LI = 1 - \frac{CI}{Y - PI}
+\end{equation*}
+
+To construct labor share series at the industry level, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS). KLEMS dataset contains information on the compensation of employees (with and without a college degree) and the value added by industry, I then follow \citep{karabarbounis2014global} and define the labor share as the ratio between the total compensation of employees and the total value added by industry.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{../images/fig:labor_share_updated.pdf}
+\caption*{\label{fig:labor_share_updated} Labor Share of Income}
+\end{figure}
+
+\subsection{Data Description}
+
+\subsubsection{Industry Trends}
+
+The trend of the labor share in the industry is the same at the national level Figure~\ref*{fig:labor_share_by_industry}
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=0.45\textwidth]{../images/industries/labor_share/dec531.pdf}
+ \hspace*{0.05\textwidth}
+ \includegraphics[width=0.45\textwidth]{../images/industries/labor_share/dec44RT.pdf}
+ \vfill
+ \includegraphics[width=0.45\textwidth]{../images/industries/labor_share/dec42.pdf}
+ \hspace*{0.05\textwidth}
+ \includegraphics[width=0.45\textwidth]{../images/industries/labor_share/dec23.pdf}
+ \caption{\label{fig:labor_share_by_industry} Declining Labor Share four larges industries}
+\end{figure}
+
+To justify exploring the skill-biased technical change I want to show that the feature of increasing labor input ratio holds and also the skill premium increasing holds at the industry level.
+
+I calculate the slope of the labor input and get that \textcolor{red}{RESULTS}, I then repeat the process for the skill premium and get the \textcolor{red}{RESULTS}. Figure~\ref*{fig:trends_correlation} shows a scatter plot of slopes. The first thing to note is that for almost all industries (\textcolor{red}{percentage}) there;'s been an increase in both indicators, furthermore the more that labor input ratio increases the more the skill premium increases. 
+
+Figure~\ref{fig:trends_correlation} shows \ldots
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=0.85\textwidth]{../images/trend_correlation_doc.pdf}
+ \caption{\label{fig:trends_correlation} Correlation between the slopes of the Labor Input Ration and the Skill Premium.}
+\end{figure}
 
 \section{Model}\label{sec:model}
 This section presents the model which is the same as \citep{krusell2000capital}. There are four inputs for production in this economy: two types of capital, equipment $(k_e)$ and structures $(k_s)$ and two types of labor, skilled $(s)$ and unskilled $(u)$. Inputs are combined through a production function $G(\cdot)$ to produce three final goods: consumption $(c)$, investment in equipment $(i_e)$ and investment in structures $(i_s)$. Assuming a hicks-neutral technological shock $A$, the aggregate production is given by
@@ -466,11 +489,11 @@ OUTLINE
 \subsection{Labor Inputs and Wage Rates}\label{subsec:labor-inputs-wage-rates}
 I include all observations excluding agents: younger than $16$ or older than $70$, unpaid family workers, those working in the military, those who report working less than $40$ weeks a year and/or $35$ hours a week, individuals with allocated income, those with hourly wages below half of the minimum federal wage rate, those did not report their education level and self-employed workers.
 
-For each person I record their characteristics age, sex, race. Their employment statistics: employment status (\texttt{empstat}), class of worker (\texttt{classwly}), weeks worked last year (\texttt{wkswork1} and \texttt{wkswork2}), usual hours worked per week last year (\texttt{uhrsworkly} and hours work last week \texttt{ahrsworkt}). Their income: total wage and salary income \texttt{incwage} and the CPS personal supplement weights: \texttt{asecwt}.
+For each person, I record their characteristics age, sex, and race. Their employment statistics: employment status (\texttt{empstat}), class of worker (\texttt{classwly}), weeks worked last year (\texttt{wkswork1} and \texttt{wkswork2}), usual hours worked per week last year (\texttt{uhrsworkly} and hours work last week \texttt{ahrsworkt}). Their income: total wage and salary income \texttt{incwage} and the CPS personal supplement weights: \texttt{asecwt}.
 
-To homogenize the data I create the following groups based on individual characteristics, age is divided into 11 five-year groups: $16-20$, $21-25$, $26-30$, $31-35$,$36-40$,$41-45$,$46-50$ reace is divided into white black and others. Sex is divided into, male and female and education is divided into four groups below high school, high school, some college and college graduates and beyond. Then, each person is assigned to one of 264 groups created by age, race, sex, and skill (education).
+To homogenize the data I create the following groups based on individual characteristics, age is divided into 11 five-year groups: $16-20$, $21-25$, $26-30$, $31-35$,$36-40$,$41-45$,$46-50$ race is divided into white black and others. Sex is divided into, male and female and education is divided into four groups without high school, high school, some college and college graduates, and beyond. Then, each person is assigned to one of 264 groups created by age, race, sex, and skill (education).
 
-For the period between $1963$ to $1975$ the variables weeks worked last year (\texttt{wkswork1}) and hours worked last year (\texttt{uhrsworkly}) are not recorded so I did the following substitution: For \texttt{wkswork1} we can use the variable \texttt{wkswork2} that is intervalled and then perform the substitution with the average hours worked by individuals reporting the same value of \texttt{wkswork1} for the post $1975$ period. For \texttt{uhrsworkly} I used hours worked last week (\texttt{ahrsworkt}) as a proxy.
+For the period between $1963$ to $1975$ the variables weeks worked last year (\texttt{wkswork1}) and hours worked last year (\texttt{uhrsworkly}) are not recorded so I did the following substitution: For \texttt{wkswork1} we can use the variable \texttt{wkswork2} that consist of intervals of hours worked, and then perform the substitution with the average hours worked by individuals in the same group reporting the same value of \texttt{wkswork2} for the post $1975$ period. For \texttt{uhrsworkly} I used hours worked last week (\texttt{ahrsworkt}) as a proxy.
 
 For every individual I create the following variables:
 \begin{itemize}
@@ -488,10 +511,10 @@ w_{g, t-1} = \frac{\sum_{i\in g}w_{i,t-1} \mu_{i,t}}{\mu_{g, t}}
 \]
 Finally to obtain skilled and unskilled series labor input and wage series I partitioned the set $\mathcal{G}$ in two subsets $(\mathcal{S}, \mathcal{U})$ based on education (college graduates and non-college graduates). Let $\{H, L\}$ indicate the group type, then the total labor input is:
 \[
-  L^U_{t-1} = \sum_{g \in\mathcal{U}} \ell_{g, t-1} \mu_{g,t} w_{g,80}
+ L^U_{t-1} = \sum_{g \in\mathcal{U}} \ell_{g, t-1} \mu_{g,t} w_{g,80}
 \]
 \[
-  L^S_{t-1} = \sum_{g \in\mathcal{S}} \ell_{g, t-1} \mu_{g,t} w_{g,80}
+ L^S_{t-1} = \sum_{g \in\mathcal{S}} \ell_{g, t-1} \mu_{g,t} w_{g,80}
 \]
 $w_{g,80}$ is the wage of the group in 1980 and is used as a scaling factor. Then wages for each skill level are obtained as:
 \[

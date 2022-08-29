@@ -166,8 +166,8 @@ function plot_results(simulation::Simulation, data::Data; years::Array=[], scale
 
     p3 = plot(years, model_results[:lbr], lw = 2,  linestyle=:dash, color = :red, label = "Model", legend =:topleft,size = (800, 400))
     plot!(years, data.lsh[2:end], lw = 2, label = "Data", color = :black)
-    y_max = maximum(data.lsh[2:end]) .* 1.05
-    y_min = minimum(data.lsh[2:end]) .* 0.95
+    y_max = max( maximum( model_results[:lbr] ), maximum(data.lsh[2:end]) ) .* 1.05
+    y_min = min( minimum(model_results[:lbr] ) , minimum(data.lsh[2:end]) ).* 0.95
     ylims!(y_min, y_max)
     title!("Labor Share of Output")
 
