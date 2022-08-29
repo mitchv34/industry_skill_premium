@@ -278,8 +278,8 @@ where $\alpha$ is the share of capital structures in output, $\mu$, and $\lambda
 \end{itemize}
 Labor input is defined as 
 \begin{align*}
- u &= \psi^u_t h^u_t\\
- s &= \psi^s_t h^s_t
+    u &= \psi^u_t h^u_t\\
+    s &= \psi^s_t h^s_t
 \end{align*}
 where $\psi^i_t$ is the (unobserved) efficiency of each type of labor and $h^i_t$ is the number of labor hours. 
 
@@ -308,7 +308,7 @@ Which in turn can be written in terms of growth rates:
 \begin{equation}\label{eq:skill_premium_growth_rates}
  \begin{aligned}
  g_{\omega t} \simeq &(1-\sigma)\left(g_{h_{u_t}}-g_{h_{s_t}}\right)+\sigma\left(g_{\psi^s_t}-g_{\psi^u_t}\right) \\
- &+(\sigma-\rho) \lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}\left(g_{k_{e_t}}-g_{h_{s_t}}-g_{\psi^s_t}\right) .
+ &+(\sigma-\rho) \lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}\left(g_{k_{e_t}}-g_{h_{s_t}}-g_{\psi^s_t}\right) 
  \end{aligned}
 \end{equation}
 where $g_x$ denotes the growth rate of variable $x$, details on the derivations are include in Appendix~\ref{sec:derivations}. Equation~\eqref{eq:skill_premium_growth_rates} has the nice property that it is a linear combination of the growth rates of the inputs in the production function, this allows us to decompose the growth rate of the skill premium into three components that are easy to analyze:
@@ -327,7 +327,7 @@ where $g_x$ denotes the growth rate of variable $x$, details on the derivations 
 \end{enumerate}
 
 \section{Estimation}
-I follow the same methodology as \citep{krusell2000capital} to estimate the model parameter. To simplify notation from now on I will refer to the unobservable labor efficiencies as, $\psi_t = \{\psi^u_t, \psi^s_t\}$, the inputs of the production function as $X_t = \{ k_{s_t} , k_{e_t}, h_{s_t}, h_{u_t}\}$ and the set of parameters to be estimated as $\Phi = \{\alpha, \sigma, \rho, \mu, \lambda, \psi^u_0, \psi^s_0, \eta_\omega \}$. 
+I follow the same methodology as \citep{krusell2000capital} to estimate the model parameters. To simplify notation from now on I will refer to the unobservable labor efficiencies as, $\psi_t = \{\psi^u_t, \psi^s_t\}$, the inputs of the production function as $X_t = \{ k_{s_t} , k_{e_t}, h_{s_t}, h_{u_t}\}$ and the set of parameters to be estimated as $\Phi = \{\alpha, \sigma, \rho, \mu, \lambda, \psi^u_0, \psi^s_0, \eta_\omega \}$. 
 
 Firms decide investment in structures based on expectations about future prices $q_{t+1}$. This is captured using a \textit{"no arbitrage"} condition, firms equate marginal returns on investment on both types of capital. On the one hand marginal return on investment in capital structures is given by given by the sum of the marginal product of structures in $t+1$, $A_{t+1} G_{k_s}(X_{t+1}, \psi_{t+1} \mid \Phi )$ and undepreciated structures on $(1-\delta_s)$. On the other hand marginal return on investment in equipment is given by the sum of the marginal product of equipment in next period, $q_t A_{t+1} G_{k_s}(X_{t+1}, \psi_{t+1} \mid \Phi )$ and depreciated structures $\mathbb{E}(q_t/q_{t+1})(1-\delta_e)$ the term $\mathbb{E}(q_t/q_{t+1})$, as in \citep{krusell2000capital} I make the simplifying assumption of 
 $(1-\delta_e)\mathbb{E}(q_t/q_{t+1}) =(1-\delta_e)(q_t/q_{t+1}) + \nu_t$ where $\nu_t$ is normally distributed with mean zero and variance $\eta_\nu^2$ this parameter is calibrated using data on $q_t$.\footnote{Since I use the same series of relative prices as KORV I take their calibration of $\eta_\nu = 0.02$}. Putting everything together we have the following equation:

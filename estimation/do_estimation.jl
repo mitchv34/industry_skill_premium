@@ -10,9 +10,9 @@ include("estimation.jl")
 function callback(os)
 	if os.iteration % 20 == 5                                      
 		println("----------------------------------------------------")
-		print(@green @bold "Iteration : $(os.iteration)")
+		print("Iteration : $(os.iteration)")
 		time = os.metadata["time"]
-		println(@green @bold "\t Time : $(time)")
+		println("\t Time : $(time)")
 		println("----------------------------------------------------")
     	# println(@red " * Iteration:       ", os.iteration)
         # print(os.metadata)
@@ -26,8 +26,8 @@ function callback(os)
 		@info "Parameters" α σ ρ μ λ φℓ⁰
 		f = os.value
 		g_norm = os.g_norm
-		println(@green @bold "Objective function value : $(f)")
-		println(@green @bold "Convergence : $(g_norm)")
+		println("Objective function value : $(f)")
+		println("Convergence : $(g_norm)")
     println("----------------------------------------------------")
 	end	
     false
@@ -130,11 +130,15 @@ function solve_optim_prob(data::Data, model::Model, fixed_param::Float64, η_ω:
 end # solve_optim_prob 
 
 # Plot the results 
-function plot_results(simulation::Simulation, data::Data; years::Array=[], scale_font::Float64 = 1.0)
+function plot_results(simulation::Simulation, data::Data; years::Array=[], scale_font::Float64 = 1.0, return_data::Bool = false)
     
 
     Plots.theme(:vibrant); # :dark, :light, :plain, :grid, :tufte, :presentation, :none
-    default(fontfamily="Computer Modern", framestyle=:box ); # LaTex-style1
+    if scale_font != 1 
+        default(fontfamily="Helvetica", framestyle=:box ); # LaTex-style1
+    else
+        default(fontfamily="Computer Modern", framestyle=:box ); # LaTex-style1
+    end
     Plots.scalefontsizes(scale_font)
     params = simulation.x # Parameters
     T = length(data.y) # Time horizon
@@ -180,8 +184,11 @@ function plot_results(simulation::Simulation, data::Data; years::Array=[], scale
 
     # p = plot(p1,p2,p3,p4, layout = (2,2), size = (800, 600))
     # p = plot(p2,p3,p4, layout = (1,3), size = (800, 600))
-
-    return  (p1, p2, p3, p4)
+    if return_data
+        return  (p1, p2, p3, p4), model_results, data
+    else
+        return  (p1, p2, p3, p4)
+    end
 end # plot_results
 
 
@@ -192,7 +199,8 @@ mutable struct InitParams
 	scale_0::Vector{Float64}
 end
 
-function estimate_industry(ind_code, initParams::InitParams; tol = 1e-2, path_to_results::String="./data/results")
+function estimate_industry(ind_code, initParams::InitParams; tol = 1e-2, 
+    path_to_results::String="./data/results", return_data::Bool=false)
 
     if ind_code*".csv" in readdir(path_to_results)
         results = CSV.read(path_to_results * "/" * ind_code * ".csv", DataFrame)
@@ -299,10 +307,13 @@ function estimate_industry(ind_code, initParams::InitParams; tol = 1e-2, path_to
         append!(results, temp_df)
         CSV.write(path_to_results * "/" * ind_code * ".csv", results)
 
-
-        return sim, p
+        if return_data
+            return sim, p, model_results
+        else
+            return sim, p
+        end
     catch  e
-        println(@red string(e))
+        # println(@red string(e))
         temp_df = DataFrame(
             [
                 :alpha_0 => [initParams.param_0[1]],

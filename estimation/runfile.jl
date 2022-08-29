@@ -1,5 +1,5 @@
 ###################### MAIN ##############################
-using Term
+# using Term
 using GLM
 using PrettyTables
 
@@ -63,16 +63,18 @@ plot(updated_capital.K_STR , lw = 2, linestyle=:dash,color = :red,
 				label = "Updated", legend =:topleft, size = (600, 600))
 plot!(dataframe_korv.K_STR , lw = 2, label = "KORV", color = :black)
 title!("Capital Structures")
-
+savefig("../documents/images/capital_structures_doc.pdf")
 plot(updated_capital.K_EQ , lw = 2, linestyle=:dash,color = :red,
 				label = "Updated", legend =:topleft, size = (600, 600))
 plot!(dataframe_korv.K_EQ , lw = 2, label = "KORV", color = :black)
 title!("Capital Equipment")
-
+savefig("../documents/images/capital_equipment_doc.pdf")
 plot(updated_capital.REL_P_EQ, lw = 2, linestyle=:dash,color = :red,
 				label = "Updated", legend =:topright, size = (600, 600))
 plot!(dataframe_korv.REL_P_EQ, lw = 2, label = "KORV", color = :black)
-				
+title!("Relative Price of Equipment")
+savefig("../documents/images/capital_price_doc.pdf")
+
 ## Instrument L_S and L_U ######
 data_for_reg_updated = DataFrame(
 	[
@@ -105,6 +107,12 @@ data_korv = generateData(dataframe_korv);
 data_updated_korv = generateData(dataframe_updated[1:30, :]);
 data_updated = generateData(dataframe_updated);
 data_updated_ind = generateData(dataframe_updated[26:end, :]);
+
+plot(dataframe_updated.YEAR, dataframe_updated.L_SHARE, lw = 2, linestyle=:dash,color = :red,
+				label = "Updated", size = (600, 600))
+plot!(dataframe_updated.YEAR[1:30], dataframe_korv.L_SHARE, lw = 2, label = "KORV", color = :black)
+savefig("../documents/images/fig:labor_share_updated.pdf")
+
 
 model = intializeModel();
 
@@ -236,4 +244,48 @@ savefig("../documents/images/fig:updated_ind_estimation_ls_slides.pdf")
 plot(p_updated_ind[4], size = (600,600) )
 savefig("../documents/images/fig:updated_ind_estimation_wbr_slides.pdf")
 
+# Labor data presentation version
+plot(updated_labor.L_U , lw = 2, linestyle=:dash,color = :red,
+                label = "Updated", legend =:topright, size = (600, 600))
+plot!(dataframe_korv.L_U , lw = 2, label = "KORV", color = :black)
+title!("Unskilled Labor Input")
+savefig("../documents/images/labor_input_unskilled_slides.pdf")
+plot(updated_labor.L_S , lw = 2, linestyle=:dash,color = :red,
+                label = "Updated", legend =:topright, size = (600, 600))
+plot!(dataframe_korv.L_S , lw = 2, label = "KORV", color = :black)
+title!("Skilled Labor Input")
+savefig("../documents/images/labor_input_skilled_slides.pdf")
+
+wbr_u = (updated_labor.L_S .* updated_labor.W_S ) ./ (updated_labor.L_U .* updated_labor.W_U)
+wbr_k = (dataframe_korv.L_S .* dataframe_korv.W_S ) ./ (dataframe_korv.L_U .* dataframe_korv.W_U)
+plot(wbr_u , lw = 2, linestyle=:dash,color = :red,
+				label = "Updated", legend =:topleft, size = (600, 600))
+plot!(wbr_k , lw = 2, label = "KORV", color = :black)
+title!("Wage-Bill Ratio")
+savefig("../documents/images/wbr_slides.pdf")
+
+sp_u = ( updated_labor.W_S ) ./ ( updated_labor.W_U)
+sp_k = ( dataframe_korv.W_S ) ./ ( dataframe_korv.W_U)
+plot(sp_u , lw = 2, linestyle=:dash,color = :red,
+				label = "Updated", legend =:topleft, size = (600, 600))
+plot!(sp_k , lw = 2, label = "KORV", color = :black)
+title!("Skill Premium")
+savefig("../documents/images/sp_slides.pdf")
+
+# Capital Data (Presentation version)
+plot(updated_capital.K_STR , lw = 2, linestyle=:dash,color = :red,
+				label = "Updated", legend =:topleft, size = (600, 600))
+plot!(dataframe_korv.K_STR , lw = 2, label = "KORV", color = :black)
+title!("Capital Structures")
+savefig("../documents/images/capital_structures_slides.pdf")
+plot(updated_capital.K_EQ , lw = 2, linestyle=:dash,color = :red,
+				label = "Updated", legend =:topleft, size = (600, 600))
+plot!(dataframe_korv.K_EQ , lw = 2, label = "KORV", color = :black)
+title!("Capital Equipment")
+savefig("../documents/images/capital_equipment_slides.pdf")
+plot(updated_capital.REL_P_EQ, lw = 2, linestyle=:dash,color = :red,
+				label = "Updated", legend =:topright, size = (600, 600))
+plot!(dataframe_korv.REL_P_EQ, lw = 2, label = "KORV", color = :black)
+title!("Relative Price of Equipment")
+savefig("../documents/images/capital_price_slides.pdf")
 

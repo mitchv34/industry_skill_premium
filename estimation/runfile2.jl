@@ -17,18 +17,18 @@ end
 
 model = intializeModel();
 
-inds = CSV.read("./data/cross_walk.csv", DataFrame)
+inds = CSV.read("../data/cross_walk.csv", DataFrame)
 codes = inds.code_klems
 names = inds.ind_desc
 
-inds_done = [f[1:end-4] for f in readdir("data/results/ind_est")]
+# inds_done = [f[1:end-4] for f in readdir("data/results/ind_est")]
 
-indx_ = [i for i in 1:length(inds.code_klems) if ~(inds.code_klems[i] in inds_done)]
+# indx_ = [i for i in 1:length(inds.code_klems) if ~(inds.code_klems[i] in inds_done)]
 
-i = indx_[end]
-codes[i]
+# i = indx_[end-1]
+i = 43
 begin
-	ind_proc = readdir("data/results/ind_est")
+	ind_proc = readdir("./results/ind_est")
 	ind_code = codes[i]
 	ind_name = names[i]
 	@show ind_code ind_name 
@@ -45,7 +45,7 @@ begin
 
 if proc
 
-path_data = "./data/proc/ind/$(ind_code).csv";
+path_data = "./proc/ind/$(ind_code).csv";
 
 dataframe = CSV.read(path_data, DataFrame);
 
@@ -54,9 +54,9 @@ delta_e = mean(dataframe.DPR_EQ)
 delta_s = mean(dataframe.DPR_ST)
 
 ### Set initial parameter values
-scale_initial = 3.0
-η_ω_0 = 0.001
-param_0 = [0.11, .5, -.5] 
+scale_initial = 0.01
+η_ω_0 = 0.083
+param_0 = [0.11, .5, .5] 
 
 scale_0 = [0.4, 0.4, scale_initial]
 sim = solve_optim_prob(data, model, scale_initial, η_ω_0, vcat(param_0, scale_0),  tol = 0.1, delta=[delta_e, delta_s])
@@ -78,7 +78,7 @@ df_param = DataFrame(
 )
 
 
-CSV.write("./data/results/ind_est/$(ind_code).csv", df_param)
+# CSV.write("/results/ind_est/$(ind_code).csv", df_param)
 
 
 plot(p_[1], p_[2], p_[3], p_[4])
