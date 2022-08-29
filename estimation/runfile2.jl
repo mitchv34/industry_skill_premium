@@ -24,14 +24,17 @@ codes = inds.code_klems
 names = inds.ind_desc
 
 
-i = 2
+i = 54
+names[i]
+codes[i]
 begin
 	ind_proc = readdir("data/results/ind_est")
 	ind_code = codes[i]
 	ind_name = names[i]
+
 	proc = true
-	if ind_code * ".csv" in ind_proc ind_code * ".csv" in ind_proc
-		println(@bold @blue "Already done press Y to procees again:")
+	if ind_code * ".csv" in ind_proc 
+		println(@bold @blue "Already done $ind_code press Y to procees again:")
 		s = readline()
 		if (s == "Y") || ( s == "y" )
 			proc = true
@@ -51,9 +54,10 @@ delta_e = mean(dataframe.DPR_EQ)
 delta_s = mean(dataframe.DPR_ST)
 
 ### Set initial parameter values
-scale_initial = 8.5
-η_ω_0 = 0.03
-param_0 = [0.11, 0.5, -.6] 
+scale_initial = 20.0
+η_ω_0 = 0.002
+param_0 = [0.11, .5,.5] 
+
 scale_0 = [0.4, 0.4, scale_initial]
 sim = solve_optim_prob(data, model, scale_initial, η_ω_0, vcat(param_0, scale_0),  tol = 0.1, delta=[delta_e, delta_s])
 p_ = plot_results(sim, data, years = collect(1988:2018) , scale_font = 1.0)
@@ -74,7 +78,7 @@ df_param = DataFrame(
 )
 
 
-# CSV.write("./data/results/ind_est/$(ind_code).csv", df_param)
+CSV.write("./data/results/ind_est/$(ind_code).csv", df_param)
 
 
 plot(p_[1], p_[2], p_[3], p_[4])
