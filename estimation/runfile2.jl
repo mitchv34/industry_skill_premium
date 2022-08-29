@@ -17,21 +17,18 @@ end
 
 model = intializeModel();
 
-
-
 inds = CSV.read("./data/cross_walk.csv", DataFrame)
-codes = inds.code_klems
-names = inds.ind_desc
 
+inds_done = [f[1:end-4] for f in readdir("data/results/ind_est")]
 
-i = 54
-names[i]
-codes[i]
+indx_ = [i for i in 1:length(inds.code_klems) if ~(inds.code_klems[i] in inds_done)]
+
+indx = indx_[1]
 begin
 	ind_proc = readdir("data/results/ind_est")
 	ind_code = codes[i]
 	ind_name = names[i]
-
+	@show ind_code ind_name 
 	proc = true
 	if ind_code * ".csv" in ind_proc 
 		println(@bold @blue "Already done $ind_code press Y to procees again:")
