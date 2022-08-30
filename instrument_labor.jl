@@ -60,7 +60,7 @@ for file in file_list
     data.W_U = vcat([0], W_U_hat)
 
     # data_dict[file[1:end-4]] = data
-
+    print(path_data * "/" * file )
     CSV.write(path_data * "/" * file, data)
 end
 

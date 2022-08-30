@@ -18,8 +18,41 @@ describe(results, cols = [:alpha, :sigma, :rho, :eta],
         mean => :mean, std => :std)
 
 
+no_cap_skill = string.(results[ results.sigma .<=results.rho, :ind_code ])
+cap_skill = string.(results[ results.sigma .> results.rho, :ind_code ])
+
+reg_summary.Group .= ""
+reg_summary[reg_summary.IND .∈ Ref(no_cap_skill), :Group] .= "A"
+reg_summary[reg_summary.IND .∈ Ref(cap_skill), :Group] .= "B"
 
 
+@df reg_summary scatter( :LI, :SP, smooth = false, group =:Group,
+alpha = 0.5, xlabel = "xlabel", ylabel = "ylabel", title = "title", label = "",
+    markerstrokealpha = 1.0, markerstrokewidth=3,  markersize = 6.5, framestyle = :zerolines)
+
+
+rename!( results, :ind_code => :ind)
+
+results.ind =  string.(results.ind)
+
+results = innerjoin(dd, results, on =:ind)
+
+sort(results, :sigma)
+
+@df results scatter( :rho, :sigma)
+# ylims!(-1, 1.5)
+        
+
+        
+        
+        
+        
+        
+        
+        
+
+        
+        
 include("./estimation/estimation.jl")
 include("./estimation/do_estimation.jl")
 
@@ -44,10 +77,9 @@ educ_code = 61
 
 begin
 
-    init_params = results[results.ind_code .== educ_code, :]
-
+    init_params = results[results.ind_code .== code_legal, :]
     ind_proc = readdir("data/results/ind_est")
-    ind_code = educ_code
+    ind_code = code_legal
     # ind_name = names[i]
     # @show ind_code ind_name 
     # proc = true
@@ -78,12 +110,12 @@ param_0 = [init_params.alpha[1], init_params.sigma[1], init_params.rho[1]]
 
 scale_0 = [init_params.lambda[1], init_params.mu[1], scale_initial]
 
-sim = solve_optim_prob(data, model, scale_initial, η_ω_0, vcat(param_0, scale_0),  tol = 0.1, delta=[delta_e, delta_s])
-p_educ, m_educ, d_educ  = plot_results(sim, data, years = collect(1988:2018) , scale_font = 1.0, return_data = true);
+sim = solve_optim_prob(data, model, scale_initial, η_ω_0, vcat(param_0, scale_0),  tol = 0.001, delta=[delta_e, delta_s])
+p_legal, m_legal, d_legal  = plot_results(sim, data, years = collect(1988:2018) , scale_font = 1.0, return_data = true);
 
 end
 
-p_educ[2]
+p_legal[2]
 
 sim.x
 plot((m_retail[:ω] .- m_retail[:ω][1]) / m_retail[:ω][1])   

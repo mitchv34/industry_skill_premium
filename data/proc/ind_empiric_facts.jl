@@ -10,11 +10,11 @@ using LaTeXStrings
 theme(:default) 
 default(fontfamily="Computer Modern", framestyle=:box) # LaTex-style
 
-cwalk = CSV.read("./cross_walk.csv", DataFrame)
+cwalk = CSV.read("./data/cross_walk.csv", DataFrame)
 
-file_list = [f for f in readdir("./proc/ind") if occursin("csv", f)]
+file_list = [f for f in readdir("./data/proc/ind") if occursin("csv", f)]
 
-data_total =  CSV.read("./proc/data_updated.csv", DataFrame)
+data_total =  CSV.read("./data/proc/data_updated.csv", DataFrame)
 
 # I want to know the trend of some varia(bles
 
@@ -22,10 +22,10 @@ data = DataFrame()
 reg_li_info = Dict()
 reg_ls_info = Dict()
 reg_sp_info = Dict()
-reg_summary = Dict(:IND => [], :LI => [], :SP => [], :LS => [])
+reg_summary = Dict(:ind => [], :LI => [], :SP => [], :LS => [])
 reg_objects = [[], [], []]
 for file in file_list
-    df = CSV.read("./proc/ind/" * file, DataFrame)
+    df = CSV.read("./data/proc/ind/" * file, DataFrame)
     df[:, :ind] .= file[1: end-4]
     df = df[2:end, :]
     df.t = 1:length(df.YEAR)
@@ -35,7 +35,7 @@ for file in file_list
     reg_li_info[file[1:end-4]] = Dict("coef" => coef(reg_li)[2], "std_err" => stderror(reg_li)[2] )
     reg_ls_info[file[1:end-4]] = Dict("coef" => coef(reg_ls)[2], "std_err" => stderror(reg_ls)[2] )
     reg_sp_info[file[1:end-4]] = Dict("coef" => coef(reg_sp)[2], "std_err" => stderror(reg_sp)[2] )
-    push!(reg_summary[:IND], file[1:end-4])
+    push!(reg_summary[:ind], file[1:end-4])
     push!(reg_summary[:LI], coef(reg_li)[2])
     push!(reg_summary[:LS], coef(reg_ls)[2])
     push!(reg_summary[:SP], coef(reg_sp)[2])
@@ -51,20 +51,32 @@ end
 regtable(reg_objects[1]...) |> to_tex
 
 
-
 reg_summary = DataFrame(reg_summary)
 
 reg_summary.LI = Float64.(reg_summary.LI)
 reg_summary.LS = Float64.(reg_summary.LS)
 reg_summary.SP = Float64.(reg_summary.SP)
+describe(reg_summary, cols = [:LI, :LS, :SP], mean => :mean, std => :std)
 
+reg_summary = innerjoin(
+reg_summary
+sort(combine(
+    groupby(data, :ind),
+    [
+        [:L_U, :W_U, :L_S, :W_S] => ( (x , y, z, w) -> mean((x .* y + z .* w) ./ (x .+ z ))  ) => :wages,
+    ]
+), :wages),
+on = :ind)
 function plot_correlations(df::DataFrame, variables::Array{Symbol}; title = "", xlabel = "", ylabel = "", level =  0.95, scale_font = 1)
 
-
     Plots.theme(:vibrant); # :dark, :light, :plain, :grid, :tufte, :presentation, :none
-    default(fontfamily="Computer Modern", framestyle=:box ); # LaTex-style1
-    Plots.scalefontsizes(scale_font)
+    if  scale_font == 1 
+        default(fontfamily="Computer Modern", framestyle=:box ); # LaTex-style1
+    else
+        default(fontfamily="Arial", framestyle=:box ); # LaTex-style1
+    end
 
+    Plots.scalefontsizes(scale_font)
     reg_formula = Term(variables[1]) ~ sum( term.(vcat([1], variables[2:end]) ) )
 
     reg_ = lm(reg_formula, df)
@@ -72,11 +84,6 @@ function plot_correlations(df::DataFrame, variables::Array{Symbol}; title = "", 
     pred = predict(reg_, df, interval = :confidence, level = level)
 
     pred.x = df[:, variables[2]]
-
-
-    anotation_1 = cwalk[cwalk.code_klems .== "211", :].ind_desc[1]
-    coords_1 = [df[df.IND .== "211", variables[2]]  , df[df.IND .== "211", variables[1]]] 
-    @show anotation_1 , coords_1
 
     # Set default title
     title = ( title == "" ) ? "$(variables[2]) vs $(variables[1]) " : title
@@ -89,11 +96,12 @@ function plot_correlations(df::DataFrame, variables::Array{Symbol}; title = "", 
     p = scatter( df[:, variables[2]], df[:, variables[1]], smooth = false,
     alpha = 0.5, xlabel = xlabel, ylabel = ylabel, title = title, label = "",
         markerstrokealpha = 1.0, markerstrokewidth=3, markercolor = :black, markersize = 6.5, framestyle = :zerolines)
+
     
         plot!(pred.x , pred.prediction, color = :red, linewidth = 2,  label = "",
         ribbon = (pred.prediction .- pred.lower, pred.upper .- pred.prediction),  fillalpha=.2)
         
-        annotate!(coords_1[1], coords_1[2], text(anotation_1, :green, :bottomleft, 10))
+        # annotate!(coords_1[1], coords_1[2], text(anotation_1, :green, :bottomleft, 10))
 
     return p
 
@@ -147,15 +155,37 @@ end # plot_correlations
 
 
 p1 = plot_correlations(reg_summary, [:SP, :LI], title = L"$1988$ - $2018$", xlabel = "(slope) Skill Premium", ylabel = "(slope) Labor Input Ratio", level = 0.)
-p2 = plot_correlations(reg_summary, [:SP, :LI], title = L"$1988$ - $2018$", xlabel = "(slope) Skill Premium", ylabel = "(slope) Labor Input Ratio", level = 0., scale_font = 1.5)
+p2 = plot_correlations(reg_summary, [:SP, :LI], title = "1988 - 2018", xlabel = "(slope) Skill Premium", ylabel = "(slope) Labor Input Ratio", level = 0., scale_font = 1.4)
+
+dd = combine(
+    groupby(data, :ind),
+    [
+        [:L_U, :W_U, :L_S, :W_S] => ( (x , y, z, w) -> mean((x .* y + z .* w) ./ (x .+ z ))  ) => :wages,
+        :SKILL_PREMIUM => mean => :SP,
+        :LABOR_INPUT_RATIO => mean => :LI
+    ]
+)
+
+dropmissing!(dd)
 
 savefig(p1, "/Users/mitchv34/Work/industry_skill_premium/documents/images/trend_correlation_doc.pdf")
 savefig(p2, "/Users/mitchv34/Work/industry_skill_premium/documents/images/trend_correlation_slides.pdf")
 
-p3 = plot_correlations(data, [1993, 2018], [:LABOR_INPUT_RATIO, :SKILL_PREMIUM]; title = "", xlabel = "Skill Premium", ylabel = "Labor Input Ratio", scale_font = 1)
-p4 = plot_correlations(data, [1993, 2018], [:LABOR_INPUT_RATIO, :SKILL_PREMIUM]; title = "", xlabel = "Skill Premium", ylabel = "Labor Input Ratio", scale_font = 1.5)
 
-# data
+p3_doc = plot_correlations(dd, [:wages, :LI], title = L"$1988$ - $2018$", ylabel = "Mean Wage", xlabel = "(mean) Labor Input Ratio", level = 0.)
+p3_slides = plot_correlations(dd, [:wages, :LI], title = "1988 - 2018", ylabel = "Mean Wage", xlabel = "(mean) Labor Input Ratio", level = 0., scale_font = 1.5)
+
+savefig(p3_doc, "/Users/mitchv34/Work/industry_skill_premium/documents/images/correlations_wage_LI_doc.pdf")
+savefig(p3_slides, "/Users/mitchv34/Work/industry_skill_premium/documents/images/correlations_wage_LI_slides.pdf")
+
+p4_doc = plot_correlations(dd, [:wages, :SP], title = L"$1988$ - $2018$", ylabel = "Mean Wage", xlabel = "(mean) Skill Premium", level = 0.)
+p4_slides = plot_correlations(dd, [:wages, :SP], title = "1988 - 2018", ylabel = "Mean Wage", xlabel = "(mean) Skill Premium", level = 0., scale_font = 1.5)
+
+savefig(p4_doc, "/Users/mitchv34/Work/industry_skill_premium/documents/images/correlations_wage_SP_doc.pdf")
+savefig(p4_slides, "/Users/mitchv34/Work/industry_skill_premium/documents/images/correlations_wage_SP_slides.pdf")
+
+data
+
 
 
 for i in eachrow(cwalk)
@@ -172,7 +202,7 @@ for i in eachrow(cwalk)
     coef_ls = round( reg_ls_info[ind_code]["coef"], digits =3 ) 
     coef_sp = round( reg_sp_info[ind_code]["coef"], digits =3 ) 
     p_li = Plots.plot(sub_df.YEAR, sub_df.LABOR_INPUT_RATIO, lw = 2, color=:black, linestyle = :solid,
-    title="$ind_name", 
+    title="Labor Input Ratio", 
     xlabel="Year", ylabel="Ratio", label = "")
     y_max = maximum([y for y in sub_df.LABOR_INPUT_RATIO if ~ismissing(y)])
     y_min = minimum([y for y in sub_df.LABOR_INPUT_RATIO if ~ismissing(y)])
@@ -180,7 +210,7 @@ for i in eachrow(cwalk)
     co_li = ( coef_li > 0.0009 ) ? :red : :blue
     plot!(sub_df.YEAR, sub_df.LABOR_INPUT_RATIO_TREND, lw = 2, color=co_li, linestyle = :dash, label = "")
     p_ls = Plots.plot(sub_df.YEAR, sub_df.L_SHARE, lw = 2, color=:black, linestyle = :solid,
-    title="$ind_name", 
+    title="Labor Share",
     xlabel="Year", ylabel="Ratio", label = "")
     y_max = maximum([y for y in sub_df.L_SHARE if ~ismissing(y)])
     y_min = minimum([y for y in sub_df.L_SHARE if ~ismissing(y)])
@@ -188,7 +218,7 @@ for i in eachrow(cwalk)
     co_ls = ( coef_ls > 0.0009 ) ? :red : :blue
     plot!(sub_df.YEAR, sub_df.L_SHARE_TREND, lw = 2, color=co_ls, linestyle = :dash, label = "")
     p_sp = Plots.plot(sub_df.YEAR, sub_df.SKILL_PREMIUM, lw = 2, color=:black, linestyle = :solid,
-    title="$ind_name", 
+    title="Skill Premium", 
     xlabel="Year", ylabel="Ratio", label = "")
     y_max = maximum([y for y in sub_df.SKILL_PREMIUM if ~ismissing(y)])
     y_min = minimum([y for y in sub_df.SKILL_PREMIUM if ~ismissing(y)])

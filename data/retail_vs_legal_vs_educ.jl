@@ -13,17 +13,17 @@ using StatsPlots
 theme(:default) 
 default(fontfamily="Computer Modern", framestyle=:box) # LaTex-style
 
-cwalk = CSV.read("../data/cross_walk.csv", DataFrame)
+cwalk = CSV.read("./data/cross_walk.csv", DataFrame)
 cwalk_dict = Dict(zip(cwalk.code_klems, cwalk.ind_desc))
 
 code_retail = "44RT"
-data_retail = CSV.read("../data/proc/ind/$(code_retail).csv", DataFrame)
+data_retail = CSV.read("./data/proc/ind/$(code_retail).csv", DataFrame)
 data_retail = data_retail[2:end, :]
-code_legal = "5411"
-data_legal = CSV.read("../data/proc/ind/$(code_legal).csv", DataFrame)
+code_legal = "525"
+data_legal = CSV.read("./data/proc/ind/$(code_legal).csv", DataFrame)
 data_legal = data_legal[2:end, :]
-educ_code = "61"
-data_educ = CSV.read("../data/proc/ind/$(educ_code).csv", DataFrame)
+educ_code = "213"
+data_educ = CSV.read("./data/proc/ind/$(educ_code).csv", DataFrame)
 data_educ = data_educ[2:end, :]
 
 LI_retail = data_retail.L_S ./ data_retail.L_U
