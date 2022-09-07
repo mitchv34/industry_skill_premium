@@ -30,6 +30,7 @@
 % \usepackage{subcaption}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+
 %% Because HTML converters don't know tabularnewline
 \providecommand{\tabularnewline}{\\}
 
@@ -129,21 +130,25 @@
 
 \begin{document}
 \sloppy
-\title{Title Goes Here!!!\thanks{Valdes-Bobes: University of Wisconsin.
+%TODO: Add Thanks
+\title{Industry Workforce Heterogeneity and Wage Inequality\thanks{Valdes-Bobes: University of Wisconsin.
  I thank [X] for the helpful comments and discussions.}}
 \author{Mitchell Valdes-Bobes}
 \maketitle
+%TODO: Add abstract
 \begin{abstract}
  We examine [X]
 \end{abstract}
 \thispagestyle{empty}
 
 \pagebreak{}
-This paper... 
-
-
 
 \section{Introduction}\label{sec:introduction}
+Wage inequality has risen in the US since the 1980s see \citet{acemoglu2011skills}. In the same period, the skill composition of the labor market in the US changed dramatically. The relative supply of skilled to unskilled labor (as defined by education) has risen from around $0.57$ in $1988$ to $1.06$ in $2018$. The fact that skilled workers made $1.1$ times higher wages than unskilled workers at the beginning of the period and the ratio has steadily increased to $1.4$, suggests that the relative demand for skilled labor must have also increased.
+
+%TODO: Discussed why occupations could matter more than a college degree (Paolo)
+
+
 
 \section{Literature Review}\label{sec:literature_review}
 This work is inserted in several strands of literature.
@@ -161,13 +166,84 @@ This work is inserted in several strands of literature.
  \item Occupations \citet{orak2017capital}
  \end{itemize}
  \end{itemize}
- \item Industry Stuff \citet{haltiwanger2022industries}
  \item Job Polarization stuff \citet{song2019firming}
+ \item Industry Stuff \citet{haltiwanger2022industries}
 \end{itemize}
+
+
+
+
 \pagebreak
 
+
+\section{Model}\label{sec:model}
+
+This section presents the model which is the same as \citep{krusell2000capital}. There are four inputs for production in this economy: two types of capital, equipment $(k_e)$ and structures $(k_s)$ and two types of labor, skilled $(s)$ and unskilled $(u)$. Inputs are combined through a production function $G(\cdot)$ to produce three final goods: consumption $(c)$, investment in equipment $(i_e)$ and investment in structures $(i_s)$. Assuming a hicks-neutral technological shock $A$, the aggregate production is given by
+\begin{equation}\label{eq:production}
+ c_t + i_{e_t} + i_{s_t} = Y_t = A_t G(k_{s_t}, k_{e_t}, u_t, s_t)
+\end{equation}
+Capital evolves following the law of motion in \eqref{eq:capital_law_motion}. The production function is assumed to be Cobb-Douglas in structures and a nested CES in all other inputs:
+\begin{equation}\label{eq:production_fun}
+ G(k_{s_t}, k_{e_t}, u_t, s_t) = k_{s_t}^\alpha\left( \mu u_t^\sigma + (1-\mu)\left(\lambda k_{s_t}^\rho + (1-\lambda)s_t^\rho\right)^\frac{\sigma}{\rho}\right)^\frac{1-\alpha}{\sigma}
+\end{equation}
+where $\alpha$ is the share of capital structures in output, $\mu$, and $\lambda$ are income shares, $\rho$ and $\sigma$ govern the elasticity of substitution between capital equipment and labor:
+\begin{itemize}
+ \item $\sigma_s = 1/(1-\rho)$ is the elasticity of substitution between equipment and high-skilled.
+ \item $\sigma_u = 1/(1-\sigma)$ is the elasticity of substitution between low-skilled and equipment + high skill labor.
+\end{itemize}
+Labor input is defined as 
+\begin{align*}
+ u &= \psi^u_t h^u_t\\
+ s &= \psi^s_t h^s_t
+\end{align*}
+where $\psi^i_t$ is the (unobserved) efficiency of each type of labor and $h^i_t$ is the number of labor hours. 
+
+\subsection{Skill Premium}
+The model can be used to analyze the determinants of the skill premium growth, i.e. growth of the ratio of wages of skilled labor to wages of unskilled labor. 
+
+Firms solve the following profit maximization problem 
+\begin{equation}\label{eq:profit_max}
+ \max_{k_{s_t}, k_{e_t}, u_t, s_t} G(k_{s_t}, k_{e_t}, u_t, s_t) - r_{s_t}k_{s_t} - r_{e_t}k_{e_t} - w_{u_t} h_{u_t} - w_{s_t} h_{s_t}
+\end{equation}
+$r_{s_t}$ and $r_{e_t}$ are rental rates of capital and $w_{u_t}$ and $w_{s_t}$ are wages of unskilled and skilled workers. Assuming perfect competition, labor is paid it marginal productivity therefore the skill premium at time $t$, ($\omega_t$) is given by
+\begin{equation}
+ \omega_t = \frac{w_{s_t}}{w_{u_t}} = \frac{G_{h_s}(k_{s_t}, k_{e_t}, u_t, s_t) }{G_{h_u}(k_{s_t}, k_{e_t}, u_t, s_t) }
+\end{equation}
+
+this gives the following expression for the skill premium:
+
+\begin{equation}\label{eq:skill_premium}
+ \omega_{t}=\frac{(1-\mu)(1-\lambda)}{\mu}\left[\lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}+(1-\lambda)\right]^{(\sigma-\rho) / \rho}\left(\frac{h_{u_t}}{h_{s_t}}\right)^{1-\sigma}\left(\frac{\psi^s_t}{\psi^u_t}\right)^{\sigma} .
+\end{equation}
+Since the object of interest is the steady state growth of $\omega_t$\eqref{eq:skill_premium} can be log-linearized to obtain the following expression:
+\begin{equation}\label{eq:skill_premium_log_linear}
+ \ln \omega_{t} \simeq \lambda \frac{\sigma-\rho}{\rho}\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}+(1-\sigma) \ln \left(\frac{h_{u_t}}{h_{s_t}}\right)+\sigma \ln \left(\frac{\psi^s_t}{\psi^u_t}\right)
+\end{equation}
+Which in turn can be written in terms of growth rates:
+\begin{equation}\label{eq:skill_premium_growth_rates}
+ \begin{aligned}
+ g_{\omega t} \simeq &(1-\sigma)\left(g_{h_{u_t}}-g_{h_{s_t}}\right)+\sigma\left(g_{\psi^s_t}-g_{\psi^u_t}\right) \\
+ &+(\sigma-\rho) \lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}\left(g_{k_{e_t}}-g_{h_{s_t}}-g_{\psi^s_t}\right) 
+ \end{aligned}
+\end{equation}
+where $g_x$ denotes the growth rate of variable $x$, details on the derivations are include in Appendix~\ref{sec:derivations}. Equation~\eqref{eq:skill_premium_growth_rates} has the nice property that it is a linear combination of the growth rates of the inputs in the production function, this allows us to decompose the growth rate of the skill premium into three components that are easy to analyze:
+\begin{enumerate}[(i)]
+ \item $(1-\sigma)(g_{h_{u_t}}-g_{h_{s_t}})$ depends on the growth rate of one type of labor over the other. We assume that both types of labor are substitutes i.e $\sigma_u < 0 \implies (1-\sigma) < 0$ . This means that if skilled labor grows at a faster rate than unskilled labor, will decrease the skill premium.
+ \item $\sigma\left(g_{\psi^s_t}-g_{\psi^u_t}\right)$ depends on the growth rate of the productivity of one type of labor over the other. I follow \citep{krusell2000capital} in making the following stochastic assumptions about labor productivity:
+ \begin{equation}\label{eq:stochastic_labor_productivity}
+ \psi^i_t = \psi^i_0 + \epsilon \qquad \epsilon \sim N(0, \eta_\omega^2) \qquad i\in\{s,u\}
+ \end{equation}
+ This assumption guarantees that on average $\sigma (g_{\psi^s_t}-g_{\psi^u_t} )$ is constant over time and does not affect the skill premium growth rate. 
+ \item $(\sigma-\rho) \lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}\left(g_{k_{e_t}}-(g_{h_{s_t}}+g_{\psi_{s_t}})\right)$ . This component depends on two factors:
+ \begin{enumerate}
+ \item The growth rate of equipment relative to the growth rates of skilled labor input. This allows us to characterize the capital-skill complementarity hypothesis as $\sigma > \rho$, if equipment capital grows faster than skilled labor, the skill-premium will increase.
+ \item The ratio of capital equipment to efficiency units of skilled labor input (given our assumptions amounts to the growth rate of skilled labor input), this effect will get larger (smaller) over time if $\rho > 0\:$ ($\rho < 0$). 
+ \end{enumerate}
+\end{enumerate}
+
+
 \section{Data}\label{sec:data}
-I estimate the model following the approach outlined in KORV \citet{krusell2000capital}. I constructed data series for wages, labor input, and capital input from 1963 to \textcolor{red}{FINAL YEAR} to replicate KORV with updated data following \citet{ohanian2021revisiting}. I then collect the same series at the industry level to re-estimate the model, due to data availability industry series cover the period from \textcolor{red}{INITIAL YEAR}-\textcolor{red}{FINAL YEAR}.
+Following the approach outlined in KORV \citet{krusell2000capital}, I constructed data series for wages, labor input, and capital input from 1963 to 2018 (the original KORV covered the period from 1963 to 1992). To create the extended series I followed \citet{ohanian2021revisiting}. I then collected similar data at the industry level covering the period from 1988 to 2018. The smaller sample size at the industry level is due to capital data availability.
 
 \subsection{Capital Data}\label{sec:capital_data}
 To extend both capital series to replicate KORV I obtained investment series in equipment $(I_e)$ and structures $(I_s)$ from NIPA Table 5.2.5. Then the equipment $(K_e)$ and structure $(K_s)$ capital series were constructed using the perpetual inventory method:
@@ -177,7 +253,7 @@ To extend both capital series to replicate KORV I obtained investment series in 
 \noindent
 I departed from KORV by using time-varying depreciation rates $\delta_{i_t}$, instead of constant depreciation rates for each series. As in \citep{ohanian2021revisiting} I deflate structures using the implicit price deflator of GDP \footnote{Available \url{https://fred.stlouisfed.org/series/GDPDEF}}, and equipment using the product of the consumption delfator\footnote{Available at \url{https://fred.stlouisfed.org/series/CONSDEF}} and the relative price of equipment \footnote{Available at \url{https://fred.stlouisfed.org/series/PERIC}}. Figure~\ref*{fig:capital_series} shows the comparison between the original capital series obtained by \citep{krusell2000capital} and the updated capital series. 
 
-\begin{figure}[H]
+\begin{figure}%{H]
 \centering
 \includegraphics[width=0.3\textwidth]{../images/capital_equipment_doc.pdf}
 \hfill
@@ -226,19 +302,20 @@ Capital share is defined as the ratio between $CI$ and gross domestic income (ne
 
 To construct labor share series at the industry level, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS). KLEMS dataset contains information on the compensation of employees (with and without a college degree) and the value added by industry, I then follow \citep{karabarbounis2014global} and define the labor share as the ratio between the total compensation of employees and the total value added by industry.
 
-\begin{figure}[H]
+\begin{figure}%{H]
 \centering
 \includegraphics[width=0.5\textwidth]{../images/fig:labor_share_updated.pdf}
-\caption*{\label{fig:labor_share_updated} Labor Share of Income}
+\caption{\label{fig:labor_share_updated} Labor Share of Income}
 \end{figure}
 
 \subsection{Data Description}
 
 \subsubsection{Industry Trends}
+% TODO: Explain how to calculate depreciation rates, show a graph of depreciation rates by industry and descriptive statistics (Kim)
 
-The trend of the labor share in the industry is the same at the national level Figure~\ref*{fig:labor_share_by_industry}
-
-\begin{figure}[H]
+In line with the findings of \citet{karabarbounis2014global} across countries, I find that the labor share of income is consistently decreasing across industries. Labor share is decreasing in $47$ of $56$ $(87.5\%)$. This decrease ranges between $59.7\%$ and $0.04\%$. Figure~\ref*{fig:labor_share_by_industry} show the labor share of the 4 largest industries (by output) in the US. 
+\begin{figure}%[H]
+ %TODO: Fix title_graph
  \centering
  \includegraphics[width=0.45\textwidth]{../images/industries/labor_share/dec531.pdf}
  \hspace*{0.05\textwidth}
@@ -249,82 +326,34 @@ The trend of the labor share in the industry is the same at the national level F
  \includegraphics[width=0.45\textwidth]{../images/industries/labor_share/dec23.pdf}
  \caption{\label{fig:labor_share_by_industry} Declining Labor Share four larges industries}
 \end{figure}
+Figure~\ref{fig:labor_input_skill_premium_trends_s_ind} shows the trends of the labor input ratio in two very dissimilar industries, Construction, and Legal Services. On the one hand, in the construction industry, the ratio of skilled to unskilled workers grew from $0.15$ in $1988$ to $0.24$ (a $60\%$ increase) in $2018$ compared to an increase from $2.1$ to $5.0$ ($138\%$). On the other hand, the skill premium increased from $1.46$ to $1.62$ ($10.2\%$) in the Construction industry compared to a jump from $1.87$ to $2.68$ ($43\%$) in Legal Services. 
 
-To justify exploring the skill-biased technical change I want to show that the feature of increasing labor input ratio holds and also the skill premium increasing holds at the industry level.
+\begin{figure}%[H]
+ \includegraphics[width=0.45\textwidth]{../images/industries/labor_input_ratio/inc23.pdf}
+ \hfill
+ \includegraphics[width=0.45\textwidth]{../images/industries/skill_premium/inc23.pdf}
+ \vfill
+ \includegraphics[width=0.45\textwidth]{../images/industries/labor_input_ratio/inc5411.pdf}
+ \hfill
+ \includegraphics[width=0.45\textwidth]{../images/industries/skill_premium/inc5411.pdf}
+ 
+ \caption{\label{fig:labor_input_skill_premium_trends_s_ind} Trends in labor input ratio (\textit{left}) and skill premium (\textit{right}) for selected industries}
+\end{figure}
+Going beyond this example, I calculate the slope of the labor input for all industries and obtained that for $52$ ($92.8\%$) industries the ratio of skilled to unskilled labor grew in the period between $1988$ and $2018$. I then repeat the process for the skill premium: for $49$ industries ($87.5\%$) the skill premium increased in the period, for $84\%$ of industries, both trends are increasing.
 
-I calculate the slope of the labor input and get that \textcolor{red}{RESULTS}, I then repeat the process for the skill premium and get the \textcolor{red}{RESULTS}. Figure~\ref*{fig:trends_correlation} shows a scatter plot of slopes. The first thing to note is that for almost all industries (\textcolor{red}{percentage}) there;'s been an increase in both indicators, furthermore the more that labor input ratio increases the more the skill premium increases. 
-
-Figure~\ref{fig:trends_correlation} shows \ldots
+The labor input ratio and skill premium trends suggest that the relative increase in the supply of skilled labor does not correlate with the increase in its relative price at the industry level. Therefore the same puzzle that we described at the aggregate level is present when the data is segmented by industry groups: the skill premium is increasing despite the increasing relative supply of skilled labor. This suggests that the demand for skilled workers increases at a faster rate. The capita-skill complementarity hypothesis indicates that technological progress is the main driver of this increase in demand for skilled workers. As in \citet{krusell2000capital} I capture technological progress as the decrease of the relative price of equipment capital relative to structure capital, It is natural to check if the trends in the ratio between the two types of capital follow similar patterns and to explore the relationship between the patterns of substitution between the two types of capital and the patterns of substitution between skilled and unskilled labor as well as the skill premium. All industries $(100\%)$ in the sample exhibit increasing patterns of substitution between equipment and structures.
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=0.85\textwidth]{../images/trend_correlation_doc.pdf}
- \caption{\label{fig:trends_correlation} Correlation between the slopes of the Labor Input Ration and the Skill Premium.}
+ \includegraphics[width=0.45\textwidth]{../images/trend_correlation_doc.pdf}
+ \hfill
+ \includegraphics[width=0.45\textwidth]{../images/trend_correlation_2_doc.pdf}
+ \caption{\label{fig:trends_correlation} Relationship between the slopes of the Labor Input Ratio, Skill Premium, and Capital Input Ratio.}
 \end{figure}
 
-\section{Model}\label{sec:model}
-This section presents the model which is the same as \citep{krusell2000capital}. There are four inputs for production in this economy: two types of capital, equipment $(k_e)$ and structures $(k_s)$ and two types of labor, skilled $(s)$ and unskilled $(u)$. Inputs are combined through a production function $G(\cdot)$ to produce three final goods: consumption $(c)$, investment in equipment $(i_e)$ and investment in structures $(i_s)$. Assuming a hicks-neutral technological shock $A$, the aggregate production is given by
-\begin{equation}\label{eq:production}
- c_t + i_{e_t} + i_{s_t} = Y_t = A_t G(k_{s_t}, k_{e_t}, u_t, s_t)
-\end{equation}
-Capital evolves following the law of motion in \eqref{eq:capital_law_motion}. The production function is assumed to be Cobb-Douglas in structures and a nested CES in all other inputs:
-\begin{equation}\label{eq:production_fun}
- G(k_{s_t}, k_{e_t}, u_t, s_t) = k_{s_t}^\alpha\left( \mu u_t^\sigma + (1-\mu)\left(\lambda k_{s_t}^\rho (1-\lambda)s_t^\rho\right)^\frac{\sigma}{\rho}\right)^\frac{1-\alpha}{\sigma}
-\end{equation}
-where $\alpha$ is the share of capital structures in output, $\mu$, and $\lambda$ are income shares, $\rho$ and $\sigma$ govern the elasticity of substitution between capital equipment and labor:
-\begin{itemize}
- \item $\sigma_s = 1/(1-\rho)$ is the elasticity of substitution between equipment and high-skilled.
- \item $\sigma_u = 1/(1-\sigma)$ is the elasticity of substitution between low-skilled and equipment + high skill labor.
-\end{itemize}
-Labor input is defined as 
-\begin{align*}
-    u &= \psi^u_t h^u_t\\
-    s &= \psi^s_t h^s_t
-\end{align*}
-where $\psi^i_t$ is the (unobserved) efficiency of each type of labor and $h^i_t$ is the number of labor hours. 
 
-\subsection{Skill Premium}
-The model can be used to analyze the determinants of the skill premium growth, i.e. growth of the ratio of wages of skilled labor to wages of unskilled labor. 
+Figure~\ref*{fig:trends_correlation} shows the relationship between the change rate of labor input and capital input with the skill premium. The important thing to notice here is that in both cases the relationship is increasing.
 
-Firms solve the following profit maximization problem 
-\begin{equation}\label{eq:profit_max}
- \max_{k_{s_t}, k_{e_t}, u_t, s_t} G(k_{s_t}, k_{e_t}, u_t, s_t) - r_{s_t}k_{s_t} - r_{e_t}k_{e_t} - w_{u_t} h_{u_t} - w_{s_t} h_{s_t}
-\end{equation}
-$r_{s_t}$ and $r_{e_t}$ are rental rates of capital and $w_{u_t}$ and $w_{s_t}$ are wages of unskilled and skilled workers. Assuming perfect competition, labor is paid it marginal productivity therefore the skill premium at time $t$, ($\omega_t$) is given by
-\begin{equation}
- \omega_t = \frac{w_{s_t}}{w_{u_t}} = \frac{G_{h_s}(k_{s_t}, k_{e_t}, u_t, s_t) }{G_{h_u}(k_{s_t}, k_{e_t}, u_t, s_t) }
-\end{equation}
-
-this gives the following expression for the skill premium:
-
-\begin{equation}\label{eq:skill_premium}
- \omega_{t}=\frac{(1-\mu)(1-\lambda)}{\mu}\left[\lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}+(1-\lambda)\right]^{(\sigma-\rho) / \rho}\left(\frac{h_{u_t}}{h_{s_t}}\right)^{1-\sigma}\left(\frac{\psi^s_t}{\psi^u_t}\right)^{\sigma} .
-\end{equation}
-Since the object of interest is the steady state growth of $\omega_t$\eqref{eq:skill_premium} can be log-linearized to obtain the following expression:
-\begin{equation}\label{eq:skill_premium_log_linear}
- \ln \omega_{t} \simeq \lambda \frac{\sigma-\rho}{\rho}\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}+(1-\sigma) \ln \left(\frac{h_{u_t}}{h_{s_t}}\right)+\sigma \ln \left(\frac{\psi^s_t}{\psi^u_t}\right)
-\end{equation}
-Which in turn can be written in terms of growth rates:
-\begin{equation}\label{eq:skill_premium_growth_rates}
- \begin{aligned}
- g_{\omega t} \simeq &(1-\sigma)\left(g_{h_{u_t}}-g_{h_{s_t}}\right)+\sigma\left(g_{\psi^s_t}-g_{\psi^u_t}\right) \\
- &+(\sigma-\rho) \lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}\left(g_{k_{e_t}}-g_{h_{s_t}}-g_{\psi^s_t}\right) 
- \end{aligned}
-\end{equation}
-where $g_x$ denotes the growth rate of variable $x$, details on the derivations are include in Appendix~\ref{sec:derivations}. Equation~\eqref{eq:skill_premium_growth_rates} has the nice property that it is a linear combination of the growth rates of the inputs in the production function, this allows us to decompose the growth rate of the skill premium into three components that are easy to analyze:
-\begin{enumerate}[(i)]
- \item $(1-\sigma)(g_{h_{u_t}}-g_{h_{s_t}})$ depends on the growth rate of one type of labor over the other. We assume that both types of labor are substitutes i.e $\sigma_u < 0 \implies (1-\sigma) < 0$ . This means that if skilled labor grows at a faster rate than unskilled labor, will decrease the skill premium.
- \item $\sigma\left(g_{\psi^s_t}-g_{\psi^u_t}\right)$ depends on the growth rate of the productivity of one type of labor over the other. I follow \citep{krusell2000capital} in making the following stochastic assumptions about labor productivity:
- \begin{equation}\label{eq:stochastic_labor_productivity}
- \psi^i_t = \psi^i_0 + \epsilon \qquad \epsilon \sim N(0, \eta_\omega^2) \qquad i\in\{s,u\}
- \end{equation}
- This assumption guarantees that on average $\sigma (g_{\psi^s_t}-g_{\psi^u_t} )$ is constant over time and does not affect the skill premium growth rate. 
- \item $(\sigma-\rho) \lambda\left(\frac{k_{e_t}}{s_{t}}\right)^{\rho}\left(g_{k_{e_t}}-(g_{h_{s_t}}+g_{\psi_{s_t}})\right)$ . This component depends on two factors:
- \begin{enumerate}
- \item The growth rate of equipment relative to the growth rates of skilled labor input. This allows us to characterize the capital-skill complementarity hypothesis as $\sigma > \rho$, if equipment capital grows faster than skilled labor, the skill-premium will increase.
- \item The ratio of capital equipment to efficiency units of skilled labor input (given our assumptions amounts to the growth rate of skilled labor input), this effect will get larger (smaller) over time if $\rho > 0\:$ ($\rho < 0$). 
- \end{enumerate}
-\end{enumerate}
 
 \section{Estimation}
 I follow the same methodology as \citep{krusell2000capital} to estimate the model parameters. To simplify notation from now on I will refer to the unobservable labor efficiencies as, $\psi_t = \{\psi^u_t, \psi^s_t\}$, the inputs of the production function as $X_t = \{ k_{s_t} , k_{e_t}, h_{s_t}, h_{u_t}\}$ and the set of parameters to be estimated as $\Phi = \{\alpha, \sigma, \rho, \mu, \lambda, \psi^u_0, \psi^s_0, \eta_\omega \}$. 
@@ -366,26 +395,27 @@ where $Z_{t}$ is the vector of model counterparts of $\tilde{Z}^{i}_t(X_{t}, \ps
 \section{Results}\label{sec:results}
 This section presents the results of the estimation process. I first show the result of the replication of KORV for different periods and then summarize the results of estimating the model for each industry.
 \subsection{KORV Replication}\label{sec:results_original}
-Table~\ref{tab:estimation_korv} compares the results obtained by \citep{krusell2000capital} to this replication using their 
-original data ($1963$ - $1992$) \footnote{Available at Gianluca Violante's website: \url{http://violante.mycpanel.princeton.edu/Journals/Data_KORV.txt}}. I present also the estimation on the extended sample ($1963$ - $2018$) and on the subset of the extended sample for which there is coverage at the industry level ($1988$ - $2018$). 
+Table~\ref{tab:estimation_korv} compares the results obtained by \citet{krusell2000capital} to this replication using their 
+original data ($1963$ - $1992$) \footnote{Available at Gianluca Violante's website: \url{http://violante.mycpanel.princeton.edu/Journals/Data_KORV.txt}}. I also present the estimation on the extended sample ($1963$ - $2018$) and on the subset of the extended sample for which there is coverage at the industry level ($1988$ - $2018$). 
 
-\begin{table}[h]
+
+
+\begin{table}[H]
 \begin{center}
  \input{../tables/tab:estimation_korv.tex}
  \caption{\label{tab:estimation_korv} Parameter estimates KORV model.}
 \end{center}
 \end{table}
 
-Table~\ref{tab:estimation_elasticities_korv} compares elasticities of substitution implied by the different parameter estimates obtained.
-
-\begin{table}[h]
+First, note that the capital-skill complementarity hypothesis $(\sigma > \rho)$ holds for the three samples. When the model is estimated with the full sample I found lower estimates of $\sigma$ and higher estimates for $\rho$ and $\alpha$, this is consistent with the replication by \citet{ohanian2021revisiting}. Table~\ref{tab:estimation_elasticities_korv} compares elasticities of substitution implied by the different parameter estimates obtained. When the initial years of the sample $(1963)$ to $(1987)$ are excluded, the estimates suggest that the elasticity of substitution between capital and skilled labor has increased and the elasticity of substitution of unskilled labor has decreased. A possible explanation for why skilled labor has become more substitute with equipment capital is because of the education-based classification of skill. In earlier years tasks assigned to college degree holders were more likely to be tasks that required a higher degree of specialization, while in later years a college degree has become more of a requirement for a job.
+\begin{table}[H]
  \begin{center}
  \input{../tables/estimation_elasticities_korv}
  \caption{\label{tab:estimation_elasticities_korv} Implied Elastities of Substitution}
  \end{center}
  \end{table}
 
-Figures~\ref{fig:korv_estimation},~\ref{fig:korv_estimation_extended} and~\ref{fig:korv_estimation_extended_industry} show the fit of the estimation process for three samples decribed. 
+Figures~\ref{fig:korv_estimation},~\ref{fig:korv_estimation_extended} and~\ref{fig:korv_estimation_extended_industry} show the fit of the estimation process for three samples described. Note that the model is able to replicate the pattern and shape of the skill premium but fails to generate the volatility present in the Labor Share of Output. The model also struggles to fit the decreasing pattern of the Labor Share in longer samples.
 
 
 \begin{figure}[H]
@@ -417,11 +447,83 @@ Figures~\ref{fig:korv_estimation},~\ref{fig:korv_estimation_extended} and~\ref{f
 \end{figure}
 
 
-As seen in table \ref{tab:estimation_korv} \textcolor{red}{Descirbe results}\dots
-
-
 \subsection{Estimation by Industry}
 
+Before showing the results of the estimation at the industry level, It is important to discuss the some cavears, the first of which is that the covergence of the model is highly sensitive to the initial conditions. Figure~\ref{fig:estimation_5411} show the fit obtained by for an specific industry (Legal Services)
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{../images/fig_ind_5411_estimation_ls_doc.pdf}
+        \hfill
+    \includegraphics[width=0.3\textwidth]{../images/fig_ind_5411_estimation_wbr_doc.pdf}
+    \hfill
+    \includegraphics[width=0.3\textwidth]{../images/fig_ind_5411_estimation_sp_doc.pdf}
+    \caption{\label{fig:estimation_5411} Fit for the $1988$ - $2018$ period. Legal Services Industry.}
+\end{figure}
+
+Initially I tried to sweep the parameter space to find the best initial conditions, I tried 10 values for each parameter (total of $700$ points), but it took me more than a day to run the code.
+I settled on 10 initial conditions.
+
+
+ Table~\ref{tab:estimation_ind} presents a summary of the results of the estimation process at the industry level. 
+ \begin{table}[h]
+ \begin{center}
+ \begin{tabular}{rrrrr}
+ \hline\hline
+ & \textbf{Updated Data} & \textbf{Industry Level} & \textbf{Industry Level} \\
+ & \texttt{$1988$ - $2018$} & \texttt{(mean)} & \texttt{(std)} \\\hline
+ $\alpha$ & 0.08 & 0.241 & 0.206 \\
+ $\sigma$ & 0.313 & 0.483 & 0.710\\
+ $\rho$ & -0.154 & -0.289 & 0.816\\
+ $\eta_\omega$& 0.043 & 0.131 & 0.195\\\hline\hline
+\end{tabular}
+\end{center}
+\caption{\label{tab:estimation_ind} Summary Industry Level Estimates.}
+\end{table}
+
+On average the Capital-skill complementarity hypothesis $(\sigma > \rho)$ is held at the industry level.
+Specifically, the hypothesis holds for $44$ of $56$ ($78.8\%$) industries. In general, the point estimates of the parameters show high variance across industries. Although not statistically significant, the strength of the capital-skill complementarity hypothesis, captured as the difference $\sigma - \rho$ increases in industries with higher skill premium and a higher proportion of skilled workers, table~\ref{tab:reg_csc} summarizes the results of the regression and Figure~\ref{fig:trends_correlation_csc} shows the relationship between the difference $\sigma - \rho$ and the skill premium (left) and labor input ratio (right).
+
+\begin{table}[h]
+ \begin{center}
+\begin{tabular}{lrr}
+ \toprule
+ & \multicolumn{2}{c}{Capital Skill Cpomplementarity} \\ 
+ \cmidrule(lr){2-3} 
+ & (1) & (2) \\ 
+ \midrule
+ (Intercept) & 0.842*** & 0.736*** \\ 
+ & (0.144) & (0.124) \\ 
+ Skill Premium & 3.779 & \\ 
+ & (13.004) & \\ 
+ Labor Input Ratio & & 7.806 \\ 
+ & & (4.331) \\ 
+ \midrule
+ Estimator & OLS & OLS \\ 
+ \midrule
+ $N$ & 56 & 56 \\ 
+ $R^2$ & 0.002 & 0.061 \\ 
+ \bottomrule
+ \end{tabular}
+\end{center}
+\caption{\label{tab:reg_csc} Relation between the Skill Premium and the Labor Share of Output and the Capital-Skill Complementarity Hypothesis.}
+\end{table}
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=0.45\textwidth]{../images/corr_sp_sigma_rho.png}
+ \hfill
+ \includegraphics[width=0.45\textwidth]{../images/corr_li_sigma_rho.png}
+ \caption{\label{fig:trends_correlation_csc} Relationship between the slopes of the Labor Input Ratio, Skill Premium and Capital Input Ratio.}
+\end{figure}
+
+
+
+
+% TODO: Scatter plot of the coefficients
+
+% TODO: Show some fits of the model and send the rest to the appendix.
+
+\section{Conclusion}
 
 \pagebreak{}
 
@@ -433,32 +535,39 @@ As seen in table \ref{tab:estimation_korv} \textcolor{red}{Descirbe results}\dot
 \appendix
 
 \section{Ommited Derivations}\label{sec:derivations}
-Outline:
-\begin{itemize}
- \item FOC of Labor and Skill premium
- \item Log Linearization
- \item Write it as growth rates
-\end{itemize}
-To obtain a version of skill premium in terms of growth rates, start by writing a continuous time version of Equaiton~\eqref{eq:skill_premium_log_linear}:
+Recall that the production function is given by:
 
-\begin{equation}\label{eq:skill_premium_log_linear_continuous}
- \ln{\omega(t)} = \lambda \frac{\sigma-\rho}{\rho}\left(\frac{k_{e}(t)}{\psi^s(t) s(t) }\right)^\rho + (1-\sigma)\ln{\left(\frac{u(t)}{s(t)}\right)} + \sigma\ln{\left(\frac{\psi^s(t)}{\psi^u(t)}\right)}
+\begin{equation}\label{eq:prod}
+ G(k_{s_t}, k_{e_t}, u_t, s_t) = k_{s_t}^\alpha\left( \mu u_t^\sigma + (1-\mu)\left(\lambda k_{s_t}^\rho + (1-\lambda)s_t^\rho\right)^\frac{\sigma}{\rho}\right)^\frac{1-\alpha}{\sigma}
 \end{equation}
- 
+Where $u_t = \psi^u_t h^u_t$ and $s_t = \psi^s_t h^s_t$. Relevant first-order conditions are:
+\begin{align}
+ [h^u_t]:&\quad w_{u_t} = (1-\alpha) \mu k_{s_t}^\alpha\left( \mu u_t^\sigma + (1-\mu)\left(\lambda k_{s_t}^\rho + (1-\lambda)s_t^\rho\right)^\frac{\sigma}{\rho}\right)^{\frac{1-\alpha}{\sigma}-1} u_t^{\sigma-1} \label{eq:foc_u}\\
+ [h^s_t]:&\quad w_{s_t} = (1-\alpha) (1-\mu)(1-\lambda) \left( \mu u_t^\sigma + (1-\mu)\left(\lambda k_{s_t}^\rho +(1-\lambda)s_t^\rho\right)^\frac{\sigma}{\rho}\right)^{\frac{1-\alpha}{\sigma}-1} \nonumber\\ & \qquad\qquad\qquad \left(\lambda k_{s_t}^\rho + (1-\lambda)s_t^\rho\right)^{\frac{\sigma}{\rho}-1} s_t^{\rho-1} \psi^s_t\label{eq:foc_s}
+\end{align}
+Dividing~\eqref{eq:foc_s} by~\eqref{eq:foc_u} we obtain the expression for the skill premium:
+\begin{align}%\label{sp_appendix}
+ \omega_t &= \frac{(1-\lambda)(1-\mu)}{\mu u_t^{\sigma-1}}u_t^{\sigma-1}(\lambda k_{s_t}^\rho + (1-\lambda)s_t^\rho)^{\frac{\sigma}{\rho}-1}s_t^{\rho-1}\frac{\psi^s_t}{\psi^u_t}\nonumber\\
+ &= \frac{(1-\lambda)(1-\mu)}{\mu}\left(\lambda \left(\frac{k_{s_t}}{s_t}\right)^\rho + (1-\lambda)\right)^{\frac{\sigma}{\rho}-1}\left(\frac{s_t}{u_t}\right)^{\sigma-1}\frac{\psi^s_t}{\psi^u_t}\nonumber\\
+ &= \frac{(1-\lambda)(1-\mu)}{\mu}\left(\lambda \left(\frac{k_{s_t}}{s_t}\right)^\rho + (1-\lambda)\right)^{\frac{\sigma}{\rho}-1}\left(\frac{h^u_t}{h^s_t}\right)^{1 - \sigma}\left(\frac{\psi^s_t}{\psi^u_t}\right)^\sigma \label{sk_prem}
+\end{align}
+To obtain a version of skill premium in terms of growth rates of the log-linearized version of equation~\eqref{sk_prem}, start by writing a continuous time version of Equaiton~\eqref{eq:skill_premium_log_linear}:
+\begin{equation}\label{eq:skill_premium_log_linear_continuous}
+ \ln{\omega(t)} = \lambda \frac{\sigma-\rho}{\rho}\left(\frac{k_{e}(t)}{\psi^s(t) h^s(t) }\right)^\rho + (1-\sigma)\ln{\left(\frac{h^u(t)}{h^s(t)}\right)} + \sigma\ln{\left(\frac{\psi^s(t)}{\psi^u(t)}\right)}
+\end{equation}
 Start with the first term of the sum in the RHS:
-
 \begin{align*}
- \frac{\partial}{\partial t}\left(\left(\frac{k_{e}(t)}{\psi^(t) s(t) }\right)^\rho\right) &= \rho\left( \frac{ k_e'(t)}{\psi^s(t) s(t)} - k_e(t) \frac{\psi'^s(t) s(t) + \psi^s(t) s'(t)}{(\psi^s(t) s(t))^2} \right)\left(\frac{k_{e}(t)}{\psi^s(t) s(t) }\right)^{\rho-1} \\
- &= \rho\left( \frac{ k_e'(t) k_e(t)}{k_e(t)(\psi^s(t) s(t)} - k_e(t) \frac{\psi'^s(t) s(t) + \psi^s(t) s'(t)}{(\psi^s(t) s(t))^2} \right)\left(\frac{k_{e}(t)}{\psi^s(t) s(t) }\right)^{\rho-1}\\
- &= \rho\left(\frac{k_e(t)}{\psi^s(t) s(t)}\right)^{\rho} \left( \frac{ k_e'(t) }{k_e(t)} - \frac{\psi'^s(t) s(t) + \psi^s(t) s'(t)}{\psi^s(t) s(t)} \right)\\
- &= \rho\left(\frac{k_e(t)}{\psi^s(t) s(t)}\right)^{\rho} \left( \frac{ k_e'(t) }{k_e(t)} - \frac{\psi'^s(t)}{\psi^s(t)} - \frac{ s'(t)}{ s(t)} \right)\\
- &= \rho\left(\frac{k_e(t)}{\psi^s(t) s(t)}\right)^{\rho}(g_{k_{e_{t}}} - g_{\psi^s_t} - g_{s_t})
+ \frac{\partial}{\partial t}\left(\left(\frac{k_{e}(t)}{\psi^(t)h^s(t) }\right)^\rho\right) &= \rho\left( \frac{ k_e'(t)}{\psi^s(t)h^s(t)} - k_e(t) \frac{\psi'^s(t)h^s(t) + \psi^s(t) h'^s(t)}{(\psi^s(t)h^s(t))^2} \right)\left(\frac{k_{e}(t)}{\psi^s(t)h^s(t) }\right)^{\rho-1} \\
+ &= \rho\left( \frac{ k_e'(t) k_e(t)}{k_e(t)(\psi^s(t)h^s(t)} - k_e(t) \frac{\psi'^s(t)h^s(t) + \psi^s(t) h'^s(t)}{(\psi^s(t)h^s(t))^2} \right)\left(\frac{k_{e}(t)}{\psi^s(t)h^s(t) }\right)^{\rho-1}\\
+ &= \rho\left(\frac{k_e(t)}{\psi^s(t)h^s(t)}\right)^{\rho} \left( \frac{ k_e'(t) }{k_e(t)} - \frac{\psi'^s(t)h^s(t) + \psi^s(t) h'^s(t)}{\psi^s(t)h^s(t)} \right)\\
+ &= \rho\left(\frac{k_e(t)}{\psi^s(t)h^s(t)}\right)^{\rho} \left( \frac{ k_e'(t) }{k_e(t)} - \frac{\psi'^s(t)}{\psi^s(t)} - \frac{ h'^s(t)}{h^s(t)} \right)\\
+ &= \rho\left(\frac{k_e(t)}{\psi^s(t)h^s(t)}\right)^{\rho}(g_{k_{e_{t}}} - g_{\psi^s_t} - g_{s_t})
 \end{align*}
 
 The next two terms in the sum are very similar, for the first term we have:
 
 \begin{equation}
- \frac{\partial}{\partial t} \left( \ln{\left( \frac{\ell(t) }{s(t)} \right)} \right) = \frac{\partial}{\partial t} \left( \ln{\ell(t)} - \ln{(s(t)} \right) = \frac{\ell'(t)}{\ell(t)} - \frac{s'(t)}{s(t)} = g_{\ell_t} - g_{s_t}
+ \frac{\partial}{\partial t} \left( \ln{\left( \frac{h^u(t) }{h^s(t)} \right)} \right) = \frac{\partial}{\partial t} \left( \ln{h^u(t)} - \ln{(h^s(t)} \right) = \frac{h'^u(t)}{h^u(t)} - \frac{h'^s(t)}{h^s(t)} = g_{u_t} - g_{s_t}
 \end{equation}
  
 Differentiating the LHS we get:
@@ -468,12 +577,12 @@ $$\frac{\partial}{\partial t}\left(\ln{\omega(t)}\right) = \frac{\omega'(t)}{\om
 \section{Data Construction}\label{sec:data-construction}
 
 
-\subsection{Capital Inputs and Labor Share}\label{subsec:capital-inputs-labor-share}
-OUTLINE
-\begin{itemize}
- \item Mention why are those delators used.
- \item How is the depreciation rate constructed?
-\end{itemize}
+% \subsection{Capital Inputs and Labor Share}\label{subsec:capital-inputs-labor-share}
+% OUTLINE
+% \begin{itemize}
+%  \item Mention why are those delators used.
+%  \item How is the depreciation rate constructed?
+% \end{itemize}
 
 % # After looking up the same for Structures and Intelectual Property I get:
 % # * Stock of Capital:
@@ -524,6 +633,9 @@ W^U_{t-1} = \frac{\sum_{g \in \mathcal{U}} w_{g, t-1} \ell_{g, t-1} \mu_{g,t}}{L
 W^S_{t-1} = \frac{\sum_{g \in \mathcal{S}} w_{g, t-1} \ell_{g, t-1} \mu_{g,t}}{L^S_{t-1}}
 \]
 
-\section{Industry Specific Trends}\label{sec:industry-specific-trends}
+\section{Industry Trends}\label{sec:industry-trends}
+
+\section{Industry Codes}
+
 
 \end{document}
