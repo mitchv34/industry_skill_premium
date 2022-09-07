@@ -296,7 +296,7 @@ end
 end 
 	
 #  Load Data
-ind_code = "624"
+ind_code = "23"
 path_data = "./data/proc/ind/$(ind_code).csv";
 dataframe = CSV.read(path_data, DataFrame);
 
@@ -477,9 +477,9 @@ end
     plot!(data.rr .* data.q[1:end-1], lw = 2, label = "Data")
     title!("Relative Price of Equipment")
     
-    p2 = plot(model_results[:ω] /model_results[:ω][1] , lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
+    p2 = plot((model_results[:ω] .- model_results[:ω][1]) /model_results[:ω][1] , lw = 2,  linestyle=:dash, label = "Model", legend =:topleft,size = (800, 400))
 	ω_data = (data.w_h ./ data.w_ℓ)[2:end]
-    plot!( ω_data / ω_data[1] , lw = 2, label = "Data")
+    plot!( (ω_data .- ω_data[1]) / ω_data[1] , lw = 2, label = "Data")
     title!("Skill Premium")
 
     p3 = plot(model_results[:lbr], lw = 2,  linestyle=:dash, label = "Model", legend = false,size = (800, 400))
@@ -487,8 +487,8 @@ end
     ylims!(0.0, 1.00)
     title!("Labor Share of Output")
 
-    p4 = plot(model_results[:wbr] /model_results[:wbr][1], lw = 2,  linestyle=:dash, label = "Model", legend =false,size = (800, 400))
-    plot!(data.wbr / data.wbr[2] , lw = 2, label = "Data")
+    p4 = plot((model_results[:wbr] .- model_results[:wbr][1])./model_results[:wbr][1], lw = 2,  linestyle=:dash, label = "Model", legend =false,size = (800, 400))
+    plot!( (data.wbr .- data.wbr[2]) ./data.wbr[2]   , lw = 2, label = "Data")
     title!("Wage Bill Ratio")
 
     title_plot = plot(title = "Model Results", grid = false, showaxis = false, bottom_margin = -1Plots.px)
@@ -496,6 +496,9 @@ end
 
     p = plot(title_plot, p1,p2,p3,p4, layout = @layout([A{0.01h}; [[B C];[D E]]]), size = (800, 600))
 end
+
+# ╔═╡ ce2d2bcf-f51d-4f8e-81f7-6b45c3833963
+data.wbr[1]
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2322,6 +2325,7 @@ version = "1.4.1+0"
 # ╟─9610f42e-4448-4657-a81d-b821ab9c0ae9
 # ╟─44bef502-0fcf-4f62-9cd2-c15cd2b5d8bf
 # ╟─54da9164-41dc-49af-8e24-626db783094b
-# ╟─2199d983-7de6-43ff-8983-fb6e4877b777
+# ╠═2199d983-7de6-43ff-8983-fb6e4877b777
+# ╠═ce2d2bcf-f51d-4f8e-81f7-6b45c3833963
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

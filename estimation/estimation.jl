@@ -374,12 +374,23 @@ function objectiveFunction(model::Model, parameters::Params, data::Data, shocks:
 	T = length(lsh) - 1
 	mS, vS = generateMoments(model, parameters, data, shocks)
 	
+	#! Normalize moments to growth rates
+	mS[1, :] = (mS[1, :] .- mS[1, 1] ) ./ mS[1, 1]
+	mS[2, :] = (mS[2, :] .- mS[2, 1] ) ./ mS[2, 1]
+	mS[3, :] = (mS[3, :] .- mS[3, 1] ) ./ mS[3, 1]
+	
 
 	# Z = hcat(wbr[1:end-1] / wbr[1] , lsh_alt[1:end-1]/lsh_alt[1], rr/rr[1])
 	Z = hcat(wbr[2:end] , lsh[2:end], rr)
 	
+	#! Normalize moments to growth rates
+	Z[1, :] = (Z[1, :] .- Z[1, 1] ) ./ Z[1, 1]
+	Z[2, :] = (Z[2, :] .- Z[2, 1] ) ./ Z[2, 1]
+	Z[3, :] = (Z[3, :] .- Z[3, 1] ) ./ Z[3, 1]
+
+
 	ℓ²ₛ = 0
-	moment_subset = [1,2,3]
+	moment_subset = [1]
 	for t ∈ 1:T
 		# @info ℓ²ₛ
 

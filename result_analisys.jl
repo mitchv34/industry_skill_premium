@@ -3,6 +3,7 @@ using DataFrames
 using Plots
 using Statistics
 using StatsPlots
+using RegressionTables
 
 results_path = "./data/results/ind_est/"
 
@@ -14,17 +15,38 @@ for f in files
     results = vcat(results, df)
 end
 
+rename!(results, :ind_code => :IND)
+results.IND = string.(results.IND)
+
 describe(results, cols = [:alpha, :sigma, :rho, :eta],
         mean => :mean, std => :std)
 
 
-no_cap_skill = string.(results[ results.sigma .<=results.rho, :ind_code ])
-cap_skill = string.(results[ results.sigma .> results.rho, :ind_code ])
+
+
+reg_summary = innerjoin(results, reg_summary, on = :IND)
 
 reg_summary.Group .= ""
-reg_summary[reg_summary.IND .∈ Ref(no_cap_skill), :Group] .= "A"
-reg_summary[reg_summary.IND .∈ Ref(cap_skill), :Group] .= "B"
+reg_summary.Group[reg_summary.sigma .> reg_summary.rho] .= "A"
+reg_summary.Group[reg_summary.sigma .<= reg_summary.rho] .= "B"
 
+reg_summary.CSC = reg_summary.sigma - reg_summary.rho
+
+sub_reg_summary = filter(:CSC => x -> x > -3, reg_summary)
+
+
+
+scatter(sub_reg_summary.CSC, sub_reg_summary.SP, smooth = true)
+@df sub_reg_summary scatter(:CSC, :LI, smooth = true )
+@df sub_reg_summary scatter(:CSC, :KR, smooth = true )
+
+
+p1, reg_1 = plot_correlations(sub_reg_summary, [:CSC, :SP],  title = "1988 - 2018", xlabel = "(slope) Skill Premium", ylabel   = L"\sigma - \rho", level = 0.)
+
+p2, reg_2 = plot_correlations(sub_reg_summary, [:CSC, :LI],  title = "1988 - 2018", xlabel = "(slope) Labor Input Ratio", ylabel   = L"\sigma - \rho", level = 0.)
+
+savefig(p1, "./documents/images/corr_sp_sigma_rho.png")
+savefig(p2, "./documents/images/corr_li_sigma_rho.png")
 
 @df reg_summary scatter( :LI, :SP, smooth = false, group =:Group,
 alpha = 0.5, xlabel = "xlabel", ylabel = "ylabel", title = "title", label = "",

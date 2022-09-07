@@ -17,9 +17,9 @@ end
 
 
 #  Load Data
-path_data_korv = "../data/Data_KORV.csv";
-path_updated_labor = "../data/proc/labor_totl.csv";
-path_updated_capital = "../data/proc/capital_totl.csv";
+path_data_korv = "./data/Data_KORV.csv";
+path_updated_labor = "./data/proc/labor_totl.csv";
+path_updated_capital = "./data/proc/capital_totl.csv";
 
 dataframe_korv = CSV.read(path_data_korv, DataFrame);
 updated_labor = CSV.read(path_updated_labor, DataFrame)

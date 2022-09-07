@@ -7,7 +7,7 @@
 \setbeameroption{hide notes} % Only slide
 %\setbeameroption{show only notes} % Only notes
 % \setbeameroption{show notes on second screen=right} % Both
-
+\usepackage{subcaption}
 \usepackage{helvet}
 % \usepackage[default]{lato}
 \usepackage{array}
@@ -244,22 +244,27 @@
 
 \begin{frame}{Introduction}
 \begin{wideitemize}
- \item I want to focus on the relationship between the composition of the workforce (Labor Input Ratio)
+ \item I want to focus on two trends and their relationship:
  \begin{itemize}
- \item Skilled workers vs Unskilled workers
+ \item the change in the composition of the workforce, the Labor Input Ratio of skilled to unskilled workers.
+ \item The change on the premium paid to skilled workers.
  \end{itemize}
- \item and wage inequality between those groups (the Skill Premium).
- \item I will use the model proposed by \textcolor{blue}{Krusell, Ohanian, Ríos‐Rull, and Violante (2000)} (KORV) to isolate two effects influencing the growth of the skill premium:
- \only<2-3>{
+\end{wideitemize}
+\end{frame}
+
+\begin{frame}{Introduction}
+ \begin{wideitemize}
+ \item To analyze the relationship between those trends I will use the model proposed by \textcolor{blue}{Krusell, Ohanian, Ríos‐Rull, and Violante (2000)} (KORV).
+ \item This model allows to isolate two effects influencing the growth of the skill premium:
+
  \begin{wideitemize}
  \item the effect of the relative input of skilled vs. unskilled workers.
  \item the effect of skill-biased technological change. (Capital-skill complementarity hypothesis)
- \end{wideitemize}
- }
- \only<3>{
+ \end{wideitemize} 
+
  \item I will analyze these effects have evolved industry level. 
- }
-\end{wideitemize}
+ \end{wideitemize}
+
 \end{frame}
 
 \begin{frame}{Objectives}
@@ -275,15 +280,12 @@ This work has two primary objectives:
 
 \begin{frame}{Motivation}
 \begin{wideitemize}
- \item In a recent work \textcolor{blue}{Haltiwanger, Hyatt and Spletzer (2022)}, shows that the rise in wage inequality is concentrated in a small number of industries (about $10\%$).
+ \item In a recent work \textcolor{blue}{Haltiwanger, Hyatt, and Spletzer (2022)}, show that the rise in wage inequality is concentrated in a small number of industries (about $10\%$).
  \begin{wideitemize}
- \item This work analyzes industries at the 4-digit NAICS level.
- \item I work with more aggregated data.
+ \item They analyze industries at the 4-digit NAICS level.
+ \item Due to data availability limitations I work at a higher level of aggregation.
  \end{wideitemize}
- \item There is a fact that holds at a higher level:
- \begin{wideitemize}
- \item High-wage industries are more likely to exhibit larger skill-premium.
- \end{wideitemize}
+ \item As in \textcolor{blue}{Haltiwanger, Hyatt, and Spletzer (2022)}, Industries in my sample exhibit a positive correlation between mean wage and wage inequality.
 \end{wideitemize}
 \end{frame}
 
@@ -321,12 +323,11 @@ This work has two primary objectives:
 \section*{Data}
 \begin{frame}{Data}
  \begin{wideitemize}
- \item I constructed data series for wages, labor input, and capital input from 1963 to 2018.
+ \item Following the methodology of \textcolor{blue}{Ohanian, Orak, and Shen (2021)}, I built data series for wages, labor input, and capital input from 1963 to 2018.
  \begin{itemize}
  \item The original data from KORV covers the period from 1963 to 1992.
  \end{itemize}
- \item I followed the methodology of \textcolor{blue}{Ohanian, Orak and Shen (2021)}. 
- \item Re-create the same series for $56$ industry groups for the period from $1998$ to $2018$.
+ \item I then Re-create the same series for $56$ industry groups for the period from $1998$ to $2018$.
  \end{wideitemize}
  \end{frame}
  
@@ -338,8 +339,15 @@ This work has two primary objectives:
  \begin{equation*}\label{eq:capital_law_motion}
  K_{i_{t+1}} = (1 - \delta_{i_t}) K_{i_{t}} + I_{i_{t}} \qquad i\in\{e, s\}
  \end{equation*}
- \item For capital data at the industry level I used the BEA Fixed Assets dataset that groups industries into 76 groups. 
- \item To construct a series of the labor share of output by industry, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS), 
+ \item To obtain capital series at the industry level I used the BEA Fixed Assets dataset.
+ \item This dataset contains $76$, industry groups. 
+\end{wideitemize}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Labor Shares}
+ \begin{wideitemize}
+ \item To construct series of the labor share of income by industry, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS), 
  \item KLEMS data consists of $56$ industry groups some of which are aggregations of industries on the BEA dataset.
 \end{wideitemize}
 \end{frame}
@@ -348,18 +356,19 @@ This work has two primary objectives:
 \frametitle{Labor Data}
 \begin{wideitemize}
  \item Labor input and wages are estimated using the march supplement of the Current Population Survey (CPS).
- \item Again, I follow the methodology of \textcolor{blue}{Ohanian, Orak and Shen (2021)} to clean and aggregate the data.
- \item To obtain labor series I segmented the labor data into the $56$ industry groups for which capital data is available and then aggregated the labor data repeating the same procedure as before.
- \item The classification of a worker being a skilled or an unskilled worker is based on the latest year of education completed.
+ \item Again, I follow the methodology of \textcolor{blue}{Ohanian, Orak, and Shen (2021)} to clean and aggregate the data.
+ \item To obtain industry-level data I partitioned the CPS dataset into the $56$ industry groups for which capital data is available and then aggregate repeating the same procedure as before.
+ \item The classification of a worker being a skilled or an unskilled worker is based on the latest year of education completed, a worker with $4$ years or more of college education is considered skilled.
 \end{wideitemize}
 \end{frame}
 
 \begin{frame}
  \frametitle{Industry Groups}
  
- \begin{itemize}
+ \begin{wideitemize}
  \item I used the crosswalk between the KLEMS, BEA, and CPS industry codes provided by \textcolor{blue}{Acemoglu, and Restrepo (2020)} to map the industry codes.
  \item KLEMS codes are often the combination of the several BEA and CPS codes:
+ \pause
  \vspace*{0.5cm}
  \begin{wideitemize}
  \item Oil and gas extraction: KLEMS-\textit{211}, BEA-\textit{2110}, CPS-\textit{42}
@@ -368,7 +377,7 @@ This work has two primary objectives:
  \end{wideitemize}
 
  
- \end{itemize}
+ \end{wideitemize}
 
  
 \end{frame}
@@ -436,30 +445,63 @@ This work has two primary objectives:
  \item To check the relationship between the trends of labor input ratio and the skill premium, I computed the slope of each series in the period:
  }
  \only<2>{
- \begin{figure}[H]
+ 
+ \begin{figure}
+ \begin{subfigure}[b]{.45\linewidth}
  \centering
- \includegraphics[width=0.4\textwidth]{../images/industries/labor_input_ratio/inc23.pdf}
- \includegraphics[width=0.4\textwidth]{../images/industries/skill_premium/inc23.pdf}
- \caption{\label{fig:trends_23} Trends: Construction}
+ \caption{Labor Input Ratio}
+ \label{fig:a}
+ \includegraphics[width=1\textwidth]{../images/industries/labor_input_ratio/inc23.pdf}
+ \end{subfigure}\hfill
+ \begin{subfigure}[b]{.45\linewidth}
+ \centering
+ \caption{Skill Premium}
+ \label{fig:b}
+ \includegraphics[width=1\textwidth]{../images/industries/skill_premium/inc23.pdf}
+ \end{subfigure}\\
+ \caption{Trends for the $1988 - 2018$ period.}\label{fig:1}
  \end{figure}
+
  }
- \only<3-4>{
- \begin{figure}[H]
+ \only<3>{
+
+ \begin{figure}
+ \begin{subfigure}[b]{.45\linewidth}
  \centering
- \includegraphics[width=0.4\textwidth]{../images/industries/labor_input_ratio/inc5411.pdf}
- \includegraphics[width=0.4\textwidth]{../images/industries/skill_premium/inc5411.pdf}
- \caption{\label{fig:trends_5411} Trends: Legal Services}
+ \caption{Labor Input Ratio}
+ \label{fig:a}
+ \includegraphics[width=1\textwidth]{../images/industries/labor_input_ratio/inc5411.pdf}
+ \end{subfigure}\hfill
+ \begin{subfigure}[b]{.45\linewidth}
+ \centering
+ \caption{Skill Premium}
+ \label{fig:b}
+ \includegraphics[width=1\textwidth]{../images/industries/skill_premium/inc5411.pdf}
+ \end{subfigure}\\
+ \caption{Trends for the $1988 - 2018$ period.}\label{fig:1}
  \end{figure}
+
+
  }
  \only<4>{
- \item For $49$ industries ($87.5\%$)the skill premium increased in the period and the input ratio showed the same pattern for $52$ ($92.8\%$) industries.
+ \item For $49$ industries ($87.5\%$) the skill premium increased in the period the input ratio showed the same pattern for $52$ ($92.8\%$) industries.
  }
  \end{wideitemize}
 \end{frame}
 
 \begin{frame}{Industry Level Trends \hyperlink{sp-model-decomposition}{\beamergotobutton{Back}}}\label{frame-industry-trends}
 
- \fitimage[Realtionship between the trends of Labor Input and Skill Premium. $84\%$ of the industries are increasing in both. ]{../images/trend_correlation_slides.pdf}
+ \fitimage[Realtionship between the trends of Labor Input and Skill Premium. For $84\%$ both trends are increasing. ]{../images/trend_correlation_slides.pdf}
+
+\end{frame}
+
+\begin{frame}
+ \frametitle{Model}
+
+ \begin{wideitemize}
+ \item In the next slides I will present the model and show how it can be employed to decompose the growth of the skill premium.
+ \item Then I will briefly explain the estimation procedure.
+ \end{wideitemize}
 
 \end{frame}
 
@@ -512,8 +554,8 @@ This work has two primary objectives:
  \begin{equation}\label{eq:production_fun}
  G(k_{s_t}, k_{e_t}, u_t, s_t) = k_{s_t}^\alpha\left( \mu u_t^\sigma + (1-\mu)\left(\lambda k_{s_t}^\rho (1-\lambda)s_t^\rho\right)^\frac{\sigma}{\rho}\right)^\frac{1-\alpha}{\sigma}
  \end{equation}
- \item $\sigma_{H} = 1/(1-\rho)$ is the elasticity between equipment and high-skilled.
- \item $\sigma_{L} = 1/(1-\sigma)$ is the elasticity between low-skilled and equipment + high-skilled.
+ \item $\sigma_{H} = 1/(1-\rho)$ is the elasticity of substitution between equipment and high-skilled.
+ \item $\sigma_{L} = 1/(1-\sigma)$ is the elasticity of substitution between low-skilled and equipment + high-skilled.
  \item Firms solve the following profit maximization problem 
  \begin{equation}\label{eq:profit_max}
  \max_{k_{s_t}, k_{e_t}, u_t, s_t} G(k_{s_t}, k_{e_t}, u_t, s_t) - r_{s_t}k_{s_t} - r_{e_t}k_{e_t} - w_{u_t} h_{u_t} - w_{s_t} h_{s_t}
@@ -523,10 +565,13 @@ This work has two primary objectives:
 
 \begin{frame}{Production Function}
  \begin{wideitemize}
- \item My objective is to use this model to test whether the evolution of the change in the wage premium for skilled labor in different industries can be explained using the capital-skill complementarity hypothesis.
+ \item My objective is to use this model to test whether the change in the wage premium for skilled labor in different industries can be explained using the capital-skill complementarity hypothesis.
  
+ \item Next, I show how we can obtain the growth rate of the skill premium from optimality conditions of the Firm.
+
+
  % % \only<2->{
- \item I can observe, $\textcolor{black}{w_{u}}, \textcolor{black}{w_{s_t}}, k_{s_t}, \textcolor{black}{k_{e_t}}, \textcolor{black}{h_{u_t}}, \textcolor{black}{h_{s_t}}$
+% \item I can observe, $\textcolor{black}{w_{u}}, \textcolor{black}{w_{s_t}}, k_{s_t}, \textcolor{black}{k_{e_t}}, \textcolor{black}{h_{u_t}}, \textcolor{black}{h_{s_t}}$
  % % }
  % % \only<3->{
  % \item $H = \psi_t^H h$ and $L = \psi_t^L \ell$ where $\textcolor{black}{\psi_t^H}, \textcolor{black}{\psi_t^L}$, are assumed to be a random process $\psi_t^i = \psi_0^i + \varepsilon$. \only<4->{ With $\epsilon\sim\mathcal{N}(0, \textcolor{black}{\eta}) $}
@@ -615,30 +660,30 @@ This work has two primary objectives:
  \frametitle{Estimation}
 
  \begin{wideitemize}
- \item I follow the same methodology as KORV to estimate the model parameters.
  \only<1>{
+ \item I follow the same methodology as KORV to estimate the model parameters.
  \item To simplify notation :
  \begin{align*}
  \psi_t &= \{\psi^u_t, \psi^s_t\} \\
  X_t &= \{ k_{s_t} , k_{e_t}, h_{s_t}, h_{u_t}\} \\
  \Phi &= \{\alpha, \sigma, \rho, \mu, \lambda, \psi^u_0, \psi^s_0, \eta_\omega \}
  \end{align*}
- \item Any $\{\mu, \lambda, \psi^u_0,\mu, \lambda, \psi^u_0, \psi^s_0\}$ act as scaling parameters thus, one can be fixed.
+ \item Any of $\{\mu, \lambda, \psi^u_0, \psi^s_0\}$ act as scaling parameters thus, one can be fixed.
  \item There are $7$ parameters to be estimated.
  }\only<2>{
  \item The parameters are estimated using the following structural equations:
  \begin{align*}
- A_{t+1} G_{k_s}(X_{t+1}, \psi_{t+1} \mid \Phi ) &= q_t A_{t+1} G_{k_s}(X_{t+1}, \psi_{t+1} \mid \Phi ) + (1-\delta_e)\left(\frac{q_t}{q_{t+1}}\right) + \nu_t\\
  \frac{w_{s_t}h_{s_t} + w_{u_t}h_{u_t} }{Y_t} &= lsh(X_{t}, \psi_{t} \mid \Phi ) \\
- \frac{w_{s_t}h_{s_t}}{w_{u_t}h_{u_t}} &= wbr(X_{t}, \psi_{t} \mid \Phi )
- \end{align*}
+ \frac{w_{s_t}h_{s_t}}{w_{u_t}h_{u_t}} &= wbr(X_{t}, \psi_{t} \mid \Phi )\\
+ A_{t+1} G_{k_s}(X_{t+1}, \psi_{t+1} \mid \Phi ) &= q_t A_{t+1} G_{k_s}(X_{t+1}, \psi_{t+1} \mid \Phi ) + (1-\delta_e)\left(\frac{q_t}{q_{t+1}}\right) + \nu_t
+\end{align*}
  }\only<3>{
  \item The estimation method is a two-stage simulated pseudo-maximum likelihood estimation (SPMLE).
  \item In the first stage labor input is considered to be endogenous and is instrumented using: both capital series, lagged capital series, lagged prices, and indicators of the business cycle.
  \item In the second stage:
  \begin{wideitemize}
  \item Taking the variance $\eta_\omega$ as given, for each date $t$, generate $S$ realizations of the model.
- \item For each date $t$ calculate the mean and variance of the realizations.
+ \item For each date $t$ calculate the mean and covariance matrix.
  \item Minimize the distance between the first moments of the model and the data, using the second moment as a weighting matrix.
  \end{wideitemize}
  }
@@ -706,16 +751,16 @@ This work has two primary objectives:
 \end{frame}
 
 \begin{frame}
-  \frametitle{Caveats}
-  \begin{wideitemize}
-    \item Convergence is highly sensitive to the initial conditions.
-    \begin{wideitemize}
-      \item Not a problem when estimating KORV.
-      \item But when estimating the model for each industry, the initial conditions are not well defined.
-    \end{wideitemize}
-    \item Initially I tried to sweep the parameter space to find the best initial conditions, I tried a 10 values for each parameter (total of $700$ points), it took me more than a day to run the code.
-    \item I settled on the trying 10 initial conditions.
-  \end{wideitemize}
+ \frametitle{Caveats}
+ \begin{wideitemize}
+ \item Convergence is highly sensitive to the initial conditions.
+ \begin{wideitemize}
+ \item Not a problem when estimating KORV.
+ \item But when estimating the model for each industry, the initial conditions are not well defined.
+ \end{wideitemize}
+ \item Initially I tried to sweep the parameter space to find the best initial conditions, I tried 10 values for each parameter (total of $700$ points), but it took me more than a day to run the code.
+ \item I settled on 10 initial conditions.
+ \end{wideitemize}
 \end{frame}
 
 
@@ -726,13 +771,13 @@ This work has two primary objectives:
  \begin{table}[h]
  \begin{center}
  \begin{tabular}{rrrrr}
-  \hline\hline
-    & \textbf{Updated Data} & \textbf{Industry Level}  & \textbf{Industry Level}  \\
-    & \texttt{$1988$ - $2018$} & \texttt{(mean)} & \texttt{(std)} \\\hline
-  $\alpha$ & 0.08 &  0.241 &  0.206 \\
-  $\sigma$ & 0.313 &  0.483 &  0.710\\
-  $\rho$ & -0.154 & -0.289 &  0.816\\
-  $\eta_\omega$& 0.043 &  0.131 &  0.195\\\hline\hline
+ \hline\hline
+ & \textbf{Updated Data} & \textbf{Industry Level} & \textbf{Industry Level} \\
+ & \texttt{$1988$ - $2018$} & \texttt{(mean)} & \texttt{(std)} \\\hline
+ $\alpha$ & 0.08 & 0.241 & 0.206 \\
+ $\sigma$ & 0.313 & 0.483 & 0.710\\
+ $\rho$ & -0.154 & -0.289 & 0.816\\
+ $\eta_\omega$& 0.043 & 0.131 & 0.195\\\hline\hline
 \end{tabular}
 \end{center}
 \caption{\label{tab:estimation_ind} Industry Level Estimates.}
@@ -741,26 +786,26 @@ This work has two primary objectives:
 \end{frame}
 
 \begin{frame}
-  \frametitle{Industry Level Results}
-  \begin{wideitemize}
-    \item On averegage the Capital-skill complementarity hypothesis $(\sigma > \rho)$ is holds at the industry level.
-    \item Specifically, the hypothesis holds for for $44$ of $56$ ($78.8\%$) industries.
-  \end{wideitemize}
+ \frametitle{Industry Level Results}
+ \begin{wideitemize}
+ \item On average the Capital-skill complementarity hypothesis $(\sigma > \rho)$ is held at the industry level.
+ \item Specifically, the hypothesis holds for $44$ of $56$ ($78.8\%$) industries.
+ \end{wideitemize}
  \end{frame}
 
 \begin{frame}
-  \frametitle{Future Work}
+ \frametitle{Future Work}
 
-  \begin{wideitemize}
-    
-    
-    \item Improve the estimation using an altertive methodology, e.g. 
-    \begin{wideitemize}
-      \item \textcolor{blue}{Polgreen, and Silos(2008)} discuss the sentitivity of KORV to variations in the data and propose a methodology to estimate the parameters that avoid the instabilities that can arise in maximizing a multidimensional function numerically
-    \end{wideitemize}
-      
-    \item Incorporate alternative sources of data. Specifically, Quarterly Workforce Indicators (QWI) published as part of the Longitudinal Employer-Household Dynamics. This will allow me to avoid having to segment the CPS data to estimate the labor input and wage series at the industry level. 
-  \end{wideitemize}
+ \begin{wideitemize}
+ 
+ 
+ \item Improve the estimation using an altertive methodology, e.g. 
+ \begin{wideitemize}
+ \item \textcolor{blue}{Polgreen, and Silos(2008)} discuss the sentitivity of KORV to variations in the data and propose a methodology to estimate the parameters that avoid the instabilities that can arise in maximizing a multidimensional function numerically
+ \end{wideitemize}
+ 
+ \item Incorporate alternative sources of data. Specifically, Quarterly Workforce Indicators (QWI, published as part of the Longitudinal Employer-Household Dynamics. This will allow me to avoid having to segment the CPS data to estimate the labor input and wage series at the industry level. 
+ \end{wideitemize}
 
 \end{frame}
 
@@ -824,14 +869,14 @@ This work has two primary objectives:
 % \end{frame}
 \section*{References}
 \begin{frame}{References}
-  \begin{itemize}
-    \item Song, Jae, David J. Price, Fatih Guvenen, Nicholas Bloom, and Till Von Wachter. "Firming up inequality." The Quarterly journal of economics 134, no. 1 (2019): 1-50.
-    \item Krusell, Per, Lee E. Ohanian, José‐Víctor Ríos‐Rull, and Giovanni L. Violante. "Capital‐skill complementarity and inequality: A macroeconomic analysis." Econometrica 68, no. 5 (2000): 1029-1053.
-    \item Haltiwanger, John C., Henry R. Hyatt, and James Spletzer. Industries, mega firms, and increasing inequality. No. w29920. National Bureau of Economic Research, 2022.
-    \item  Ohanian, Lee E., Musa Orak, and Shihan Shen. Revisiting capital-skill complementarity, inequality, and labor share. No. w28747. National Bureau of Economic Research, 2021.
-    \item Acemoglu, Daron, and Pascual Restrepo. "Unpacking skill bias: Automation and new tasks." In aea Papers and Proceedings, vol. 110, pp. 356-61. 2020.
-    \item Polgreen, Linnea, and Pedro Silos. "Capital–skill complementarity and inequality: A sensitivity analysis." Review of Economic Dynamics 11, no. 2 (2008): 302-313.
-  \end{itemize}
+ \begin{itemize}
+ \item Song, Jae, David J. Price, Fatih Guvenen, Nicholas Bloom, and Till Von Wachter. "Firming up inequality." The Quarterly journal of economics 134, no. 1 (2019): 1-50.
+ \item Krusell, Per, Lee E. Ohanian, José‐Víctor Ríos‐Rull, and Giovanni L. Violante. "Capital‐skill complementarity and inequality: A macroeconomic analysis." Econometrica 68, no. 5 (2000): 1029-1053.
+ \item Haltiwanger, John C., Henry R. Hyatt, and James Spletzer. Industries, mega firms, and increasing inequality. No. w29920. National Bureau of Economic Research, 2022.
+ \item Ohanian, Lee E., Musa Orak, and Shihan Shen. Revisiting capital-skill complementarity, inequality, and labor share. No. w28747. National Bureau of Economic Research, 2021.
+ \item Acemoglu, Daron, and Pascual Restrepo. "Unpacking skill bias: Automation and new tasks." In aea Papers and Proceedings, vol. 110, pp. 356-61. 2020.
+ \item Polgreen, Linnea, and Pedro Silos. "Capital–skill complementarity and inequality: A sensitivity analysis." Review of Economic Dynamics 11, no. 2 (2008): 302-313.
+ \end{itemize}
  % \bibliographystyle{plainnat}
  % \bibliography{/Users/mitchv34/Work/industry_skill_premium/documents/manuscript/references.bib}
 \end{frame}

@@ -162,10 +162,11 @@ function plot_results(simulation::Simulation, data::Data; years::Array=[], scale
                 label = "Model", legend =:topright, size = (800, 200))
     plot!(years, data.rr .* data.q[1:end-1], lw = 2, label = "Data", color = :black)
     title!("Relative Price of Equipment")
-    
-    p2 = plot(years, model_results[:ω] , lw = 2,  linestyle=:dash, color = :red,
+    ω_model = model_results[:ω]
+    p2 = plot(years, (ω_model .- ω_model[1]) ./ ω_model[1] , lw = 2,  linestyle=:dash, color = :red,
     label = "Model", legend =:topleft,size = (800, 400))
-    plot!(years, data.w_h[2:end] ./ data.w_ℓ[2:end], lw = 2, label = "Data", color = :black)
+    ω_data =  data.w_h[2:end] ./ data.w_ℓ[2:end]
+    plot!(years, (ω_data .- ω_data[1]) ./ω_data[1] , lw = 2, label = "Data", color = :black)
     title!("Skill Premium")
 
     p3 = plot(years, model_results[:lbr], lw = 2,  linestyle=:dash, color = :red, label = "Model", legend =:topleft,size = (800, 400))
@@ -175,8 +176,10 @@ function plot_results(simulation::Simulation, data::Data; years::Array=[], scale
     ylims!(y_min, y_max)
     title!("Labor Share of Output")
 
-    p4 = plot(years, model_results[:wbr], lw = 2,  linestyle=:dash, color = :red, label = "Model", legend =:topleft,size = (800, 400))
-    plot!(years, data.wbr[2:end], lw = 2, label = "Data", color = :black)
+    wbr_model = model_results[:wbr]
+    p4 = plot(years, (wbr_model .- wbr_model[1])./wbr_model[1], lw = 2,  linestyle=:dash, color = :red, label = "Model", legend =:topleft,size = (800, 400))
+    wbr_data = data.wbr[2:end]
+    plot!(years, (wbr_data .- wbr_data[1])./wbr_data[1], lw = 2, label = "Data", color = :black)
     title!("Wage Bill Ratio")
 
     # title_plot = plot(title = title, grid = false, showaxis = false, bottom_margin = -1Plots.px)
@@ -185,9 +188,9 @@ function plot_results(simulation::Simulation, data::Data; years::Array=[], scale
     # p = plot(p1,p2,p3,p4, layout = (2,2), size = (800, 600))
     # p = plot(p2,p3,p4, layout = (1,3), size = (800, 600))
     if return_data
-        return  (p1, p2, p3, p4), model_results, data
+        return  [p1, p2, p3, p4], model_results, data
     else
-        return  (p1, p2, p3, p4)
+        return  [p1, p2, p3, p4]
     end
 end # plot_results
 

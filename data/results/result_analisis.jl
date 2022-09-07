@@ -3,11 +3,11 @@ using DataFrames
 using Plots
 using StatsBase
 
-files = [f for f in readdir("./data/results/") if occursin(".csv", f)]
+files = [f for f in readdir("./data/results/ind_est") if occursin(".csv", f)]
 
-ind_dict = Dict()
+estimation_ind = Dict()
 for f in files
-    temp = CSV.read("./data/results/$(f)", DataFrame)
+    temp = CSV.read("./data/results/ind_est/$(f)", DataFrame)
     filter!(row -> all(x -> !(x isa Number && isnan(x)), row), temp)
     ind_dict[f[1:end-4]] = temp
 end
