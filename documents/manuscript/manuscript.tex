@@ -2,6 +2,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{luainputenc}
 \usepackage{geometry}
+\usepackage{booktabs}
 \usepackage{color}
 \usepackage{babel}
 \usepackage{float}
@@ -264,8 +265,7 @@ I departed from KORV by using time-varying depreciation rates $\delta_{i_t}$, in
 \end{figure}
 
 To obtain capital data at the industry level I used the BEA Fixed Assets dataset to obtain investment and capital consumption series by industry and type, details of which tables were used are included in Appendix \ref{subsec:capital-inputs-labor-share}. Fixed Assets dataset groups industries into 76 groups. To construct a series of the labor share of output by industry, I used the BEA-BLS Integrated Industry-level Production Accounts (KLEMS)\footnote{Available at \url{https://www.bls.gov/productivity/articles-and-research/industry-production-account-capital.xlsx}}. This dataset contains the data underlying the BEA/BLS Integrated Industry-level Production Account for the United States. The data covers 1987-2020. KLEMS data consists of 57 industry groups some of which are aggregations of industries on the BEA dataset. The table 
-presents the crosswalk between BEA, KLEMS, and Census industry codes. I used the crosswalk provided by \citep{acemoglu2020unpacking}. A description of the codes is in \textcolor{red}{INSER TABLE AND REFERENCEIT}.
-
+presents the crosswalk between BEA, KLEMS, and Census industry codes. I used the crosswalk provided by \citep{acemoglu2020unpacking}. A description of the codes is included in Appendix~\ref{sec:industry_codes}.
 \subsection{Labor Data}\label{sec:labor_data}
 
 Labor input and wages are estimated using the march supplement of the Current Population Survey (CPS), downloaded from IPUMS\footnote{\url{https://cps.ipums.org/cps/index.shtml}}, see \citet{flood2015integrated}. Flowing \citep{krusell2000capital} and \citep{ohanian2021revisiting} I include all observations excluding agents: younger than $16$ or older than $70$, unpaid family workers, those working in the military, those who report working less than $40$ weeks a year and/or $35$ hours a week, individuals with allocated income, those with hourly wages below half of the minimum federal wage rate, those did not report their education level and self-employed workers. Appendix~\ref{subsec:labor-inputs-wage-rates} describes in detail the cleaning process undertaken to obtain the labor input and wage series. Figure~\ref{fig:labor_series} displays the labor input and wage series for the $1963$ - $2018$ period compared with the original data.
@@ -277,15 +277,18 @@ Labor input and wages are estimated using the march supplement of the Current Po
  \includegraphics[width=0.45\textwidth]{../images/labor_input_unskilled_doc.pdf}
  \hspace*{0.05\textwidth}
  \includegraphics[width=0.45\textwidth]{../images/labor_input_skilled_doc.pdf}
- \vfill
+ \caption{\label{fig:labor_series_1} Labor Series (A)}
+\end{figure}
+\begin{figure}
+    \centering
  \includegraphics[width=0.45\textwidth]{../images/sp_doc.pdf}
  \hspace*{0.05\textwidth}
  \includegraphics[width=0.45\textwidth]{../images/wbr_doc.pdf}
- \caption{\label{fig:labor_series} Labor Series}
+ \caption{\label{fig:labor_series_2} Labor Series (B)}
 \end{figure}
 
 
-I used the crosswalk in Table \textcolor{red}{INSER TABLE AND REFERENCEIT} to group Census code groups for each industry and subdivided the original CPS data. I then repeated the process described in Appendix~\ref{subsec:labor-inputs-wage-rates} to obtain labor input and wage series for each industry.
+I used the crosswalk included in Appendix~\ref{sec:industry_codes} to group Census code groups for each industry and subdivided the original CPS data. I then repeated the process described in Appendix~\ref{subsec:labor-inputs-wage-rates} to obtain labor input and wage series for each industry.
 
 
 \subsection{Labor Income Shares}\label{sec:labor_share_income}
@@ -635,7 +638,8 @@ W^S_{t-1} = \frac{\sum_{g \in \mathcal{S}} w_{g, t-1} \ell_{g, t-1} \mu_{g,t}}{L
 
 \section{Industry Trends}\label{sec:industry-trends}
 
-\section{Industry Codes}
+\pagebreak
 
+\input{../tables/cross_walk_table.tex}
 
 \end{document}
