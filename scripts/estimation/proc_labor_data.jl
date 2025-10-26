@@ -81,9 +81,20 @@ end
 
 # labor_data = CSV.read("extend_KORV/data/raw/cps_00014.csv", DataFrame)
 labor_data = CSV.read("./data/raw/cps_00022.csv", DataFrame)
-subset!(labor_data, :ASECWT => ByRow(x -> ~ismissing(x)))
 
-# Fix weights for the 2014 sample
+# Track sample selection for reporting
+println("="^70)
+println("CPS SAMPLE SELECTION")
+println("="^70)
+println("Raw CPS extract: ", nrow(labor_data), " observations")
+initial_n = nrow(labor_data)
+
+subset!(labor_data, :ASECWT => ByRow(x -> ~ismissing(x)))
+println("After valid weights filter: ", nrow(labor_data), " (", round(100*nrow(labor_data)/initial_n, digits=1), "%)")
+
+# Fix weights for the 2014 sample (CPS redesign adjustment)
+# Following IPUMS guidance for 2014 split-sample design:
+# https://cps.ipums.org/cps/2014_redesign.shtml
 sample2014 = subset( labor_data, :YEAR => ByRow(==(2014)) )
 new_ASECWT = sample2014.ASECWT .* (5/8 * (1 .- sample2014.HFLAG) + 3/8 *sample2014.HFLAG)
 labor_data[labor_data.YEAR .== 2014, :ASECWT] = new_ASECWT
@@ -91,13 +102,16 @@ labor_data[labor_data.YEAR .== 2014, :ASECWT] = new_ASECWT
 # Keep only employted individials (excluiding self-employed and unpaid family workers) 
 filter!( :CLASSWLY => x -> ~ismissing(x), labor_data)
 filter!( :CLASSWLY => ∈([20 ,22 ,24 ,25 ,27 ,28]), labor_data)
+println("After employment class filter: ", nrow(labor_data), " (", round(100*nrow(labor_data)/initial_n, digits=1), "%)")
 
 # Remove workers employed in the military and those with missing data
-# subset!(labor_data, :IND1990 => ByRow(x -> ~ismissing(x)))
-# filter!(:IND1990 => x -> ~(x  ∈ [940,941,942,950,951,952,960,998] ), labor_data)
+subset!(labor_data, :IND1990 => ByRow(x -> ~ismissing(x)))
+filter!(:IND1990 => x -> ~(x  ∈ [940,941,942,950,951,952,960,998] ), labor_data)
+println("After military exclusion: ", nrow(labor_data), " (", round(100*nrow(labor_data)/initial_n, digits=1), "%)")
 
 # Remove observations with missing data weeks worked data
 filter!(:WKSWORK2 => !=(0), labor_data)
+println("After weeks worked filter (WKSWORK2≥5 applied later): ", nrow(labor_data), " (", round(100*nrow(labor_data)/initial_n, digits=1), "%)")
 # Recode education
 # labor_data.EDUCAT = recode_education.(labor_data.EDUC) # TODO: CHECK EDUCATION VARIABLE 
 labor_data.EDUCAT_1 = recode_educationHG.(labor_data.HIGRADE) # TODO: CHECK EDUCATION VARIABLE 
@@ -107,11 +121,13 @@ labor_data.EDUCAT = [ (isnothing(labor_data.EDUCAT_1[i])) ? labor_data.EDUCAT_2[
 
 # Drop observations based on not reported education level
 filter!(:EDUCAT => x -> ~isnothing(x), labor_data)
+println("After education filter: ", nrow(labor_data), " (", round(100*nrow(labor_data)/initial_n, digits=1), "%)")
 # Create groups
 age_groups = [20 + i * 5 for i in 0:10]
 labor_data.AGEGROUP = recode_age.(labor_data.AGE)
 # Drop observations based on not reported age group
 filter!(:AGEGROUP => x -> ~isnothing(x), labor_data)
+println("After age filter (16-70): ", nrow(labor_data), " (", round(100*nrow(labor_data)/initial_n, digits=1), "%)")
 labor_data.RACEGROUP = recode_race.(labor_data.RACE)
 labor_data.GROUP =  string.(labor_data.EDUCAT) .* labor_data.AGEGROUP .* labor_data.RACEGROUP .* string.(labor_data.SEX)
 
@@ -124,7 +140,9 @@ labor_data_post = filter(:YEAR => x -> x >  1975, labor_data)
 ## Pre 1975
 labor_data_pre  = filter(:YEAR => x -> x <= 1975, labor_data)
 
-### Use post 1975 data for to impute missing data in pre 1975 data
+### Use post 1975 data to impute missing data in pre 1975 data
+# Note: For 1963-1975, WKSWORK1 and UHRSWORKLY are not recorded in CPS
+# We impute using demographic group averages from 1976-1992 period
 
 labor_data_post_c = copy(labor_data_post)
 
@@ -199,10 +217,12 @@ labor_data_full.:ASECWT = [w / weights[y] for (w, y) in zip(labor_data_full.:ASE
 
 #labor_data_full.INCWAGE = labor_data_full.INCWAGE .* labor_data_full.CPI99
 
-# # Drop observations with less than 35 weeks worked
-filter!(:WKSWORK1 => >=(40), labor_data_full) # TODO: Check if this is correct
-# # Drop observations with less than 30 hours worked
-filter!(:UHRSWORKLY => >=(30), labor_data_full) # TODO: Check if this is correct
+# Drop observations with less than 40 weeks worked (≥48 weeks from WKSWORK2 ≥5)
+filter!(:WKSWORK1 => >=(40), labor_data_full)
+println("After full-year filter (≥40 weeks): ", nrow(labor_data_full), " (", round(100*nrow(labor_data_full)/initial_n, digits=1), "%)")
+# Drop observations with less than 30 hours worked per week
+filter!(:UHRSWORKLY => >=(30), labor_data_full)
+println("After full-time filter (≥30 hrs/week): ", nrow(labor_data_full), " (", round(100*nrow(labor_data_full)/initial_n, digits=1), "%)")
 
 # Construct hours worked variable
 labor_data_full.HOURS_WORKED = labor_data_full.WKSWORK1 .* labor_data_full.UHRSWORKLY;
@@ -210,6 +230,11 @@ labor_data_full.HOURS_WORKED = labor_data_full.WKSWORK1 .* labor_data_full.UHRSW
 labor_data_full.WAGE = labor_data_full.INCWAGE ./ labor_data_full.HOURS_WORKED
 # Removing workers earning less than half the minimum wage (using 1999 min wage )
 labor_data_full = labor_data_full[(labor_data_full.WAGE .* labor_data_full.CPI99 .>= (5.65 / 4)), :]
+println("After wage floor filter: ", nrow(labor_data_full), " (", round(100*nrow(labor_data_full)/initial_n, digits=1), "%)")
+println("="^70)
+println("Final estimation sample: ", nrow(labor_data_full), " observations")
+println("="^70)
+println()
 
 
 labor_data_full.W_HOURS_WORKED = labor_data_full.HOURS_WORKED .* labor_data_full.ASECWT
@@ -287,25 +312,35 @@ data_korv = CSV.read("./data/Data_KORV.csv", DataFrame)
 sp_korv = data_korv.W_S ./ data_korv.W_U
 lir_korv = data_korv.L_S ./ data_korv.L_U
 
-p4 = plot(final.YEAR, final.SKILL_PREMIUM /   final.SKILL_PREMIUM[1] , legend=:topleft, label="Updated", lw = 2, linestyle = :dash)
-plot!(final.YEAR[1:30], sp_korv  / sp_korv[1], label="KORV", lw = 2)
+theme(:default) 
+default(fontfamily="Computer Modern", framestyle=:box) # LaTex-style
 
-p5 = plot(final.YEAR, final.LABOR_INPUT_RATIO / final.LABOR_INPUT_RATIO[1], legend=:topleft, label="Update", lw = 2, linestyle = :dash)
-plot!(final.YEAR[1:30], lir_korv / lir_korv[1], label="KORV", lw = 2)
+p4 = plot(final.YEAR, final.SKILL_PREMIUM /   final.SKILL_PREMIUM[1] , c = :red, legend=:topleft, label="Updated", lw = 2, linestyle = :dash)
+plot!(final.YEAR[1:30], sp_korv  / sp_korv[1], label="KORV",  c=:black,lw = 2)
+
+p5 = plot(final.YEAR, final.LABOR_INPUT_RATIO / final.LABOR_INPUT_RATIO[1],  c = :red, legend=:topleft, label="Update", lw = 2, linestyle = :dash)
+plot!(final.YEAR[1:30], lir_korv / lir_korv[1], label="KORV",  c=:black,lw = 2)
 
 wbr = (final.W_S  .* final.L_S) ./ (final.W_U .* final.L_U)
 wbr_korv = (data_korv.W_S  .* data_korv.L_S) ./ (data_korv.W_U .* data_korv.L_U)
 
-p3 = plot(final.YEAR, wbr / wbr[1], legend=:topleft, label="Update", lw = 2, linestyle = :dash)
-plot!(final.YEAR[1:30], wbr_korv / wbr_korv[1], label="KORV", lw = 2)
+p3 = plot(final.YEAR, wbr / wbr[1], legend=:topleft, label="Update",  c = :red, lw = 2, linestyle = :dash)
+plot!(final.YEAR[1:30], wbr_korv / wbr_korv[1], label="KORV",  c=:black,lw = 2)
 
-p2 = plot(final.YEAR, final.L_U / final.L_U[1], label="Update", lw = 2, linestyle = :dash)
-plot!(final.YEAR[1:30], data_korv.L_U  / data_korv.L_U[1], label="KORV", lw = 2)
+p2 = plot(final.YEAR, final.L_U / final.L_U[1], label="Update",  c = :red, lw = 2, linestyle = :dash)
+plot!(final.YEAR[1:30], data_korv.L_U  / data_korv.L_U[1], label="KORV", c=:black, lw = 2)
 
-p1 = plot(final.YEAR, final.L_S / final.L_S[1], legend=:topleft, label="Update", lw = 2, linestyle = :dash)
-plot!(final.YEAR[1:30], data_korv.L_S  / data_korv.L_S[1], label="KORV", lw = 2)
+p1 = plot(final.YEAR, final.L_S / final.L_S[1], legend=:topleft,  c = :red, label="Update", lw = 2, linestyle = :dash)
+plot!(final.YEAR[1:30], data_korv.L_S  / data_korv.L_S[1], label="KORV", c=:black, lw = 2)
 
 plot(p1, p2, p3, p4)
+
+
+savefig(p1, "./documents/images/labor_input_unskilled_doc.pdf")
+savefig(p2, "./documents/images/labor_input_skilled_doc.pdf")
+savefig(p3, "./documents/images/sp_doc.pdf")
+savefig(p4, "./documents/images/wbr_doc.pdf")
+
 
 # Re Escale the so that the first value coeincides with the first value of the KORV data
 final.W_S = final.W_S ./ final.W_S[1] * data_korv.W_S[1]

@@ -1,11 +1,16 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
 from curses.ascii import isdigit
 import pandas as pd 
 from os import listdir
+import config
 from rich import print
 
-# Path to data
-path_raw_data = "./extend_KORV/data/raw/" # To read
-path_proc_data = "./extend_KORV/data/interim/" # To write
+# Path to data (centralized in config.py)
+path_raw_data = config.PATH_RAW_EXTEND + ""  # To read
+path_proc_data = config.PATH_PROC_IND + ""   # To write (estimation reads from here)
 
 print("[bold blue]Loading data...")
 file_list = [f for f in listdir(path_raw_data) if ".csv" in f]

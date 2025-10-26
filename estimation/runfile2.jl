@@ -26,7 +26,7 @@ names = inds.ind_desc
 # indx_ = [i for i in 1:length(inds.code_klems) if ~(inds.code_klems[i] in inds_done)]
 
 # i = indx_[end-1]
-i = 7
+i = 43
 begin
 	ind_proc = readdir("./data/results/ind_est")
 	ind_code = codes[i]
@@ -55,8 +55,8 @@ delta_s = mean(dataframe.DPR_ST)
 
 ### Set initial parameter values
 scale_initial = 0.01
-η_ω_0 = 0.16
-param_0 = [0.18, .5, -0.5] 
+η_ω_0 = 0.5
+param_0 = [0.008, .99, 0.1] 
 
 scale_0 = [0.2, 0.23, scale_initial]
 sim = solve_optim_prob(data, model, scale_initial, η_ω_0, vcat(param_0, scale_0),  tol = 0.1, delta=[delta_e, delta_s])
@@ -78,7 +78,7 @@ df_param = DataFrame(
 )
 
 
-CSV.write("./data/results/ind_est/$(ind_code).csv", df_param)
+# CSV.write("./data/results/ind_est/$(ind_code).csv", df_param)
 
 
 plot(p_[1], p_[2], p_[3], p_[4])

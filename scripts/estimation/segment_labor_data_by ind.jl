@@ -84,17 +84,21 @@ end
 
 ## MAIN  ########################################################################
 
-xwalk = CSV.read("./extend_KORV/data/interim/cross_walk.csv", DataFrame)
+xwalk = CSV.read("./data/cross_walk.csv", DataFrame)
 
 code_census = xwalk.code_census
 code_klems = xwalk.code_klems
 
 # Read in big CPS data
-labor_data = CSV.read("./extend_KORV/data/raw/cps_00022.csv", DataFrame)
+labor_data = CSV.read("./data/raw/cps_00022.csv", DataFrame)
 subset!(labor_data, :ASECWT => ByRow(x -> ~ismissing(x)))
 
 # Drop observations with missing industry data
 filter!(:IND1990 => x -> ~ismissing(x), labor_data)
+
+code_census_list = collect(Iterators.flatten([split(code_census[i], ",") for i in 1:length(code_census)]))
+
+subdata_not = subset(labor_data, :IND1990 => ByRow( x -> ~(string(x)  ∈ code_census_list)))
 
 # Fix weights for the 2014 sample
 sample2014 = subset( labor_data, :YEAR => ByRow(==(2014)) )

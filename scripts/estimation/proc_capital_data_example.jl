@@ -4,6 +4,10 @@ using StatsBase
 using Plots
 using StatsPlots
 
+theme(:default) 
+default(fontfamily="Computer Modern", framestyle=:box) # LaTex-style
+
+
 # Load KORV for comparison
 KORV = CSV.read("./data/Data_KORV.csv", DataFrame)
 
@@ -50,24 +54,33 @@ end
 K_st = (K_st / K_st[18]) * KORV.K_STR[1]
 K_eq = (K_eq / K_eq[18]) * KORV.K_EQ[1]
 
-# ## Uncoment to plot results
-# p1 = plot(capital_data.year, K_st , label = "Updated", lw = 2, linestyle = :dash, legend = :topleft)
-#     plot!(capital_data.year[18:18+29], KORV.K_STR , lw = 2, label = "KORV")
-# title!("Stock of Structures")
+## Uncoment to plot results
+p1 = plot(capital_data.year, K_st , label = "Updated", lw = 2, c =:red, linestyle = :dash, legend = :topleft)
+    plot!(capital_data.year[18:18+29], KORV.K_STR , lw = 2, label = "KORV", c = :black)
+title!("Stock of Structures")
+xlims!(1964, 2018)
 
-# p2 = plot(capital_data.year[18:end], K_eq[18:end] / K_eq[18], label = "Updated", lw = 2, linestyle = :dash, legend = :topleft)
-#     plot!(capital_data.year[18:18+29], KORV.K_EQ / KORV.K_EQ[1], lw = 2, label = "KORV")
-# title!("Stock of Equipment")
 
-# p3 = plot(capital_data.year[18:end],peric.value[18:end] / peric.value[18] , label = "Updated", lw = 2, linestyle = :dash)
-#     plot!(capital_data.year[18:18+29], KORV.REL_P_EQ / KORV.REL_P_EQ[1], lw = 2, label = "KORV")
-# title!("Realtive Price of Equipment")
+p2 = plot(capital_data.year[18:end], K_eq[18:end] / K_eq[18], label = "Updated", c =:red, lw = 2, linestyle = :dash, legend = :topleft)
+    plot!(capital_data.year[18:18+29], KORV.K_EQ / KORV.K_EQ[1], lw = 2, label = "KORV", c=:black)
+title!("Stock of Equipment")
+xlims!(1964, 2018)
 
-# p4 = plot(capital_data.year[18:end], δ_st[18:end], label = "Structures", lw = 2)
-#     plot!(capital_data.year[18:end], δ_eq[18:end], lw = 2, label = "Equipment")
-#     ylims!(0,0.2)
+p3 = plot(capital_data.year[18:end],peric.value[18:end] / peric.value[18] , label = "Updated", c = :red, lw = 2, linestyle = :dash)
+    plot!(capital_data.year[18:18+29], KORV.REL_P_EQ / KORV.REL_P_EQ[1], lw = 2, label = "KORV", c=:black)
+title!("Realtive Price of Equipment")
+xlims!(1964, 2018)
 
-# title!("Depreciation Rates")
+savefig(p1, "./documents/images/capital_equipment_doc.pdf")
+savefig(p2, "./documents/images/capital_structures_doc.pdf")
+savefig(p3, "./documents/images/capital_price_doc.pdf")
+
+
+p4 = plot(capital_data.year[18:end], δ_st[18:end], label = "Structures", lw = 2)
+    plot!(capital_data.year[18:end], δ_eq[18:end], lw = 2, label = "Equipment")
+    ylims!(0,0.2)
+
+title!("Depreciation Rates")
 
 # plot(p3, p4, p2, p1, size = (800, 600))
 # plot(capital_data.year[18:end], gdp.value[18:end] / gdp.value[18] , label = "Updated", lw = 2, linestyle = :dash)

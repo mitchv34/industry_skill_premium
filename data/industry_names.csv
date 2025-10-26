@@ -1,0 +1,57 @@
+Description,BEA_Code
+Farms,111CA
+"Forestry, fishing, and related activities",113FF
+Oil and gas extraction,211
+"Mining, except oil and gas",212
+Support activities for mining,213
+Utilities,22
+Construction,23
+Food and beverage and tobacco products,311FT
+Textile mills and textile product mills,313TT
+Apparel and leather and allied products,315AL
+Wood products,321
+Paper products,322
+Printing and related support activities,323
+Petroleum and coal products,324
+Chemical products,325
+Plastics and rubber products,326
+Nonmetallic mineral products,327
+Primary metals,331
+Fabricated metal products,332
+Machinery,333
+Computer and electronic products,334
+"Electrical equipment, appliances, and components",335
+"Motor vehicles, bodies and trailers, and parts",3361MV
+Other transportation equipment,3364OT
+Furniture and related products,337
+Miscellaneous manufacturing,339
+Wholesale trade,42
+Retail trade,44RT
+Air transportation,481
+Rail transportation,482
+Water transportation,483
+Truck transportation,484
+Transit and ground passenger transportation,485
+Other transportation and support activities,487OS
+Warehousing and storage,493
+Motion picture and sound recording industries,512
+Broadcasting and telecommunications,513
+"Federal Reserve banks, credit intermediation, and related activities",521CI
+Insurance carriers and related activities,524
+"Funds, trusts, and other financial vehicles",525
+Real estate,531
+Rental and leasing services and lessors of intangible assets,532RL
+Legal services,5411
+"Miscellaneous professional, scientific, and technical services",5412OP
+Computer systems design and related services,5415
+Management of companies and enterprises,55
+Administrative and support services,561
+Waste management and remediation services,562
+Educational services,61
+Ambulatory health care services,621
+Hospitals and nursing and residential care facilities,622HO
+Social assistance,624
+"Performing arts, spectator sports, museums, and related activities",711AS
+Accommodation,721
+Food services and drinking places,722
+"Other services, except government",81

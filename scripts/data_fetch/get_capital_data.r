@@ -2,6 +2,11 @@
 library(pacman)
 p_load(bea.R, fredr)
 
+# Set working directory to repo root (two levels up from this script)
+script_dir <- dirname(normalizePath(sys.frame(1)$ofile))
+repo_root <- dirname(dirname(script_dir))
+setwd(repo_root)
+
 # definitions are here: 
 #     https://www.bea.gov/resources/learning-center/definitions-and-introduction-fixed-assets
 

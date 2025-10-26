@@ -1,31 +1,45 @@
 # Import packages
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
 from os import listdir
+import os
 import pandas as pd 
 import requests
 import json
 from rich import print
+import config
 
 class CensusAPI:
     """_summary_
     """
     def __init__(self, api_key, states, industry_code):
         """_summary_
+
+        Initialize the CensusAPI helper.
+        Args:
+            api_key: Census API key string
+            states: list or iterable of state FIPS (or single value)
+            industry_code: industry code string
         """
         self.api_key = api_key
         self.time_init = '2000'
         self.time_final = '2030'
         self.base_url = "https://api.census.gov/data/timeseries/qwi/"
-        apiself.endpoint = "se"
-        self.variables = {  "EmpS" : "Full-Quarter Employment (Stable): Counts",
-                            "EarnS": "Full Quarter Employment (Stable): Average Monthly Earnings"}
-        self.sex = [1,2]
-        self.education = [1,2,3,4]
+        self.endpoint = "se"
+        self.variables = {
+            "EmpS": "Full-Quarter Employment (Stable): Counts",
+            "EarnS": "Full Quarter Employment (Stable): Average Monthly Earnings",
+        }
+        self.sex = [1, 2]
+        self.education = [1, 2, 3, 4]
         self.states = states
-        self.county = "" 
+        self.county = ""
         self.industry = industry_code
         self.request_url = ""
-        self.data_frame =  False # This could also be empty dataframe
-        self.data = False # This could also be empty list
+        self.data_frame = False  # This could also be empty dataframe
+        self.data = False  # This could also be empty list
 
     def contruct_url(self):
         """_summary_
@@ -73,12 +87,17 @@ class CensusAPI:
         
 
 if __name__ == "__main__":
-    # Read the api key from a file
-    api_keys_path = "/Users/mitchv34/my_work/census_data_api/api_key/"
+    # Read the api key from a file (path configured in config.py or via
+    # env var CENSUS_API_KEYS_PATH). Update that setting if keys live
+    # elsewhere on your machine/CI.
+    api_keys_path = config.CENSUS_API_KEYS
     api_keys = [f for f in listdir(api_keys_path) if "key" in f]
 
-    with open(api_keys_path + '/' + api_keys[0], 'r') as f:
-        api_key = f.read()
+    if len(api_keys) == 0:
+        raise FileNotFoundError(f"No API key files found in {api_keys_path}; set CENSUS_API_KEYS_PATH to point to a directory containing your key file(s).")
+
+    with open(os.path.join(api_keys_path, api_keys[0]), 'r') as f:
+        api_key = f.read().strip()
     ind_code = "1121"
     a = CensusAPI(api_key, ind_code)
     a.contruct_url()
