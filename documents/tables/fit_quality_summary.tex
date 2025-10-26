@@ -1,0 +1,28 @@
+\begin{table}[H]
+\caption{Summary of Model Fit Quality by Category}
+\label{tab:fit_quality_summary}
+\begin{center}
+\begin{tabular}{lccccc}
+\toprule
+Fit Category & N & \multicolumn{4}{c}{Mean RMSE} \\
+\cmidrule(lr){3-6}
+& & Skill Prem. & Labor Share & Wage Bill Ratio & Labor Input Ratio \\
+\midrule
+Good & 18 & 0.207 & 0.058 & 0.098 & 0.000 \\
+Medium & 18 & 0.315 & 0.060 & 0.153 & 0.000 \\
+Poor & 18 & 2.009 & 0.123 & 4.107 & 0.000 \\
+\midrule
+\multicolumn{6}{l}{\textbf{Mean $R^2$ by Category}} \\
+\midrule
+Good & 18 & -0.481 & -0.045 & 0.741 & 1.000 \\
+Medium & 18 & -3.962 & -1.313 & 0.259 & 1.000 \\
+Poor & 18 & -528.422 & -17.393 & -41.718 & 1.000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{minipage}{\textwidth}
+\small
+\textit{Note:} Industries classified into terciles based on overall fit quality (average $R^2$ across four series). 
+Good fit = top tercile, Medium = middle tercile, Poor = bottom tercile. RMSE and $R^2$ averaged across industries within each category.
+\end{minipage}
+\end{table}

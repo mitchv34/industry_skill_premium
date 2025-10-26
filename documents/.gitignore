@@ -1,0 +1,19 @@
+# Only track manuscript.pdf, ignore all other PDFs and LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Ignore all PDFs except manuscript.pdf
+*.pdf
+!manuscript/manuscript.pdf
+
+# Ignore all .tex files except manuscript.tex
+*.tex
+!manuscript/manuscript.tex
+!tables/*.tex

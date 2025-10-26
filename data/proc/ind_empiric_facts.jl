@@ -262,9 +262,9 @@ for i in eachrow(cwalk)
     
 
 
-    # savefig(p_li, "/Users/mitchv34/Work/industry_skill_premium/documents/images/industries/labor_input_ratio/$prefix_li$(ind_code).pdf")
-    # savefig(p_ls, "/Users/mitchv34/Work/industry_skill_premium/documents/images/industries/labor_share/$prefix_ls$(ind_code).pdf")
-    # savefig(p_sp, "/Users/mitchv34/Work/industry_skill_premium/documents/images/industries/skill_premium/$prefix_sp$(ind_code).pdf")
+    savefig(p_li, "/Users/mitchv34/Work/industry_skill_premium/documents/images/industries/labor_input_ratio/$prefix_li$(ind_code)_new.pdf")
+    savefig(p_ls, "/Users/mitchv34/Work/industry_skill_premium/documents/images/industries/labor_share/$prefix_ls$(ind_code)_new.pdf")
+    savefig(p_sp, "/Users/mitchv34/Work/industry_skill_premium/documents/images/industries/skill_premium/$prefix_sp$(ind_code)_new.pdf")
 end   
 
 

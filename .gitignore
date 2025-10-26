@@ -1,7 +1,22 @@
-# Large data files
+# Large data files (don't commit raw/interim data to git)
 /data/raw/
 /data/interim/
-# Exept processed
+/extend_KORV/data/raw/
+/extend_KORV/data/interim/
+# Except processed data for reproducibility
+
+# API keys and sensitive configuration
+**/api_key/
+**/api_keys/
+*.key
+config_local.py
+.env.local
+
+# Temporary and scratch files
+scrap.ipynb
+*_temp.ipynb
+*_test.ipynb
+gr-temp/
 
 
 # Jupyter notebooks files
@@ -554,3 +569,12 @@ TSWLatexianTemp*
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
+
+# VSCode and editor files
+.history/
+.vscode/
+**/__pycache__/
+*.pyc
+
+# Temp files
+gr-temp/

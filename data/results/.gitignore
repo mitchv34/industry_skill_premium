@@ -1,0 +1,9 @@
+# Ignore bulk generated figures from parameter sweeps
+figures/
+*_sweep_*.png
+*_param_*.png
+
+# Keep important result CSVs and summary files
+!*.csv
+!decomposition_by_industry.csv
+!industry_fit_statistics.csv
