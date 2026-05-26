@@ -578,3 +578,6 @@ TSWLatexianTemp*
 
 # Temp files
 gr-temp/
+
+# Local Claude Code state (machine-specific)
+.claude/
