@@ -1,0 +1,86 @@
+{
+    "version": 2,
+    "dataStructure": {
+        "rectangular": {
+            "on": "P"
+        }
+    },
+    "dataFormat": "csv",
+    "caseSelectWho": "individuals",
+    "description": "industry_skill_premium ACS 2000-2023",
+    "samples": {
+        "us2000d": {},
+        "us2001a": {},
+        "us2002a": {},
+        "us2003a": {},
+        "us2004a": {},
+        "us2005a": {},
+        "us2006a": {},
+        "us2007a": {},
+        "us2008a": {},
+        "us2009a": {},
+        "us2010a": {},
+        "us2011a": {},
+        "us2012a": {},
+        "us2013a": {},
+        "us2014a": {},
+        "us2015a": {},
+        "us2016a": {},
+        "us2017a": {},
+        "us2018a": {},
+        "us2019a": {},
+        "us2020a": {},
+        "us2021a": {},
+        "us2022a": {},
+        "us2023a": {}
+    },
+    "variables": {
+        "YEAR": {
+            "preselected": true
+        },
+        "SAMPLE": {
+            "preselected": true
+        },
+        "SERIAL": {
+            "preselected": true
+        },
+        "CBSERIAL": {
+            "preselected": true
+        },
+        "HHWT": {
+            "preselected": true
+        },
+        "CLUSTER": {
+            "preselected": true
+        },
+        "STRATA": {
+            "preselected": true
+        },
+        "GQ": {
+            "preselected": true
+        },
+        "PERNUM": {
+            "preselected": true
+        },
+        "PERWT": {
+            "preselected": true
+        },
+        "SEX": {},
+        "AGE": {},
+        "RACE": {},
+        "HISPAN": {},
+        "EDUC": {},
+        "DEGFIELD": {},
+        "EMPSTAT": {},
+        "CLASSWKR": {},
+        "OCC": {},
+        "OCC1990": {},
+        "IND": {},
+        "IND1990": {},
+        "WKSWORK1": {},
+        "WKSWORK2": {},
+        "UHRSWORK": {},
+        "INCWAGE": {}
+    },
+    "collection": "usa"
+}
