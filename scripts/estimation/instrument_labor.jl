@@ -1,102 +1,125 @@
 using CSV
 using DataFrames
 using GLM
+using Statistics
 
+const DEFAULT_INPUT_DIR = "./data/proc/ind"
 
-# Load data
+const LABOR_IV_FORMULA = @formula(
+    labor ~ trend + K_EQ + K_STR + K_EQ_lagged + K_STR_lagged + Q_lagged
+)
 
-poly(x, n) = x^n
+function parse_args(args)
+    input_dir = DEFAULT_INPUT_DIR
+    ind_code = nothing
 
+    i = 1
+    while i <= length(args)
+        if args[i] == "--ind"
+            i == length(args) && error("--ind requires an industry code")
+            ind_code = args[i + 1]
+            i += 2
+        elseif args[i] == "--input-dir"
+            i == length(args) && error("--input-dir requires a path")
+            input_dir = args[i + 1]
+            i += 2
+        else
+            error("Unknown argument: $(args[i])")
+        end
+    end
 
-path_data = "./data/proc/ind"
-
-file_list = [f for f in readdir(path_data) if occursin(".csv", f)]
-
-formula_W_S = @formula( W_S ~ trend  + K_EQ + K_STR + K_EQ_lagged + K_STR_lagged + Q_lagged)
-formula_W_U = @formula( W_U ~ trend  + K_EQ + K_STR + K_EQ_lagged + K_STR_lagged + Q_lagged)
-formula_L_S = @formula( L_S ~ trend  + K_EQ + K_STR + K_EQ_lagged + K_STR_lagged + Q_lagged)
-formula_L_U = @formula( L_U ~ trend  + K_EQ + K_STR + K_EQ_lagged + K_STR_lagged + Q_lagged)
-
-# data_dict = Dict()
-
-for file in file_list
-    data = CSV.read(path_data * "/" * file, DataFrame)
-    # @show data
-
-    ## Instrument L_S and L_U ######
-    data_for_reg = DataFrame(
-        [
-            :W_S => data.W_S[2:end],
-            :W_U => data.W_U[2:end],
-            :L_S => data.L_S[2:end],
-            :L_U => data.L_U[2:end],
-            :trend => 1:length(data.L_S[2:end]),
-            :K_EQ => data.K_EQ[2:end],
-            :K_STR => data.K_STR[2:end],
-            :K_EQ_lagged => data.K_EQ[1:end-1],
-            :K_STR_lagged => data.K_STR[1:end-1],
-            :Q_lagged => data.REL_P_EQ[1:end-1],
-        ]
-    )
-
-    ## Run regression  first stage for L_S and L_U ######
-    reg_L_S = lm(formula_L_S,  data_for_reg)
-    reg_L_U = lm(formula_L_U,  data_for_reg)
-    reg_W_S = lm(formula_W_S,  data_for_reg)
-    reg_W_U = lm(formula_W_U,  data_for_reg)
-    
-    L_S_hat = predict(reg_L_S, data_for_reg)
-    L_U_hat = predict(reg_L_U, data_for_reg)
-    W_S_hat = predict(reg_W_S, data_for_reg)
-    W_U_hat = predict(reg_W_U, data_for_reg)
-    
-
-    # L_S_hat = ( L_S_hat./L_S_hat[1] ) *  data_for_reg.L_S[1]
-    # L_U_hat = ( L_U_hat./L_U_hat[1] ) *  data_for_reg.L_U[1]
-
-    data.L_S = vcat([0], L_S_hat)
-    data.L_U = vcat([0], L_U_hat)
-    data.W_S = vcat([0], W_S_hat)
-    data.W_U = vcat([0], W_U_hat)
-
-    # data_dict[file[1:end-4]] = data
-    print(path_data * "/" * file )
-    CSV.write(path_data * "/" * file, data)
+    return input_dir, ind_code
 end
 
+function source_files(input_dir::String, ind_code)
+    if isnothing(ind_code)
+        return sort([
+            joinpath(input_dir, f)
+            for f in readdir(input_dir)
+            if endswith(f, ".csv") && !endswith(f, "_iv.csv")
+        ])
+    end
 
+    path = joinpath(input_dir, "$(ind_code).csv")
+    isfile(path) || error("Industry source file not found: $path")
+    return [path]
+end
 
-##  Sanity check plots ###### Must uncomment data_dict lines above
-# begin
-#     i = "5415"
-#     p1 = plot(data_dict[i].YEAR[2:end], data_dict[i].L_S[2:end], lw = 2, label = "L_S", legend=:top)
-#     plot!(data_dict[i].YEAR[2:end], data_dict[i].L_S_hat[2:end], lw = 2, label = "L_S_hat")
+function build_regression_frame(data::DataFrame, labor_col::Symbol)
+    n = nrow(data)
+    n >= 2 || error("Need at least two rows to construct lagged instruments")
 
-#     p2 = plot(data_dict[i].YEAR[2:end], data_dict[i].L_U[2:end], lw = 2, label = "L_U", legend=:top)
-#     plot!(data_dict[i].YEAR[2:end],     data_dict[i].L_U_hat[2:end], lw = 2, label = "L_U_hat")
+    return DataFrame(
+        row_id = 2:n,
+        labor = data[2:end, labor_col],
+        trend = 1:(n - 1),
+        K_EQ = data.K_EQ[2:end],
+        K_STR = data.K_STR[2:end],
+        K_EQ_lagged = data.K_EQ[1:end-1],
+        K_STR_lagged = data.K_STR[1:end-1],
+        Q_lagged = data.REL_P_EQ[1:end-1],
+    )
+end
 
-#     p3 = plot(data_dict[i].YEAR[2:end], data_dict[i].W_S[2:end], lw = 2, label = "W_S", legend=:topleft)
-#     plot!(data_dict[i].YEAR[2:end], data_dict[i].W_S_hat[2:end], lw = 2, label = "W_S_hat")
-    
-#     p4 = plot(data_dict[i].YEAR[2:end], data_dict[i].W_U[2:end], lw = 2, label = "W_U", legend=:topleft)
-#     plot!(data_dict[i].YEAR[2:end], data_dict[i].W_U_hat[2:end], lw = 2, label = "W_U_hat")
+function predict_labor(data::DataFrame, labor_col::Symbol)
+    output = Vector{Union{Missing, Float64}}(undef, nrow(data))
+    output .= Float64.(data[:, labor_col])
 
-#     plot(p1, p2, p3, p4)
-# end
+    reg_data = build_regression_frame(data, labor_col)
+    predictor_cols = [:trend, :K_EQ, :K_STR, :K_EQ_lagged, :K_STR_lagged, :Q_lagged]
+    complete_predictors = completecases(reg_data[:, predictor_cols])
+    complete_model = completecases(reg_data[:, [:labor; predictor_cols]])
 
-# begin
-#     sp_original = data_dict[i].W_S[2:end] ./ data_dict[i].W_U[2:end]
-#     sp_hat = data_dict[i].W_S_hat[2:end] ./ data_dict[i].W_U_hat[2:end]
-    
-#     wbr_original = (data_dict[i].W_S .* data_dict[i].L_S)[2:end] ./ (data_dict[i].W_U .* data_dict[i].L_U)[2:end]
-#     wbr_hat      = (data_dict[i].W_S_hat .* data_dict[i].L_S_hat)[2:end] ./ (data_dict[i].W_U_hat .* data_dict[i].L_U_hat)[2:end]
-    
+    model_data = reg_data[complete_model, :]
+    if nrow(model_data) <= length(predictor_cols)
+        @warn "Too few complete observations to instrument $labor_col; keeping raw values"
+        return Float64.(coalesce.(output, data[:, labor_col]))
+    end
 
-#     p1 = plot(data_dict[i].YEAR[2:end], sp_original, lw = 2, label = "SP", legend=:topleft)
-#     plot!(data_dict[i].YEAR[2:end], sp_hat, lw = 2, label = "SP hat")
+    model = lm(LABOR_IV_FORMULA, model_data)
+    prediction_data = reg_data[complete_predictors, :]
+    predicted = predict(model, prediction_data)
 
-#     p2 = plot(data_dict[i].YEAR[2:end], wbr_original, lw = 2, label = "WBR", legend=:topleft)
-#     plot!(data_dict[i].YEAR[2:end],    wbr_hat, lw = 2, label = "WBR hat")
+    for (row_id, value) in zip(prediction_data.row_id, predicted)
+        output[row_id] = value
+    end
 
-#     plot(p1, p2)
-# end
+    return Float64.(coalesce.(output, data[:, labor_col]))
+end
+
+function instrument_labor_file(path::String)
+    data = CSV.read(path, DataFrame)
+    required = [:YEAR, :L_S, :L_U, :W_S, :W_U, :K_EQ, :K_STR, :REL_P_EQ]
+    missing_cols = setdiff(required, Symbol.(names(data)))
+    isempty(missing_cols) || error("$(basename(path)) missing required columns: $missing_cols")
+
+    output = copy(data)
+    output.L_S_raw = Float64.(data.L_S)
+    output.L_U_raw = Float64.(data.L_U)
+    output.L_S_iv = predict_labor(data, :L_S)
+    output.L_U_iv = predict_labor(data, :L_U)
+
+    # Keep estimation-compatible column names pointed at the instrumented labor
+    # series, while preserving raw and IV-specific columns for auditability.
+    output.L_S = output.L_S_iv
+    output.L_U = output.L_U_iv
+
+    out_path = replace(path, r"\.csv$" => "_iv.csv")
+    CSV.write(out_path, output)
+    return out_path
+end
+
+function main(args=ARGS)
+    input_dir, ind_code = parse_args(args)
+    outputs = String[]
+    for path in source_files(input_dir, ind_code)
+        out_path = instrument_labor_file(path)
+        push!(outputs, out_path)
+        println("wrote $out_path")
+    end
+    println("instrumented $(length(outputs)) file(s)")
+end
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    main()
+end

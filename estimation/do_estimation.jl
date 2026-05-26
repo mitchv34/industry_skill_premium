@@ -5,6 +5,63 @@ using Plots
 
 include("estimation.jl")
 
+const TRANSFORM_EPS = 1e-8
+
+sigmoid(z::Real) = z >= 0 ? 1 / (1 + exp(-z)) : exp(z) / (1 + exp(z))
+
+function logit(p::Real)
+    p_bounded = clamp(p, TRANSFORM_EPS, 1 - TRANSFORM_EPS)
+    return log(p_bounded / (1 - p_bounded))
+end
+
+function log_one_minus_below_one(x::Real)
+    x_bounded = min(x, 1 - TRANSFORM_EPS)
+    return log(max(1 - x_bounded, TRANSFORM_EPS))
+end
+
+positive_to_free(x::Real) = log(max(x, TRANSFORM_EPS))
+free_to_positive(z::Real) = exp(clamp(z, -700, 700))
+free_to_below_one(z::Real) = 1 - free_to_positive(z)
+
+function constrained_to_free(x::Vector)
+    length(x) == 6 || error("Expected six constrained optimizer parameters: α, σ, ρ, μ, λ, φℓ₀")
+    return [
+        logit(x[1]),                  # α ∈ (0, 1)
+        log_one_minus_below_one(x[2]),# σ ∈ (-∞, 1)
+        log_one_minus_below_one(x[3]),# ρ ∈ (-∞, 1)
+        logit(x[4]),                  # μ ∈ (0, 1)
+        logit(x[5]),                  # λ ∈ (0, 1)
+        positive_to_free(x[6])        # φℓ₀ ∈ (0, ∞)
+    ]
+end
+
+function free_to_constrained(z::Vector)
+    length(z) == 6 || error("Expected six free optimizer parameters")
+    return [
+        sigmoid(z[1]),          # α
+        free_to_below_one(z[2]),# σ
+        free_to_below_one(z[3]),# ρ
+        sigmoid(z[4]),          # μ
+        sigmoid(z[5]),          # λ
+        free_to_positive(z[6])  # φℓ₀
+    ]
+end
+
+function free_to_params(z::Vector, η_ω::Float64, fixed_param::Float64; delta::Vector=[])
+    θ = free_to_constrained(z)
+    if length(delta) == 0
+        return setParams([θ[1:3]..., η_ω], [θ[4:end]..., fixed_param])
+    else
+        delta_e, delta_s = delta
+        return setParams([θ[1:3]..., η_ω], [θ[4:end]..., fixed_param], δ_e = delta_e, δ_s = delta_s)
+    end
+end
+
+function readable_free_params(z::Vector)
+    θ = free_to_constrained(z)
+    return (α = θ[1], σ = θ[2], ρ = θ[3], μ = θ[4], λ = θ[5], φℓ⁰ = θ[6])
+end
+
 
 # Callback function to be used during estimation
 function callback(os)
@@ -17,12 +74,7 @@ function callback(os)
     	# println(@red " * Iteration:       ", os.iteration)
         # print(os.metadata)
 		minimizer = os.metadata["centroid"]
-		α = minimizer[1]
-		σ = minimizer[2]
-		ρ = minimizer[3]
-		μ = minimizer[4]
-		λ = minimizer[5]
-		φℓ⁰	= minimizer[6]
+		(α, σ, ρ, μ, λ, φℓ⁰) = readable_free_params(minimizer)
 		@info "Parameters" α σ ρ μ λ φℓ⁰
 		f = os.value
 		g_norm = os.g_norm
@@ -55,24 +107,9 @@ mutable struct Simulation
 end # Simulation
 
 # Define optimization problem
-function set_optim_problem(x::Vector, data::Data, T::Int64, η_ω::Float64, model::Model, fixed_param::Float64; delta::Vector=[])
+function set_optim_problem(z::Vector, data::Data, T::Int64, η_ω::Float64, model::Model, fixed_param::Float64; delta::Vector=[])
 
-	# Check admisible parameter values
-	if (0 > x[1]) || (1 < x[1]) || (x[2] > 1)  || (1 < x[3]) 
-		return Inf 
-	end
-
-	if (0 > x[4]) || (1 < x[4]) || (0 > x[5])  || (1 < x[5]) || (x[6] < 0) 
-		return Inf 
-	end
-
-    if length(delta) == 0
-        p_new = setParams( [x[1:3]...,η_ω] , [x[4:end]..., fixed_param]);
-    else
-        delta_e, delta_s = delta
-        p_new = setParams( [x[1:3]...,η_ω] , [x[4:end]..., fixed_param], δ_e = delta_e, δ_s = delta_s);
-    end
-    
+	p_new = free_to_params(z, η_ω, fixed_param; delta=delta)
 
 	shocks = generateShocks(p_new, T);
 	update_model!(model, p_new)
@@ -87,14 +124,15 @@ function solve_optim_prob(data::Data, model::Model, fixed_param::Float64, η_ω:
 
     ### Run optimization
     # set optimization problem
-    optim_problem(x::Vector) = set_optim_problem(x, data, T, η_ω, model, fixed_param; delta=delta)
+    optim_problem(z::Vector) = set_optim_problem(z, data, T, η_ω, model, fixed_param; delta=delta)
 
     T = length(data.y) # Time horizon
+    z_0 = constrained_to_free(x_0)
 
     ## Set options for estimation
     options = OptimOptions(
         optim_problem, # Function to be optimized
-        x_0, # Initial parameter values
+        z_0, # Initial parameter values in unconstrained z-space
         NelderMead(), # Optimization method
         tol, # Tolerance for convergence
         maxiter, # Maximum number of iterations
@@ -123,8 +161,8 @@ function solve_optim_prob(data::Data, model::Model, fixed_param::Float64, η_ω:
     return Simulation(  sol.minimum,
                         sol.g_residual,
                         sol.time_run,
-                        setParams( [sol.initial_x[1:3]...,η_ω] , [sol.initial_x[4:end]..., fixed_param], δ_e = delta_e, δ_s = delta_s ),
-                        setParams( [sol.minimizer[1:3]...,η_ω] , [sol.minimizer[4:end]..., fixed_param], δ_e = delta_e, δ_s = delta_s ),
+                        free_to_params(sol.initial_x, η_ω, fixed_param, delta=[delta_e, delta_s]),
+                        free_to_params(sol.minimizer, η_ω, fixed_param, delta=[delta_e, delta_s]),
                         options
                     )
 end # solve_optim_prob 

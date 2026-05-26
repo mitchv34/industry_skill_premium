@@ -1,172 +1,188 @@
-# install.packages('pacman')
+# Fetches BEA Fixed Assets + NIPA + FRED time series needed for the chapter.
+#
+# Setup:
+#   - install.packages(c("pacman")); pacman::p_load(bea.R, fredr)
+#   - Set BEA_API_KEY and FRED_API_KEY environment variables, OR put them in
+#     `pass` under api/bea and api/fred (then export from your shell).
+#
+# Output layout (defined in config.py, kept in sync here):
+#   data/raw/bea/   — BEA Fixed Assets + NIPA tables
+#   data/raw/fred/  — FRED series
+#
+# Sample window: SAMPLE_START_YEAR .. SAMPLE_END_YEAR below. Override via env
+# vars SAMPLE_START_YEAR / SAMPLE_END_YEAR if needed.
+
 library(pacman)
 p_load(bea.R, fredr)
 
-# Set working directory to repo root (two levels up from this script)
+# ---------------------------------------------------------------------------
+# Setup: working directory, API keys, sample window.
+# ---------------------------------------------------------------------------
+
 script_dir <- dirname(normalizePath(sys.frame(1)$ofile))
-repo_root <- dirname(dirname(script_dir))
+repo_root  <- dirname(dirname(script_dir))
 setwd(repo_root)
 
-# definitions are here: 
-#     https://www.bea.gov/resources/learning-center/definitions-and-introduction-fixed-assets
+# Read keys from env vars (Mitchell's `pass`-based convention exports these in
+# shell init). Refuse to run with empty keys rather than silently failing.
+beaKey  <- Sys.getenv("BEA_API_KEY")
+fredKey <- Sys.getenv("FRED_API_KEY")
+if (nchar(beaKey)  == 0) stop("BEA_API_KEY not set (try: export BEA_API_KEY=$(pass show api/bea))")
+if (nchar(fredKey) == 0) stop("FRED_API_KEY not set (try: export FRED_API_KEY=$(pass show api/fred))")
 
-beaKey 	<- 'A22A56FA-4B7B-4EB3-8A78-304D00AF56F4'
+sample_start <- as.integer(Sys.getenv("SAMPLE_START_YEAR", "1947"))
+sample_end   <- as.integer(Sys.getenv("SAMPLE_END_YEAR",   "2025"))
+obs_start    <- as.Date(sprintf("%d-01-01", sample_start))
+obs_end      <- as.Date(sprintf("%d-12-31", sample_end))
 
-# I will also be pulling data from the FRED API
-fredKey <- '485a8a81f782ca06921bd2620a64b301'
+# Output directories (kept in sync with config.py).
+out_bea  <- file.path(repo_root, "data", "raw", "bea")
+out_fred <- file.path(repo_root, "data", "raw", "fred")
+dir.create(out_bea,  showWarnings = FALSE, recursive = TRUE)
+dir.create(out_fred, showWarnings = FALSE, recursive = TRUE)
 
-# I know the identifiers of the following series
-# Current-Cost Net Capital Stock of Private Nonresidential Fixed Assets (Equipment): K1N110C1EQ00
-# Current-Cost Depreciation of Private Nonresidential Fixed Assets (Equipment): M1N110C1EQ00
-# Investment in Private Nonresidential Fixed Assets (Equipment): I3N110C1EQ00
+# ---------------------------------------------------------------------------
+# BEA Fixed Assets — capital stocks, investment, depreciation by industry.
+#
+# As of 2023, BEA Fixed Assets are published on NAICS 2022. Historical series
+# 1947+ have been restated. See:
+#   https://www.bea.gov/news/2023/gross-domestic-product-third-quarter-2023-second-estimate
+#
+# Definitions: https://www.bea.gov/resources/learning-center/definitions-and-introduction-fixed-assets
+#
+# Equipment  / Structures  / Intellectual Property
+# Stock:     FAAt301E / FAAt301S / FAAt301I
+# Investment:FAAt307E / FAAt307S / FAAt307I  <-- Table 3.7E is also the input
+#                                                for the industry-specific
+#                                                Tornqvist deflator (Q1).
+# Depreciation: FAAt304E / FAAt304S / FAAt304I
+# ---------------------------------------------------------------------------
 
-# Let's do a search on the first one and see what we get
-beaSearch(" Table 3.1E.", beaKey, asHtml = TRUE)
+data_stk <- c("FAAt301E", "FAAt301S", "FAAt301I")
+data_inv <- c("FAAt307E", "FAAt307S", "FAAt307I")
+data_dpr <- c("FAAt304E", "FAAt304S", "FAAt304I")
 
-# There are two tables that contains this series both in the FixedAssets dataset:
-# 1.(FAAt301E) Table 3.1E. Current-Cost Net Stock of Private Equipment by Industry
-# 2.(FAAt401) Table 4.1. Current-Cost Net Stock of Private Nonresidential Fixed Assets by Industry Group and Legal Form of Organization
-# After a quick search I determined that I want the first one
-
-# Repeat the search for the second and third series and I get:
-# (FAAt304E) Table 3.4E. Current-Cost Depreciation of Private Equipment by Industry
-# (FAAt307E) Table 3.7E. Investment in Private Equipment by Industry
-
-# After looking up the same for Structures and Intelectual Property I get:
-    # * Stock of Capital:
-    #     - (FAAt301S) Table 3.1S. Current-Cost net Stock of Private Structures by Industry
-    #     - (FAAt301I) Table 3.1I. Current-Cost Net Stock of Intellectual Property Products by Industry
-    # * Investment:
-    #     - (FAAt307S) Table 3.7S. Investment in Private Structures by Industry
-    #     - (FAAt307I) Table 3.7I. Investment in Private Intellectual Property Products by Industry
-    # * Depreciation:
-    #     - (FAAt304S) Table 3.4S. Current-Cost Depreciation of Private Structures by Industry
-    #     - (FAAt304I) Table 3.4I. Current-Cost Depreciation of Private Intellectual Property Products by Industry
-
-# Putting all toghter I get:
-# List        Equipment   Structures        IP
-data_stk <- c("FAAt301E", "FAAt301S", "FAAt301I")   # Stock of Capital
-data_inv <- c("FAAt307E", "FAAt307S", "FAAt307I")   # Investment
-data_dpr <- c("FAAt304E", "FAAt304S", "FAAt304I")   # Depreciation
-
-
-# Get the data
-create_query <- function(table_name){
-    query <-  list(
-        'UserID' = beaKey, 
-        'Method' = 'GetData',
-        'datasetname' = "FixedAssets", # Data set name
-        'TableName' = table_name, 
-        'Frequency' = 'A', # annual
-        'Year' = 'X', # 'X' is a placeholder for all years
-        'ResultFormat' = 'json'
+create_query <- function(table_name, dataset = "FixedAssets") {
+    list(
+        'UserID'      = beaKey,
+        'Method'      = 'GetData',
+        'datasetname' = dataset,
+        'TableName'   = table_name,
+        'Frequency'   = 'A',
+        'Year'        = 'X',          # all available years
+        'ResultFormat'= 'json'
     )
-    return(query)
 }
 
-# Get the data for each series
-## Stock of Capital
+message("Fetching BEA Fixed Assets ...")
 stock_eq <- beaGet(create_query(data_stk[1]))
 stock_st <- beaGet(create_query(data_stk[2]))
 stock_ip <- beaGet(create_query(data_stk[3]))
-## Investment
-inv_eq <- beaGet(create_query(data_inv[1]))
-inv_st <- beaGet(create_query(data_inv[2]))
-inv_ip <- beaGet(create_query(data_inv[3]))
-## Depreciation
-dpr_eq <- beaGet(create_query(data_dpr[1]))
-dpr_st <- beaGet(create_query(data_dpr[2]))
-dpr_ip <- beaGet(create_query(data_dpr[3]))
+inv_eq   <- beaGet(create_query(data_inv[1]))
+inv_st   <- beaGet(create_query(data_inv[2]))
+inv_ip   <- beaGet(create_query(data_inv[3]))
+dpr_eq   <- beaGet(create_query(data_dpr[1]))
+dpr_st   <- beaGet(create_query(data_dpr[2]))
+dpr_ip   <- beaGet(create_query(data_dpr[3]))
 
+# ---------------------------------------------------------------------------
+# NIPA — equipment price indexes by detail asset type (Table 5.6.4).
+# Needed for industry-specific Tornqvist deflator (Q1).
+# ---------------------------------------------------------------------------
 
-# FRED DATA
+message("Fetching NIPA Table 5.6.4 (price indexes for equipment by type) ...")
+nipa_5_6_4 <- beaGet(list(
+    'UserID'      = beaKey,
+    'Method'      = 'GetData',
+    'datasetname' = "NIPA",
+    'TableName'   = "T50604",
+    'Frequency'   = 'A',
+    'Year'        = 'X',
+    'ResultFormat'= 'json'
+))
+
+# ---------------------------------------------------------------------------
+# NIPA Gross Domestic Income (T11000) — labor share construction input.
+# ---------------------------------------------------------------------------
+
+message("Fetching NIPA T11000 (Gross Domestic Income) ...")
+gdi <- beaGet(list(
+    'UserID'      = beaKey,
+    'Method'      = 'GetData',
+    'datasetname' = "NIPA",
+    'TableName'   = "T11000",
+    'Frequency'   = 'A',
+    'Year'        = 'X',
+    'ResultFormat'= 'json'
+))
+
+# ---------------------------------------------------------------------------
+# GDP by Industry — for industry-level value added / output.
+# ---------------------------------------------------------------------------
+
+message("Fetching GDPbyIndustry (industry-level value added) ...")
+gdp_by_industry <- beaGet(list(
+    'UserID'      = beaKey,
+    'Method'      = 'GetData',
+    'datasetname' = "GDPbyIndustry",
+    'TableID'     = "All",
+    'Industry'    = "A",
+    'Frequency'   = 'A',
+    'Year'        = 'X',
+    'ResultFormat'= 'json'
+))
+
+# ---------------------------------------------------------------------------
+# FRED — aggregate price/output series.
+# ---------------------------------------------------------------------------
+
 fredr_set_key(fredKey)
 
-# GDP
-gdp <- gdpdef <- fredr(
-    series_id = "GDPC1",
-    observation_start = as.Date("1947-01-01"),
-    observation_end = as.Date("2020-01-01"),
-    frequency = "a"
-)
+fred_fetch <- function(series_id) {
+    fredr(
+        series_id         = series_id,
+        observation_start = obs_start,
+        observation_end   = obs_end,
+        frequency         = "a"
+    )
+}
 
+message("Fetching FRED series ...")
+gdp     <- fred_fetch("GDPC1")     # Real GDP, chained 2017 dollars
+gdpdef  <- fred_fetch("GDPDEF")    # GDP implicit deflator
+consdef <- fred_fetch("CONSDEF")   # Consumption deflator
+peric   <- fred_fetch("PERIC")     # Relative price of equipment (aggregate q_t)
 
-# Implicit price Deflator GDPDEF
-gdpdef <- fredr(
-    series_id = "GDPDEF",
-    observation_start = as.Date("1947-01-01"),
-    observation_end = as.Date("2020-01-01"),
-    frequency = "a"
-)
+# ---------------------------------------------------------------------------
+# Write outputs.
+# ---------------------------------------------------------------------------
 
-# Consumption Deflator CONSDEF
-consdef <- fredr(
-    series_id = "CONSDEF",
-    observation_start = as.Date("1947-01-01"),
-    observation_end = as.Date("2020-01-01"),
-    frequency = "a"
-)
+bea_writer <- function(df, fname) {
+    write.csv2(df, file.path(out_bea, fname), row.names = FALSE, quote = FALSE)
+}
+fred_writer <- function(df, fname) {
+    write.csv(df, file.path(out_fred, fname), row.names = FALSE, quote = FALSE)
+}
 
-# Relative Price of Equipment PERIC
-peric <- fredr(
-    series_id = "PERIC",
-    observation_start = as.Date("1947-01-01"),
-    observation_end = as.Date("2020-01-01"),
-    frequency = "a"
-)
+message("Writing BEA outputs to ", out_bea, " ...")
+bea_writer(stock_eq,        "stock_eq.csv")
+bea_writer(stock_st,        "stock_st.csv")
+bea_writer(stock_ip,        "stock_ip.csv")
+bea_writer(inv_eq,          "inv_eq.csv")
+bea_writer(inv_st,          "inv_st.csv")
+bea_writer(inv_ip,          "inv_ip.csv")
+bea_writer(dpr_eq,          "dpr_eq.csv")
+bea_writer(dpr_st,          "dpr_st.csv")
+bea_writer(dpr_ip,          "dpr_ip.csv")
+bea_writer(nipa_5_6_4,      "nipa_T50604_equipment_price_by_asset.csv")
+bea_writer(gdi,             "gdi.csv")
+bea_writer(gdp_by_industry, "gdp_by_industry.csv")
 
+message("Writing FRED outputs to ", out_fred, " ...")
+fred_writer(gdp,     "gdp.csv")
+fred_writer(gdpdef,  "gdpdef.csv")
+fred_writer(consdef, "consdef.csv")
+fred_writer(peric,   "peric.csv")
 
-# Save the data
-## From BEA
-write.csv2(stock_eq, "./extend_KORV/data/raw/stock_eq.csv", row.names=FALSE, quote=FALSE)
-write.csv2(stock_st, "./extend_KORV/data/raw/stock_st.csv", row.names=FALSE, quote=FALSE)
-write.csv2(stock_ip, "./extend_KORV/data/raw/stock_ip.csv", row.names=FALSE, quote=FALSE)
-write.csv2(inv_eq, "./extend_KORV/data/raw/inv_eq.csv", row.names=FALSE, quote=FALSE)
-write.csv2(inv_st, "./extend_KORV/data/raw/inv_st.csv", row.names=FALSE, quote=FALSE)
-write.csv2(inv_ip, "./extend_KORV/data/raw/inv_ip.csv", row.names=FALSE, quote=FALSE)
-write.csv2(dpr_eq, "./extend_KORV/data/raw/dpr_eq.csv", row.names=FALSE, quote=FALSE)
-write.csv2(dpr_st, "./extend_KORV/data/raw/dpr_st.csv", row.names=FALSE, quote=FALSE)
-write.csv2(dpr_ip, "./extend_KORV/data/raw/dpr_ip.csv", row.names=FALSE, quote=FALSE)
-## From FRED
-write.csv(gdp, "./extend_KORV/data/raw/gdp.csv", row.names=FALSE, quote=FALSE)
-write.csv(gdpdef, "./extend_KORV/data/raw/gdpdef.csv", row.names=FALSE, quote=FALSE)
-write.csv(consdef, "./extend_KORV/data/raw/consdef.csv", row.names=FALSE, quote=FALSE)
-write.csv(peric, "./extend_KORV/data/raw/peric.csv", row.names=FALSE, quote=FALSE)
-
-
-## Data for estimating the Labor Share of the economy
-gdi <- beaGet(list(
-    'UserID' = beaKey, 
-    'Method' = 'GetData',
-    'datasetname' = "NIPA", # Data set name
-    'TableName' = "T11000", 
-    'Frequency' = 'A', # annual
-    'Year' = 'X', # 'X' is a placeholder for all years
-    'ResultFormat' = 'json'
-)
-)
-
-write.csv2(gdi, "./extend_KORV/data/raw/gdi.csv", row.names=FALSE, quote=FALSE)
-
-## Data for estimating the Labor Share of the economy
-gdi <- beaGet(list(
-    'UserID' = beaKey, 
-    'Method' = 'GetData',
-    'datasetname' = "NIPA", # Data set name
-    'TableName' = "T11000", 
-    'Frequency' = 'A', # annual
-    'Year' = 'X', # 'X' is a placeholder for all years
-    'ResultFormat' = 'json'
-)
-)
-
-gdi <- beaGet(list(
-    'UserID' = beaKey, 
-    'Method' = 'GetData',
-    'datasetname' = "GDPbyIndustry", # Data set name
-    'TableID' = "All", 
-    'Industry' = "A",
-    'Frequency' = 'A', # annual
-    'Year' = 'X', # 'X' is a placeholder for all years
-    'ResultFormat' = 'json')
-)
+message("Done. Sample: ", sample_start, "-", sample_end,
+        " | NAICS 2022 (BEA restatement applies to historical series).")

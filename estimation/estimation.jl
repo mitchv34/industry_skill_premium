@@ -360,52 +360,50 @@ function generateMoments(model::Model, parameters::Params, data::Data, shocks::S
 	
 end
 
-function objectiveFunction(model::Model, parameters::Params, data::Data, shocks::Shocks; moment_subset = [1,2,3])
-	
-	@unpack wbr, lsh, rr, y, lsh_alt = data
-	@unpack ε = shocks
-	
-	@parameters α, μ, σ, λ, ρ, δ_s, δ_e
-	@variables k_e, k_s, h, ℓ, ψ_L, ψ_H, q
+function objectiveFunction(model::Model, parameters::Params, data::Data, shocks::Shocks; moment_subset = [1, 2, 3])
+	# SPMLE objective. Manuscript moments (in order):
+	#   1 = wage-bill ratio  (wbr)
+	#   2 = labor share      (lsh)
+	#   3 = no-arbitrage rr  (rr)
+	# `moment_subset` selects which moments enter the likelihood. Default uses
+	# all three, matching the manuscript description.
 
-	# model = intializeModel()
-	# update_model!(model, parameters)
+	@unpack wbr, lsh, rr = data
 
 	T = length(lsh) - 1
 	mS, vS = generateMoments(model, parameters, data, shocks)
-	
-	#! Normalize moments to growth rates
-	mS[1, :] = (mS[1, :] .- mS[1, 1] ) ./ mS[1, 1]
-	mS[2, :] = (mS[2, :] .- mS[2, 1] ) ./ mS[2, 1]
-	mS[3, :] = (mS[3, :] .- mS[3, 1] ) ./ mS[3, 1]
-	
+	# Dimensions: mS is T×3 (time × moment); vS is T×3×3 (time × moment-cov).
 
-	# Z = hcat(wbr[1:end-1] / wbr[1] , lsh_alt[1:end-1]/lsh_alt[1], rr/rr[1])
-	Z = hcat(wbr[2:end] , lsh[2:end], rr)
-	
-	#! Normalize moments to growth rates
-	Z[1, :] = (Z[1, :] .- Z[1, 1] ) ./ Z[1, 1]
-	Z[2, :] = (Z[2, :] .- Z[2, 1] ) ./ Z[2, 1]
-	Z[3, :] = (Z[3, :] .- Z[3, 1] ) ./ Z[3, 1]
+	# Data-side moments, same column order as the simulated mS.
+	Z = hcat(wbr[2:end], lsh[2:end], rr)
 
-
-	ℓ²ₛ = 0
-	moment_subset = [1]
-	for t ∈ 1:T
-		# @info ℓ²ₛ
-
-		a = (Z[t,moment_subset] - mS[t,moment_subset])
-		# ℓ²ₛ += 	(a' * pinv(vS[t,:,:]) * a) + log( abs(det(vS[t,:,:])) +  eps(0.0) )
-		# ℓ²ₛ += 	(a' * inv(vS[t, :, :]) * a)# + log( abs(det(vS[t,:,:])) +  eps(0.0) )
-		ℓ²ₛ += 	(a' * inv(vS[t, moment_subset, moment_subset]) * a) + log( abs(det(vS[t,:,:]))  )
-		# if ℓ²ₛ < 0 
-		# 	termshow(a)
-		# 	termshow(a'a)
-		# end
-
+	# Normalize each moment column to a growth rate relative to its year-1
+	# value. The previous implementation used row indexing (`mS[1, :]`,
+	# `mS[2, :]`, `mS[3, :]`) which only touched the first three *years* and
+	# left years 4..T un-normalized — a row-vs-column bug that silently
+	# produced an inconsistent objective.
+	for j ∈ 1:size(mS, 2)
+		base_m = mS[1, j]
+		base_z = Z[1, j]
+		base_m == 0 && error("normalization base is zero in mS column $j (year 1); upstream data likely wrong")
+		base_z == 0 && error("normalization base is zero in Z column $j (year 1); upstream data likely wrong")
+		mS[:, j] = (mS[:, j] .- base_m) ./ base_m
+		Z[:, j]  = (Z[:, j]  .- base_z) ./ base_z
 	end
-	
-	return (ℓ²ₛ / (2*T))
+
+	# Quasi-likelihood: Σₜ aₜ' Σₜ⁻¹ aₜ + log|Σₜ|, where aₜ = Zₜ − mₜ and Σₜ is
+	# the simulated covariance at time t restricted to `moment_subset`. The
+	# previous implementation inverted the submatrix but took det() over the
+	# full 3×3 — mathematically inconsistent for either 1-moment or 3-moment
+	# specifications. Both terms now use the same submatrix.
+	ℓ²ₛ = 0.0
+	for t ∈ 1:T
+		Σₜ = vS[t, moment_subset, moment_subset]
+		a  = Z[t, moment_subset] - mS[t, moment_subset]
+		ℓ²ₛ += (a' * inv(Σₜ) * a) + log(abs(det(Σₜ)))
+	end
+
+	return ℓ²ₛ / (2 * T)
 	
 end
 
